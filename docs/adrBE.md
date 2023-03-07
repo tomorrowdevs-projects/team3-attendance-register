@@ -1,7 +1,7 @@
 # *WebApp ASD - Attendance Register ***Back-End*** Development*
-- Status: proposed
+- Status: approved
 - Deciders: Mirko Dall'aglio, Luca Galeno, Noel Lapedota, DanielePiani, AlessiaCaporaso, Eva Lateltin, Margherita Bonanno
-- Date: 06/03/2023
+- Date: 07/03/2023
   
 
 ## Context and Problem Statement
@@ -58,15 +58,10 @@ ___
 
 ## Decision Outcome
 ---
-Chosen option: 1 or 2, because ....
+Chosen option: ***Node.JS with Express***
 
-### Positive Consequences
-- {e.g., improvement of quality attribute satisfaction, follow-up decisions required, …}
-- ...
+The use of node allows us to use Javascript for the whole project both BE and FE, and it is a language that all team members know, as well as the large amount of packages available that can be useful
 
-### Negative Consequences
-- {e.g., compromising quality attribute, follow-up decisions required, …}
-- ...
   
 ## Pros and Cons of the Options
 ---

@@ -1,7 +1,7 @@
 # *WebApp ASD - Attendance Register ***Database*** Development*
-- Status: proposed
+- Status: approved
 - Deciders: Mirko Dall'aglio, Luca Galeno, Noel Lapedota, DanielePiani, AlessiaCaporaso, Eva Lateltin, Margherita Bonanno
-- Date: 06/03/2023
+- Date: 07/03/2023
   
 
 ## Context and Problem Statement
@@ -58,15 +58,10 @@ ___
 
 ## Decision Outcome
 ---
-Chosen option: 1 or 2, because ....
+Chosen option: ***MySQL***
 
-### Positive Consequences
-- {e.g., improvement of quality attribute satisfaction, follow-up decisions required, …}
-- ...
+Because the webapp in question uses relational and structured data, it is easier to retrieve subsets and is the one best known to team members
 
-### Negative Consequences
-- {e.g., compromising quality attribute, follow-up decisions required, …}
-- ...
   
 ## Pros and Cons of the Options
 ---

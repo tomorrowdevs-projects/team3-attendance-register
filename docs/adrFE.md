@@ -1,7 +1,7 @@
 # *WebApp ASD - Attendance Register ***Front-End*** Development*
-- Status: proposed
+- Status: approved
 - Deciders: Mirko Dall'aglio, Luca Galeno, Noel Lapedota, DanielePiani, AlessiaCaporaso, Eva Lateltin, Margherita Bonanno
-- Date: 06/03/2023
+- Date: 07/03/2023
   
 
 ## Context and Problem Statement
@@ -59,15 +59,16 @@ ___
 
 ## Decision Outcome
 ---
-Chosen option: 1 ,2 or 3, because ....
+Chosen option: ***Vue.JS*** 
+
+The decision to use Vue.js as a technology was motivated by the team's desire to learn new skills and knowledge on a modern and widely used framework in the world of web development. Given the inexperience of the team with Vue.js, it was felt that the choice of this technology offered the opportunity to acquire new skills and to deepen the knowledge of an extremely useful and widespread component in the field of front-end development, improving thus their own value and what they can offer in the future.
 
 ### Positive Consequences
-- {e.g., improvement of quality attribute satisfaction, follow-up decisions required, …}
-- ...
+- Greater efficiency and speed of development
+- Experience for team members
 
 ### Negative Consequences
-- {e.g., compromising quality attribute, follow-up decisions required, …}
-- ...
+- although Vue's learning curve is fast it still takes some time to learn
   
 ## Pros and Cons of the Options
 ---
