@@ -1,12 +1,13 @@
 const express = require("express");
 const app = express();
+const cors = require('cors');
 const db = require("./src/connectMysql.js");
 const logIn = require("./routing/logIn.js");
 const routing = express.Router();
 const session = require("express-session");
 const queries = require("./model/queries.js");
 require("dotenv").config();
-
+app.use(cors());
 //-----------------------------------------------------------------------------------------------------
 //session is like cookie
 app.use(
@@ -21,16 +22,16 @@ app.use(express.json());
 //-----------------------------------------------------------------------------------------------------
 //create tables in the db if these are not there
 db().then(async (connection) => {
-  console.log("connection to db completed!!");
+   console.log("connection to db completed!!",process.env.NAME);
   await connection.query(queries.createDb);
   await connection.query(queries.use);
   await connection.query(queries.createAccounts);
   await connection.query(queries.createAdmin, [
-    process.env.name,
-    process.env.password_admin,
-    process.env.name_surname,
-    process.env.email,
-    process.env.role
+    process.env.NAME,
+    process.env.PASSWORD_ADMIN,
+    process.env.NAME_SURNAME,
+    process.env.EMAIL,
+    process.env.ROLE
   ]);  
 
   return connection; 

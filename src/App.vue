@@ -1,85 +1,43 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue'
+import AdminPage from './components/adminPage.vue';
+import LoginModule from './components/loginModule.vue';
+import TrainerPage from './components/trainerPage.vue';
+
+const showLogin = ref(true);
+const userRole = ref('none');
+
+const handleLoginSuccess = (role) => {
+  if (role === 'admin') userRole.value = 'admin'
+  else if (role === 'trainer') userRole.value = 'trainer'
+  showLogin.value = false
+}
+
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <img src="./components/icons/logo.png" alt="logoSport">
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <h1>Attendance Register App</h1>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
+  <LoginModule v-if="showLogin" @login-success="handleLoginSuccess"/>
 
-  <RouterView />
+  <AdminPage v-if="userRole === 'admin'" />
+
+  <TrainerPage v-if="userRole === 'trainer'" />
+
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+img {
+  margin-bottom: 2em;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+h1 {
+  font-size: 2.5em;
+  margin: 0 0 1.3em 0;
+  text-shadow: 2px 2px 3px grey;
 }
 </style>
+
+
