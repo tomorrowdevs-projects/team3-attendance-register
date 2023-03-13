@@ -20,9 +20,8 @@
 		axios
 		  .post('http://localhost:2000/api/v1/login', postData)
 		  .then((response) => {
-        console.log(response.data.status in errors)
         if (response.data.status in errors) message.value = errors[response.data.status]
-        else if (response.data.status === 201) emit('login-success', response.data.role)
+        else if (response.data.status === 201) emit('login-success', { role: response.data.role, username: postData.username })
       })
 
   }

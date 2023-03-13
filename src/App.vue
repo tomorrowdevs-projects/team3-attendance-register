@@ -6,10 +6,12 @@ import TrainerPage from './components/trainerPage.vue';
 
 const showLogin = ref(true);
 const userRole = ref('none');
+const userName = ref('');
 
-const handleLoginSuccess = (role) => {
-  if (role === 'admin') userRole.value = 'admin'
-  else if (role === 'trainer') userRole.value = 'trainer'
+const handleLoginSuccess = (event) => {
+  if (event.role === 'admin') userRole.value = 'admin'
+  else if (event.role === 'trainer') userRole.value = 'trainer'
+  userName.value = event.username;
   showLogin.value = false
 }
 
@@ -22,9 +24,9 @@ const handleLoginSuccess = (role) => {
 
   <LoginModule v-if="showLogin" @login-success="handleLoginSuccess"/>
 
-  <AdminPage v-if="userRole === 'admin'" />
+  <AdminPage v-if="userRole === 'admin'" :name="userName"/>
 
-  <TrainerPage v-if="userRole === 'trainer'" />
+  <TrainerPage v-if="userRole === 'trainer'" :name="userName"/>
 
 </template>
 
