@@ -5,6 +5,7 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // for DEMO VERSION comment base
   base: '/dist/',
   plugins: [vue()],
   resolve: {

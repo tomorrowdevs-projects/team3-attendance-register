@@ -1,30 +1,36 @@
 <script setup>
-  import axios from 'axios';
-  import { ref } from 'vue'
+import axios from 'axios';
+import { ref } from 'vue'
 
-  const emit = defineEmits(['login-success'])
-  const postData = {
-        username: '',
-        password: '',
-  };
+const emit = defineEmits(['login-success'])
+const postData = {
+  username: '',
+  password: '',
+};
 
-  const errors = {
-    400: 'Incorrect Username and/or Password!',
-    401: 'Generic error, try again'
-  }
+const errors = {
+  400: 'Incorrect Username and/or Password!',
+  401: 'Generic error, try again'
+}
 
-  let message = ref('');
+let message = ref('');
 
-  const fetchData = () => {
-    
-		axios
-		  .post('http://localhost:2000/api/v1/login', postData)
-		  .then((response) => {
-        if (response.data.status in errors) message.value = errors[response.data.status]
-        else if (response.data.status === 201) emit('login-success', { role: response.data.role, username: postData.username })
-      })
+const fetchData = () => {
 
-  }
+  // for DEMO VERSION
+  if (postData.username === 'admin' || postData.username === 'trainer')
+      emit('login-success', { role: postData.username, username: postData.username })
+  else message.value = errors[400]
+  // end DEMO VERSION
+
+  /* axios
+    .post('http://localhost:2000/api/v1/login', postData)
+    .then((response) => {
+      if (response.data.status in errors) message.value = errors[response.data.status]
+      else if (response.data.status === 201) emit('login-success', { role: response.data.role, username: postData.username })
+    }) */
+
+}
 
 </script>
 
@@ -34,7 +40,8 @@
       <div class="col-mb-3">{{ message }}</div>
       <div class="col-mb-3">
         <label for="validationCustom01" class="form-label">Username</label>
-        <input type="text" class="form-control" id="validationCustom01" pattern="[0-9a-zA-Z]{3,}" v-model="postData.username" required>
+        <input type="text" class="form-control" id="validationCustom01" pattern="[0-9a-zA-Z]{3,}"
+          v-model="postData.username" required>
       </div>
       <div class="mb-3">
         <label for="exampleInputPassword1" class="form-label">Password</label>
@@ -45,6 +52,10 @@
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
   </section>
+
+  <!-- For DEMO VERSION -->
+  <p class="demo">( DEMO VERSION => Type ' admin ' or ' trainer ' in Username and a password that meets the minimum requirements )</p>
+  <!-- end DEMO VERSION -->
 </template>
 
 <style scoped>
@@ -71,13 +82,22 @@ button:hover {
   transform: scale(1.1);
 }
 
-div:first-child{
+div:first-child {
   color: red;
   font-weight: 600;
 }
 
-@media (max-width: 577px){
-  section{
+/* for DEMO VERSION */
+
+.demo {
+  margin-top: 2em;
+  color: red;
+  font-weight: 700;
+}
+/* end DEMO VERSION */
+
+@media (max-width: 577px) {
+  section {
     max-width: 90%;
   }
 }
