@@ -8,23 +8,23 @@
         password: '',
   };
 
-  let message = ref('');
-
   const errors = {
     400: 'Incorrect Username and/or Password!',
     401: 'Generic error, try again'
   }
 
-  const fetchData = () => {
-    let role = 'admin';
-    emit('login-success', role)
+  let message = ref('');
 
+  const fetchData = () => {
+    
 		axios
 		  .post('http://localhost:2000/api/v1/login', postData)
 		  .then((response) => {
-        if (response.status in errors) message = errors[response.status]
-        else if (response.status === 201) role = 'ciao'
+        console.log(response.data.status in errors)
+        if (response.data.status in errors) message.value = errors[response.data.status]
+        else if (response.data.status === 201) emit('login-success', response.data.role)
       })
+
   }
 
 </script>
@@ -32,8 +32,8 @@
 <template>
   <section>
     <form class="needs-validation" @submit.prevent="fetchData">
-      <div class="col-mb-3 ">{{ message }}</div>
-      <div class="col-mb-3 ">
+      <div class="col-mb-3">{{ message }}</div>
+      <div class="col-mb-3">
         <label for="validationCustom01" class="form-label">Username</label>
         <input type="text" class="form-control" id="validationCustom01" pattern="[0-9a-zA-Z]{3,}" v-model="postData.username" required>
       </div>
@@ -70,6 +70,11 @@ input {
 
 button:hover {
   transform: scale(1.1);
+}
+
+div:first-child{
+  color: red;
+  font-weight: 600;
 }
 
 @media (max-width: 577px){

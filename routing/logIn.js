@@ -22,11 +22,10 @@ router.post("/login", (req, res) => {
             //   // Authenticate the user
             req.session.loggedin = true;
             req.session.username = username;
-
             //   // Redirect to home page
-            res.status(201).end();
+            res.json({ status: 201, role: rows[0].role });
           } else {
-            res.status(400).end();
+            res.json({ status: 400 }).end();
           }
         });
       })
@@ -34,7 +33,7 @@ router.post("/login", (req, res) => {
         throw error;
       });
   } else {
-    res.status(401).end();
+    res.json({ status: 401 }).end();
   }
 });
 
