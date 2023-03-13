@@ -7,7 +7,9 @@ const routing = express.Router();
 const session = require("express-session");
 const queries = require("./model/queries.js");
 require("dotenv").config();
-app.use(cors());
+app.use(cors({
+  origin: '*'
+}));
 //-----------------------------------------------------------------------------------------------------
 //session is like cookie
 app.use(
@@ -22,7 +24,7 @@ app.use(express.json());
 //-----------------------------------------------------------------------------------------------------
 //create tables in the db if these are not there
 db().then(async (connection) => {
-   console.log("connection to db completed!!",process.env.NAME);
+   console.log("connection to db completed!!");
   await connection.query(queries.createDb);
   await connection.query(queries.use);
   await connection.query(queries.createAccounts);
@@ -40,7 +42,7 @@ db().then(async (connection) => {
 
 // http://localhost:3000/home
 //API
-app.get("/home", (req, res) => {
+app.get("./dist", (req, res) => {
   // If the user is loggedin
   if (req.session.loggedin) {
     // Output username

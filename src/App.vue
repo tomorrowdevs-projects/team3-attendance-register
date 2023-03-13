@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 import AdminPage from './components/adminPage.vue';
 import LoginModule from './components/loginModule.vue';
 import TrainerPage from './components/trainerPage.vue';
@@ -16,7 +16,7 @@ const handleLoginSuccess = (role) => {
 </script>
 
 <template>
-  <img src="./components/icons/logo.png" alt="logoSport">
+  <img src="@/components/icons/logo.png" alt="logoSport">
 
   <h1>Attendance Register App</h1>
 

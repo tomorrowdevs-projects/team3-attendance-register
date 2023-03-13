@@ -13,7 +13,6 @@ router.post("/login", (req, res) => {
       .then(async (connection) => {
         await connection.query(queries.use);
         await connection.query(queries.select).then(([rows]) => {
-          console.log("Response: ", rows);
           //object array filter to search if user exists in the Db
           const result = rows.filter((obj) => {
             return obj.password === password && obj.username === username;

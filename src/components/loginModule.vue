@@ -1,10 +1,10 @@
 <script setup>
-  //import axios from 'axios';
+  import axios from 'axios';
   import { ref } from 'vue'
 
   const emit = defineEmits(['login-success'])
   const postData = {
-        userName: '',
+        username: '',
         password: '',
   };
 
@@ -16,15 +16,15 @@
   }
 
   const fetchData = () => {
-    const role = 'trainer';
+    let role = 'admin';
     emit('login-success', role)
-    //console.log(postData);
-		/* axios
+
+		axios
 		  .post('http://localhost:2000/api/v1/login', postData)
 		  .then((response) => {
-        console.log(response)
+        if (response.status in errors) message = errors[response.status]
+        else if (response.status === 201) role = 'ciao'
       })
-      .catch(err => console.log(err)) */
   }
 
 </script>
@@ -35,7 +35,7 @@
       <div class="col-mb-3 ">{{ message }}</div>
       <div class="col-mb-3 ">
         <label for="validationCustom01" class="form-label">Username</label>
-        <input type="text" class="form-control" id="validationCustom01" pattern="[0-9a-zA-Z]{3,}" v-model="postData.userName" required>
+        <input type="text" class="form-control" id="validationCustom01" pattern="[0-9a-zA-Z]{3,}" v-model="postData.username" required>
       </div>
       <div class="mb-3">
         <label for="exampleInputPassword1" class="form-label">Password</label>
