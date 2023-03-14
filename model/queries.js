@@ -13,7 +13,7 @@ const createAccounts = `CREATE TABLE  if not exists accounts(
    KEY unique_index  (username, email)
   
   )`;
-const hash = `SELECT password FROM accounts WHERE username = ? `;
+const passwordAndRole = `SELECT password , role FROM accounts WHERE username = ?  `;
 
 const createUser = `INSERT IGNORE INTO accounts (username, password, name_surname, email, role) VALUES (?, ?, ?, ?, ?) `;
 const selectUsername = `SELECT username OR email  FROM accounts WHERE  username = ? OR email = ? `;
@@ -22,7 +22,7 @@ module.exports = {
   selectLogin,
   createAccounts,
   createDb,
-  hash,
+  passwordAndRole,
   use,
   createUser,
   selectUsername,

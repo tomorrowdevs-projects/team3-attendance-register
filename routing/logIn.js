@@ -13,8 +13,8 @@ router.post("/login", async (req, res) => {
         await connection.query(queries.use);
         //find the cryptoPassword in Db
         await connection
-          .query(queries.hash, [username])
-          .then(async ([rows]) => {
+          .query(queries.passwordAndRole, [username])
+          .then(([rows]) => {
             //if there is no password, therefore user inside DB:
             if (rows.length === 0) res.status(400).end();
             else {
@@ -31,6 +31,7 @@ router.post("/login", async (req, res) => {
                 //   // Authenticate the user
                 req.session.loggedin = true;
                 req.session.username = username;
+                req.session.role = rows[0].role;
 
                 res.status(200).end();
               } else {
@@ -40,7 +41,7 @@ router.post("/login", async (req, res) => {
           });
       })
       .catch((error) => {
-        //   throw error;
+        throw error;
       });
   } else {
     res.status(401).end();
