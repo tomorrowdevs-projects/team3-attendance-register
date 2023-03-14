@@ -10,25 +10,27 @@ const postData = {
 
 const errors = {
   400: 'Incorrect Username and/or Password!',
-  401: 'Generic error, try again'
+  401: 'Incorrect Username and/or Password!',
+  404: 'Generic error, try again'
 }
 
 let message = ref('');
 
 const fetchData = () => {
 
-  // for DEMO VERSION
+ /*  // for DEMO VERSION
   if (postData.username === 'admin' || postData.username === 'trainer')
       emit('login-success', { role: postData.username, username: postData.username })
   else message.value = errors[400]
   // end DEMO VERSION
-
-  /* axios
+ */
+  axios
     .post('http://localhost:2000/api/v1/login', postData)
     .then((response) => {
+      console.log(response.data);
       if (response.data.status in errors) message.value = errors[response.data.status]
       else if (response.data.status === 201) emit('login-success', { role: response.data.role, username: postData.username })
-    }) */
+    }) 
 
 }
 
@@ -88,12 +90,12 @@ div:first-child {
 }
 
 /* for DEMO VERSION */
-
+/* 
 .demo {
   margin-top: 2em;
   color: red;
   font-weight: 700;
-}
+} */
 /* end DEMO VERSION */
 
 @media (max-width: 577px) {
