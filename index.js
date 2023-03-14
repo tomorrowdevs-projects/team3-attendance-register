@@ -4,6 +4,11 @@ const app = express();
 const cors = require('cors');
 const db = require("./src/connectMysql.js");
 const logIn = require("./routing/logIn.js");
+const logout = require("./routing/logout.js");
+const bcrypt = require("bcryptjs");
+const controller = require("./controller/auth.js");
+
+const managementMyApp = require("./routing/managementMyApp.js");
 const routing = express.Router();
 const session = require("express-session");
 const queries = require("./model/queries.js");
@@ -42,15 +47,18 @@ db().then(async (connection) => {
   await connection.query(queries.createDb);
   await connection.query(queries.use);
   await connection.query(queries.createAccounts);
-  await connection.query(queries.createAdmin, [
+  let hashedPassowrd = await bcrypt.hash(process.env.PASSWORD_ADMIN, 12);
+
+  await connection.query(queries.createUser, [
     process.env.NAME,
-    process.env.PASSWORD_ADMIN,
+    hashedPassowrd,
     process.env.NAME_SURNAME,
     process.env.EMAIL,
-    process.env.ROLE
-  ]);  
+    process.env.ROLE,
+  ]);
 
-  return connection; 
+  return connection;
+
 });
 //-----------------------------------------------------------------------------------------------------
 
@@ -69,6 +77,18 @@ app.get("./dist", (req, res) => {
 });
 
 app.use("/api/v1", logIn);
+app.use("/api/v1", logout);
+
+//first check if you are an administrator,
+//then if the credential format is respected, 
+//then if there are no duplicates in the DB
+app.use(
+  "/api/v1",
+  controller.onlyAdmin,
+  controller.checkParametersRegister,
+  controller.checkusernameExist,
+  managementMyApp
+);
 
 //-----------------------------------------------------------------------------------------------------
 

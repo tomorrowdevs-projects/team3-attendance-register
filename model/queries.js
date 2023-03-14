@@ -1,7 +1,6 @@
 const createDb = `CREATE DATABASE IF NOT EXISTS team3`;
-const insertAccount =
-  "INSERT IGNORE INTO accounts(username, password, role) VALUES (?, ?, ?)";
-const select = "SELECT * FROM accounts ";
+const selectLogin =
+  "SELECT * FROM accounts WHERE username = ? AND password = ?";
 const use = "USE team3";
 const createAccounts = `CREATE TABLE  if not exists accounts(
   id int(255) NOT NULL AUTO_INCREMENT,
@@ -11,17 +10,20 @@ const createAccounts = `CREATE TABLE  if not exists accounts(
   email VARCHAR(255) NOT NULL,
   role VARCHAR(255) NOT NULL, 
    PRIMARY KEY (id),
-   CONSTRAINT UC_account UNIQUE (username, email)
+   KEY unique_index  (username, email)
   
   )`;
+const passwordAndRole = `SELECT password , role FROM accounts WHERE username = ?  `;
 
-const createAdmin = `INSERT IGNORE INTO accounts (username, password, name_surname, email, role) VALUES (?, ?, ?, ?, ?) `;
+const createUser = `INSERT IGNORE INTO accounts (username, password, name_surname, email, role) VALUES (?, ?, ?, ?, ?) `;
+const selectUsername = `SELECT username OR email  FROM accounts WHERE  username = ? OR email = ? `;
 
 module.exports = {
-  insertAccount,
-  select,
+  selectLogin,
   createAccounts,
   createDb,
+  passwordAndRole,
   use,
-  createAdmin,
+  createUser,
+  selectUsername,
 };
