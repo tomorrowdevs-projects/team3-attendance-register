@@ -33,9 +33,9 @@ router.post("/login", async (req, res) => {
                 req.session.username = username;
                 req.session.role = rows[0].role;
 
-                res.status(200).end();
+                res.json({ status: 201, role: rows[0].role });
               } else {
-                res.status(400).end();
+                res.json({ status: 400 }).end();
               }
             }
           });
@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
         throw error;
       });
   } else {
-    res.status(401).end();
+    res.json({ status: 401 }).end();
   }
 });
 

@@ -1,5 +1,7 @@
+//import { initializeApp } from "firebase/app";
 const express = require("express");
 const app = express();
+const cors = require('cors');
 const db = require("./src/connectMysql.js");
 const logIn = require("./routing/logIn.js");
 const logout = require("./routing/logout.js");
@@ -11,7 +13,22 @@ const routing = express.Router();
 const session = require("express-session");
 const queries = require("./model/queries.js");
 require("dotenv").config();
+app.use(cors({
+  origin: '*'
+}));
 
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCH4uv4qKiy1ZKkaTT9qyoJAauf8Mdd9mA",
+  authDomain: "team3project-19334.firebaseapp.com",
+  projectId: "team3project-19334",
+  storageBucket: "team3project-19334.appspot.com",
+  messagingSenderId: "1051253835545",
+  appId: "1:1051253835545:web:4def2a6de80d5299c2e788"
+};
+
+// Initialize Firebase
+//app.initializeApp(firebaseConfig);
 //-----------------------------------------------------------------------------------------------------
 //session is like cookie
 app.use(
@@ -26,7 +43,7 @@ app.use(express.json());
 //-----------------------------------------------------------------------------------------------------
 //create tables in the db if these are not there
 db().then(async (connection) => {
-  console.log("connection to db completed!!");
+   console.log("connection to db completed!!");
   await connection.query(queries.createDb);
   await connection.query(queries.use);
   await connection.query(queries.createAccounts);
@@ -41,12 +58,13 @@ db().then(async (connection) => {
   ]);
 
   return connection;
+
 });
 //-----------------------------------------------------------------------------------------------------
 
 // http://localhost:3000/home
 //API
-app.get("/home", (req, res) => {
+app.get("./dist", (req, res) => {
   // If the user is loggedin
   if (req.session.loggedin) {
     // Output username
