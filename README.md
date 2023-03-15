@@ -7,6 +7,8 @@
   The coach, on the other hand, accesses the calendar of his own categories and displays the list of assigned athletes. He can check for the presence of the athletes. 
   The trainer can enter the number of hours/minutes of training, with increments of 30 minutes. He can make changes to the dates every 7 days. The app allows the           trainer to generate a PDF file with the attendance list.
   
+# Technologies used
+  
 **Client Request**
 
 https://github.com/tomorrowdevs-projects/asd-attendance-register
