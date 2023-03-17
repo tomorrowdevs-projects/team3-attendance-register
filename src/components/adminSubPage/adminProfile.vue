@@ -100,10 +100,6 @@ label {
     cursor: not-allowed;
   }
 
-  button:hover:not(:disabled) {
-    background-color: #0069d9;
-  }
-
   form {
     max-width: 600px;
     margin: 0 auto;

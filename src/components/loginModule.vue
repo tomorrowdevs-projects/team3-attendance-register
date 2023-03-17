@@ -53,6 +53,8 @@ const fetchData = () => {
       </div>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+    <hr>
+    <p>Forgot your password? <a href="#">Click here</a></p>
   </section>
 
   <!-- For DEMO VERSION -->
@@ -68,6 +70,9 @@ section {
   border-radius: 1rem;
   text-align: center;
   background-color: #dde4ea;
+}
+section p{
+  margin-bottom: 0;
 }
 
 button {
@@ -93,12 +98,12 @@ div:first-child {
 
 .demo {
   margin-top: 2em;
-  color: red;
+  color:  red;
   font-weight: 700;
 }
 /* end DEMO VERSION */
 
-@media (max-width: 577px) {
+@media (max-width: 768px) {
   section {
     max-width: 90%;
   }
