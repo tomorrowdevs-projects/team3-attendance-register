@@ -11,12 +11,12 @@ router.post("/login", async (req, res) => {
     connection()
       .then(async (connection) => {
         await connection.query(queries.use);
-        //find the cryptoPassword in Db
+        //find the cryptoPassword in Db  
         await connection
           .query(queries.passwordAndRole, [username])
-          .then(([rows]) => {
+          .then(([rows]) => {  
             //if there is no password, therefore user inside DB:
-            if (rows.length === 0) res.status(400).end();
+            if (rows.length === 0) res.status(400).json({ status: 400 });
             else {
               //NOTE : to fix when we'll solve the problem with unique inside queries
 
@@ -33,7 +33,7 @@ router.post("/login", async (req, res) => {
                 req.session.username = username;
                 req.session.role = rows[0].role;
 
-                res.json({ status: 201, role: rows[0].role });
+                res.json({ status: 201, role: rows});
               } else {
                 res.json({ status: 400 }).end();
               }

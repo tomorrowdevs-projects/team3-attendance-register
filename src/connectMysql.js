@@ -3,11 +3,10 @@ const mysql = require("mysql2/promise");
 
 async function db() {
   return await mysql.createConnection({
-    host: 'localhost',//process.env.localhost,
-    user: 'root',//process.env.root,
-    password: ''//process.env.password,
+    host: process.env.LOCALHOST,
+    user: process.env.ROOT,
+    password: process.env.PASSWORD,
   });
 }
 
 module.exports = db;
- 
