@@ -20,6 +20,8 @@ const filteredClone = [...filteredList.value];
 const name = ref('');
 const surname = ref('');
 const username = ref('');
+const email = ref('');
+let formError = ref('');
 
 watchEffect(() => {
     username.value = `${capitalizeFirstLetter(name.value)}${capitalizeFirstLetter(surname.value)}`
@@ -79,6 +81,28 @@ const printPdf = (element) => {
 function filtered() {
     if (search.value === 'all') filteredList.value = [...filteredClone]
     else filteredList.value = filteredClone.filter(el => el.category.some(cat => cat === search.value))
+}
+
+//Add new user
+const fetchNewUser = () => {
+    const catNewUser = document.querySelectorAll('input[name="categories"]:checked')
+    if (catNewUser.length === 0) {
+        formError.value = 'Select at least one category.'
+        return
+    }
+    const form = event.target
+    const formData = new FormData(form)
+    const data = Object.fromEntries(formData.entries())
+    data.categories = [...Array.from(catNewUser).map(el => el.value)];
+    console.log(data)
+    // fetch data qui
+
+    //if response ok
+    form.reset()
+    //close modal
+    const modal = document.querySelector('#modalAddNew')
+    const bsModal = bootstrap.Modal.getInstance(modal)
+    bsModal.hide()
 }
 
 </script>
@@ -166,9 +190,9 @@ function filtered() {
                                         <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure to delete it?</h1>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
+                                        <button type="button" class="btn btn-outline-secondary"
                                             data-bs-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-danger"
+                                        <button type="button" class="btn btn-outline-danger"
                                             @click="deleteItem(trainer)">Delete</button>
                                     </div>
                                 </div>
@@ -190,43 +214,49 @@ function filtered() {
                 </div>
                 <div class="modal-body">
 
-                    <form class="needs-validation" @submit.prevent="fetchData">
+                    <form class="needs-validation" @submit.prevent="fetchNewUser">
                         <div class="mb-3 row">
-                            <label for="name" class="col-sm-4 col-form-label">Name</label>
-                            <div class="col-sm-8">
-                                <input v-model="name" type="text" class="form-control name" required>
+                            <label for="name" class="col-sm-3 col-form-label">Name</label>
+                            <div class="col-sm-9">
+                                <input v-model="name" name="name" type="text" class="form-control name" required>
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="surname" class="col-sm-4 col-form-label">Surname</label>
-                            <div class="col-sm-8">
-                                <input v-model="surname" type="text" class="form-control surname" required>
+                            <label for="surname" class="col-sm-3 col-form-label">Surname</label>
+                            <div class="col-sm-9">
+                                <input v-model="surname" name="surname" type="text" class="form-control surname" required>
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="username" class="col-sm-4 col-form-label">Username</label>
-                            <div class="col-sm-8">
-                                <input v-model="username" type="text" class="form-control username" required>
+                            <label for="username" class="col-sm-3 col-form-label">Username</label>
+                            <div class="col-sm-9">
+                                <input v-model="username" name="username" type="text" class="form-control username"
+                                    required>
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="email" class="col-sm-4 col-form-label">Email address</label>
-                            <div class="col-sm-8">
-                                <input type="email" class="form-control email" required>
+                            <label for="email" class="col-sm-3 col-form-label">Email address</label>
+                            <div class="col-sm-9">
+                                <input name="email" type="email" class="form-control email" required>
                             </div>
                         </div>
+                        <p v-if="formError" id="formError">{{ formError }}</p>
                         <div class="mb-3 row">
-                            <label for="category" class="col-sm-4 col-form-label">Category</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control category" required>
+                            <label for="catefories" class="col-sm-3 col-form-label">Categories</label>
+                            <div class="col-sm-9">
+                                <div v-for="category in categories" :key="category" class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" name="categories"
+                                        :id="category.replace(/\s/g, '')" :value="category">
+                                    <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category
+                                    }}</label>
+                                </div>
                             </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-outline-success">Save</button>
                         </div>
                     </form>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
             </div>
         </div>
@@ -291,9 +321,23 @@ h2 {
     text-transform: uppercase;
 }
 
+.modal-title {
+    margin: 0;
+}
+
 .modal-footer {
     flex-wrap: unset;
     gap: 3em;
+}
+
+.form-switch .form-check-input {
+    margin-top: 10px;
+}
+
+#formError {
+    color: red;
+    text-align: center;
+    margin: 0;
 }
 
 @media only screen and (max-width: 768px) {
@@ -303,6 +347,22 @@ h2 {
 
     .search {
         width: 80%;
+        font-size: .9em;
+    }
+
+    .searchContainer {
+        width: 100%;
+        gap: 1em;
+    }
+
+    .searchContainer button {
+        flex-basis: 8em;
+        font-size: .9em !important;
+    }
+
+    #modalAddNew .col-form-label {
+        padding-bottom: 0;
+        padding-top: 0;
     }
 }
 </style>
