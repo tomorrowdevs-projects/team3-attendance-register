@@ -1,4 +1,7 @@
 <template>
-    <h1>ciao</h1>
+    <div>
+      <h2>Calendario di prenotazione</h2>
 
-</template>
+    </div>
+  </template>
+  

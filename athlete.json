@@ -23,27 +23,27 @@
             "pilates",
             "judo"
         ],
-        "mounthlyHoursWorked": "54"
+        "mounthlyHoursWorked": "76"
     },
     {
         "id": "3",
         "role": "athlete",
-        "username": "LProfonda",
+        "username": "LPurple",
         "name": "Ludovica",
-        "surname": "Profonda",
+        "surname": "Purple",
         "email": "gviola@miao.it",
         "category": [
             "spinning",
-            "salto del pasto"
+            "salto in lungo"
         ],
         "mounthlyHoursWorked": "120"
     },
     {
         "id": "4",
         "role": "athlete",
-        "username": "ALear",
+        "username": "ALearning",
         "name": "Amanda",
-        "surname": "Lear",
+        "surname": "Learning",
         "email": "allin@me.it",
         "category": [
             "bocce"

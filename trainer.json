@@ -23,7 +23,7 @@
             "pilates",
             "judo"
         ],
-        "mounthlyHoursWorked": "54"
+        "mounthlyHoursWorked": "76"
     },
     {
         "id": "3",
@@ -34,19 +34,20 @@
         "email": "gviola@miao.it",
         "category": [
             "spinning",
-            "salto del pasto"
+            "salto in lungo"
         ],
         "mounthlyHoursWorked": "120"
     },
     {
         "id": "4",
         "role": "trainer",
-        "username": "VSleale",
+        "username": "VNeri",
         "name": "Veronica",
-        "surname": "Sleale",
+        "surname": "Neri",
         "email": "allin@me.it",
         "category": [
-            "bocce"
+            "bocce",
+            "yoga"
         ],
         "mounthlyHoursWorked": "45"
     },

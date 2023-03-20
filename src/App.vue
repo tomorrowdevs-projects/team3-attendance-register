@@ -32,7 +32,6 @@ const handleLoginSuccess = (event) => {
 <style scoped>
 
 img {
-  margin-bottom: 2em;
   width: 40%;
 }
 

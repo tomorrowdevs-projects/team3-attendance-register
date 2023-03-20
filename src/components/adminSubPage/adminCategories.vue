@@ -8,12 +8,14 @@ const categories = [...new Set([...trainerJson].reduce((result, el) => result.co
 const delClicked = ref(false);
 const delString = ref('');
 const catName = ref('');
+const red = ref('');
 
 const deleteBut = () => {
     if (delString.value === 'Now') {
         const catNewUser = [...Array.from(document.querySelectorAll('input[name="categories"]:checked')).map(el => el.value)];
         delClicked.value = false;
         delString.value = '';
+        red.value = '';
         if (catNewUser.length > 0) {
             console.log(catNewUser);
             //qui richiamo l'api
@@ -21,6 +23,7 @@ const deleteBut = () => {
     } else {
         delClicked.value = true;
         delString.value = 'Now';
+        red.value = 'border: 1px solid red';
     }
 }
 
@@ -43,11 +46,10 @@ const addNew = () => {
 
 
     <div class="col-12 catContainer" v-for="category in categories" :key="category">
-        <div class="form-check form-switch">
+        <div class="form-check form-switch" :style="red">
             <input v-if="delClicked" class="form-check-input" type="checkbox" role="switch" name="categories"
                 :id="category.replace(/\s/g, '')" :value="category">
-            <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category
-            }}</label>
+            <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category }}</label>
         </div>
     </div>
 
@@ -92,7 +94,7 @@ const addNew = () => {
 .catContainer div {
     border-radius: 2em;
     box-shadow: 0 0 15px gray;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
     text-transform: uppercase;
     padding: 2px;
 }
@@ -132,6 +134,10 @@ label {
     .butContainer {
         width: 100%;
         font-size: .5em;
+    }
+
+    .catContainer{
+        margin-bottom: 1.5em;
     }
 
     .form-check-input {
