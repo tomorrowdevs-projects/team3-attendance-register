@@ -3,12 +3,12 @@ const express = require("express");
 const router = express.Router();
 const connection = require("../src/connectMysql.js");
 const bcrypt = require("bcryptjs");
+const { ErrorCodes } = require("vue");
 
-router.post("/managementMyApp", async (req, res) => {
-  console.log(req.body);
+router.post("/", async (req, res) => {
+  const password = req.password;
 
-  const { username, password, passwordConfirm, name_surname, email, role } =
-    req.body;
+  const { username, name, surname, email, role } = req;
   await connection()
     .then(async (connection) => {
       await connection.query(queries.use);
@@ -16,21 +16,20 @@ router.post("/managementMyApp", async (req, res) => {
       //create cryptoPassowrd
       let hashedPassowrd = await bcrypt.hash(password, 12);
       console.log(hashedPassowrd);
-      //add user inside Db
+      // //add user inside Db
       await connection.query(queries.createUser, [
         username,
         hashedPassowrd,
-        name_surname,
+        name,
+        surname,
         email,
         role,
       ]);
-      res.status(201).end();
+      res.status(200).json({ status: 200 });
     })
     .catch((error) => {
       throw error;
     });
 });
-
-
 
 module.exports = router;

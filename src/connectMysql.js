@@ -10,4 +10,3 @@ async function db() {
 }
 
 module.exports = db;
- 
