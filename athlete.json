@@ -1,0 +1,66 @@
+[
+    {
+        "id": "1",
+        "role": "athlete",
+        "username": "LScavato",
+        "name": "Luigi",
+        "surname": "Scavato",
+        "email": "mariorossi@ciao.it",
+        "category": [
+            "yoga"
+        ],
+        "mounthlyHoursWorked": "54"
+    },
+    {
+        "id": "2",
+        "role": "athlete",
+        "username": "ASecco",
+        "name": "Andrea",
+        "surname": "Secco",
+        "email": "paologialli@ciaone.it",
+        "category": [
+            "yoga",
+            "pilates",
+            "judo"
+        ],
+        "mounthlyHoursWorked": "76"
+    },
+    {
+        "id": "3",
+        "role": "athlete",
+        "username": "LPurple",
+        "name": "Ludovica",
+        "surname": "Purple",
+        "email": "gviola@miao.it",
+        "category": [
+            "spinning",
+            "salto in lungo"
+        ],
+        "mounthlyHoursWorked": "120"
+    },
+    {
+        "id": "4",
+        "role": "athlete",
+        "username": "ALearning",
+        "name": "Amanda",
+        "surname": "Learning",
+        "email": "allin@me.it",
+        "category": [
+            "bocce"
+        ],
+        "mounthlyHoursWorked": "45"
+    },
+    {
+        "id": "5",
+        "role": "athlete",
+        "username": "DTinta",
+        "name": "Denise",
+        "surname": "Tinta",
+        "email": "fede78@sport.it",
+        "category": [
+            "pallavolo",
+            "beach volley"
+        ],
+        "mounthlyHoursWorked": "160"
+    }
+]

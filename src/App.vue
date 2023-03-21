@@ -18,27 +18,32 @@ const handleLoginSuccess = (event) => {
 </script>
 
 <template>
-  <img src="@/components/icons/logo.png" alt="logoSport">
+    <img id="logo" src="@/components/icons/logo.png" alt="logoSport">
 
-  <h1>Attendance Register App</h1>
+    <h1>Attendance Register App</h1>
 
-  <LoginModule v-if="showLogin" @login-success="handleLoginSuccess"/>
+    <LoginModule v-if="showLogin" @login-success="handleLoginSuccess" />
 
-  <AdminPage v-if="userRole === 'admin'" :name="userName"/>
+    <AdminPage v-if="userRole === 'admin'" :name="userName" />
 
-  <TrainerPage v-if="userRole === 'trainer'" :name="userName"/>
-
+    <TrainerPage v-if="userRole === 'trainer'" :name="userName" />
 </template>
 
 <style scoped>
+
 img {
-  margin-bottom: 2em;
+  width: 40%;
 }
 
 h1 {
   font-size: 2.5em;
-  margin: 0 0 1.3em 0;
   text-shadow: 2px 2px 3px grey;
+}
+
+@media only screen and (max-width: 768px) {
+  #logo {
+    width: 90%;
+  }
 }
 </style>
 
