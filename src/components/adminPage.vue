@@ -4,13 +4,14 @@ import adminProfile from './adminSubPage/adminProfile.vue';
 import adminPeopleList from './adminSubPage/adminPeopleList.vue';
 import adminCategories from './adminSubPage/adminCategories.vue';
 import adminCalendar from './adminSubPage/adminCalendar.vue';
+import Button from './ui/Button.vue';
 
 const props = defineProps({
     name: {
         type: String,
         required: true
     },
-    type: {
+    user: {
         type: String,
         required: true
     }
@@ -22,57 +23,37 @@ const showBack = ref(false);
 </script>
 
 <template>
-    <img v-show="showBack" class="back" src="@/components/icons/back.png" alt="back" @click="[selected, showBack] = ['', false]">
+    <img v-show="showBack" class="back" src="@/components/icons/back.png" alt="back"
+    @click="[selected, showBack] = ['', false]">
 
     <div v-if="selected === ''" class="d-grid gap-4 col-4 mx-auto butContainer">
-        <button class="btn btn-outline-secondary" type="button" @click="[selected, showBack] = ['profile', true]"><img
-                src="@/components/icons/adminProfile.png" alt="adminProfile"> {{ name.toLocaleUpperCase() }}'s Profile</button>
-
+        <Button :type="{ icons: 'adminProfile', title: `${name.toLocaleUpperCase()} 's Profile` }"
+            @click="[selected, showBack] = ['profile', true]"></Button>
         <hr>
 
-        <button class="btn btn-outline-secondary" type="button" @click="[selected, showBack] = ['trainers', true]"><img
-                src="@/components/icons/trainer.png" alt="trainer">
-            Trainers</button>
+        <Button :type="{ icons: 'trainer', title: 'Trainers' }"
+            @click="[selected, showBack] = ['trainers', true]"></Button>
 
-        <button class="btn btn-outline-secondary" type="button" @click="[selected, showBack] = ['athlete', true]"><img
-                src="@/components/icons/athlete.png" alt="athlete">
-            Athletes</button>
+        <Button :type="{ icons: 'athlete', title: 'Athletes' }"
+            @click="[selected, showBack] = ['athlete', true]"></Button>
 
-        <button class="btn btn-outline-secondary" type="button" @click="[selected, showBack] = ['category', true]"><img
-                src="@/components/icons/category.png" alt="category">
-            Categories</button>
+        <Button :type="{ icons: 'category', title: 'Categories' }"
+            @click="[selected, showBack] = ['category', true]"></Button>
 
-        <button class="btn btn-outline-secondary" type="button" @click="[selected, showBack] = ['calendar', true]"><img
-                src="@/components/icons/calendar.png" alt="calendar">
-            Calendar</button>
+        <Button :type="{ icons: 'calendar', title: 'Calendar' }"
+            @click="[selected, showBack] = ['calendar', true]"></Button>
 
     </div>
 
-    <adminProfile v-if="selected === 'profile'"/>
-    <adminPeopleList v-if="selected === 'trainers' || selected === 'athlete'" :type="selected"/>
-    <adminCategories v-if="selected === 'category'"/>
-    <adminCalendar v-if="selected === 'calendar'"/>
-
+    <adminProfile v-if="selected === 'profile'" />
+    <adminPeopleList v-if="selected === 'trainers' || selected === 'athlete'" :user="selected" />
+    <adminCategories v-if="selected === 'category'" />
+    <adminCalendar v-if="selected === 'calendar'" />
 </template>
 
-<style scope>
-button {
-    font-size: 1.5rem !important;
-    font-weight: bolder !important;
-    box-shadow: 0px 0px 16px 0px grey;
-    transition: box-shadow .4s;
-}
+<style scoped>
 
-button:hover {
-    box-shadow: none;
-}
-
-button img {
-    width: 1.5em;
-    float: left;
-}
-
-.back{
+.back {
     width: 3em;
     cursor: pointer;
     transform: translate(15em);
@@ -80,7 +61,7 @@ button img {
 
 @media only screen and (max-width: 768px) {
 
-    h1{
+    h1 {
         font-size: 1.5em !important;
     }
 
@@ -88,10 +69,8 @@ button img {
         width: 90%;
     }
 
-    .back{
+    .back {
         align-self: flex-end;
         transform: none;
     }
-}
-
-</style>
+}</style>

@@ -1,5 +1,6 @@
 <script setup>
 import { defineProps, ref, watchEffect, computed } from 'vue';
+import Button from '../ui/Button.vue';
 
 //JSON for test
 import trainerJson from '../../../trainer.json'
@@ -7,7 +8,7 @@ import athleteJson from '../../../athlete.json'
 
 // PROPS
 const props = defineProps({
-    type: {
+    user: {
         type: String,
         required: true
     }
@@ -17,7 +18,7 @@ const props = defineProps({
 const search = ref('all');
 const selectedOrder = ref('hours');
 let filteredList = computed(() => {
-    let filtered = props.type === 'trainers' ? [...trainerJson.sort(compare)] : [...athleteJson.sort(compare)];
+    let filtered = props.user === 'trainers' ? [...trainerJson.sort(compare)] : [...athleteJson.sort(compare)];
 
     if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value))
 
@@ -28,6 +29,9 @@ const surname = ref('');
 const username = ref('');
 const edit = ref(false);
 const formError = ref('');
+const inputDisabled = ref(true);
+const catEditUser = ref([]);
+const catNewUser = ref([]);
 
 //write username from name and surname and capitalize first letter
 watchEffect(() => {
@@ -50,16 +54,13 @@ function compare(a, b) {
 //GET categories from json
 const categories = [...new Set(filteredList.value.reduce((result, el) => result.concat(el.category), []))]
 
-//UTILITY
-const getAll = (el) => document.querySelectorAll(`${el}`);
-
 /* const errors = {
   400: 'Incorrect Username and/or Password!',
   401: 'Incorrect Username and/or Password!',
   404: 'Generic error, try again'
 } */
 /*   axios
-    .post('http://localhost:2000/api/v1/edit', {type: type})
+    .post('http://localhost:2000/api/v1/edit', {type: user})
     .then((response) => {
       console.log(response.data);
       
@@ -71,27 +72,24 @@ const deleteItem = (element) => {
 
 const editItem = (element) => {
     edit.value = true;
-    const input = getAll(`#id${element.id} input`);
-    input.forEach(el => el.removeAttribute('disabled'))
+    inputDisabled.value = false;
 }
 
 const cancel = (element) => {
     edit.value = false;
     formError.value = '';
-    const input = getAll(`#id${element.id} input`);
-    input.forEach(el => el.setAttribute('disabled', true))
+    inputDisabled.value = true;
 }
 
-const saveChange = (element) => {
-    const catNewUser = getAll('input[name="categories"]:checked');
-    if (catNewUser.length === 0) {
+const saveChange = () => {
+    if (catEditUser.value.length === 0) {
         formError.value = 'Select at least one category.'
         return
     } else formError.value = ''
-    const form = document.getElementById('editForm');
+    const form = event.target;
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
-    data.categories = [...Array.from(catNewUser).map(el => el.value)];
+    data.categories = [...catEditUser.value];
     console.log(data)
 }
 
@@ -102,15 +100,14 @@ const printPdf = (element) => {
 
 //Add new user
 const fetchNewUser = () => {
-    const catNewUser = getAll('input[name="categories"]:checked')
-    if (catNewUser.length === 0) {
+    if (catNewUser.value.length === 0) {
         formError.value = 'Select at least one category.'
         return
     }
     const form = event.target
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
-    data.categories = [...Array.from(catNewUser).map(el => el.value)];
+    data.categories = [...catNewUser.value];
     console.log(data)
     // fetch data qui
 
@@ -124,12 +121,12 @@ const fetchNewUser = () => {
 </script>
 
 <template>
-    <h2 class="title">List of {{ type }}</h2>
+    <h2 class="title">List of {{ user }}</h2>
 
     <div class="butContainer col-6">
-        <button class="btn btn-outline-warning" type="button" data-bs-toggle="modal" data-bs-target="#modalAddNew">Add
-            New</button>
-        <button class="btn btn-outline-danger" type="button">All {{ type }} PDF</button>
+        <Button :type="{ color: 'warning', title: 'Add New' }" data-bs-toggle="modal" data-bs-target="#modalAddNew"></Button>
+
+        <Button :type="{ color: 'danger', title: `All ${user} PDF` }"></Button>
     </div>
 
     <div class="searchContainer col-6">
@@ -164,20 +161,20 @@ const fetchNewUser = () => {
                     data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
 
-                        <form class="needs-validation" id="editForm">
+                        <form class="needs-validation" id="editForm" @submit.prevent="saveChange">
 
                             <div class="mb-3 row">
                                 <label for="username" class="col-sm-4 col-form-label">Username</label>
                                 <div class="col-sm-8">
                                     <input type="text" class="form-control username" name="username"
-                                        :value="trainer.username" disabled>
+                                        :value="trainer.username" :disabled="inputDisabled">
                                 </div>
                             </div>
 
                             <div class="mb-3 row">
                                 <label for="name" class="col-sm-4 col-form-label">Name</label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control name" name="name" :value="trainer.name" disabled>
+                                    <input type="text" class="form-control name" name="name" :value="trainer.name" :disabled="inputDisabled">
                                 </div>
                             </div>
 
@@ -185,7 +182,7 @@ const fetchNewUser = () => {
                                 <label for="surname" class="col-sm-4 col-form-label">Surname</label>
                                 <div class="col-sm-8">
                                     <input type="text" class="form-control surname" name="surname" :value="trainer.surname"
-                                        disabled>
+                                    :disabled="inputDisabled">
                                 </div>
                             </div>
 
@@ -193,15 +190,16 @@ const fetchNewUser = () => {
                                 <label for="email" class="col-sm-4 col-form-label">Email address</label>
                                 <div class="col-sm-8">
                                     <input type="email" class="form-control email" name="email" :value="trainer.email"
-                                        disabled>
+                                    :disabled="inputDisabled">
                                 </div>
                             </div>
 
+                            <!-- Default - if we are not in edit mode -->
                             <div v-if="!edit" class="editCat">
                                 <div class="mb-3 row">
                                     <label for="category" class="col-sm-4 col-form-label">Category</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control category" :value="trainer.category" disabled>
+                                        <input type="text" class="form-control category" :value="trainer.category" :disabled="inputDisabled">
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
@@ -212,13 +210,15 @@ const fetchNewUser = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- if in EDIT mode I add the category checkboxes -->
                             <div v-else class="cateContainer">
                                 <p v-show="formError" id="formError">{{ formError }}</p>
                                 <div class="mb-3 row">
                                     <label for="catefories" class="col-sm-4 col-form-label">Categories</label>
                                     <div class="col-sm-8">
                                         <div v-for="category in categories" :key="category" class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" role="switch" name="categories"
+                                            <input class="form-check-input" type="checkbox" v-model="catEditUser" role="switch" name="categories"
                                                 :id="category.replace(/\s/g, '')" :value="category">
                                             <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category
                                             }}</label>
@@ -227,13 +227,13 @@ const fetchNewUser = () => {
                                 </div>
                             </div>
 
+                            <!--  -->
                             <div v-if="edit" :id="'saveBtn' + trainer.id" class="save">
-                                <button class="btn btn-outline-danger" type="button"
-                                    @click="cancel(trainer)">Cancel</button>
-                                <button class="btn btn-outline-success" type="button"
-                                    @click="saveChange(trainer)">Save</button>
+                                <Button :type="{color: 'danger', title: 'Cancel'}" @click="cancel(trainer)"></Button>
+                                <Button :type="{color: 'success', title: 'Save', type: 'submit'}"></Button>
                             </div>
 
+                            <!--  -->
                             <div v-else :id="'saveIcon' + trainer.id" class="buttonContainer">
                                 <img src="@/components/icons/trash.png" alt="delete" data-bs-toggle="modal"
                                     :data-bs-target="'#modal' + trainer.id">
@@ -251,10 +251,8 @@ const fetchNewUser = () => {
                                         <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure to delete it?</h1>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-outline-danger"
-                                            @click="deleteItem(trainer)">Delete</button>
+                                        <Button :type="{title: 'Close'}" data-bs-dismiss="modal"></Button>
+                                        <Button :type="{color: 'danger', title: 'Delete'}" @click="deleteItem(trainer)"></Button>
                                     </div>
                                 </div>
                             </div>
@@ -271,7 +269,7 @@ const fetchNewUser = () => {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add new {{ type }}</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add new {{ user }}</h1>
                 </div>
                 <div class="modal-body">
 
@@ -306,7 +304,7 @@ const fetchNewUser = () => {
                             <label for="catefories" class="col-sm-3 col-form-label">Categories</label>
                             <div class="col-sm-9">
                                 <div v-for="category in categories" :key="category" class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" name="categories"
+                                    <input class="form-check-input" type="checkbox" v-model="catNewUser" role="switch" name="categories"
                                         :id="category.replace(/\s/g, '')" :value="category">
                                     <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category
                                     }}</label>
@@ -314,8 +312,8 @@ const fetchNewUser = () => {
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-outline-success">Save</button>
+                            <Button :type="{color: 'danger', title: 'Close'}" data-bs-dismiss="modal"></Button>
+                            <Button :type="{ color: 'success', title: 'Save', type: 'submit'}"></Button>
                         </div>
                     </form>
                 </div>
@@ -348,6 +346,7 @@ const fetchNewUser = () => {
     display: flex;
     gap: 2em;
     margin-bottom: 2em;
+    
 }
 
 .order {
@@ -403,7 +402,7 @@ const fetchNewUser = () => {
 
 .accordion-button span {
     position: absolute;
-    right: 2em;
+    right: 2.2em;
     border-radius: 50%;
     background-color: #557eb3;
     color: whitesmoke;
@@ -412,9 +411,11 @@ const fetchNewUser = () => {
     box-shadow: 0 0 4px darkblue;
 }
 
+
 .accordion-flush .accordion-item .accordion-button,
 .accordion-flush .accordion-item .accordion-button.collapsed {
     border-radius: 1em;
+    font-size: .7em;
 }
 
 /* Modal */
@@ -432,10 +433,6 @@ const fetchNewUser = () => {
 .modal-footer {
     flex-wrap: unset;
     gap: 3em;
-}
-
-.form-switch .form-check-input {
-    margin-top: 10px;
 }
 
 #formError {
@@ -461,6 +458,10 @@ const fetchNewUser = () => {
         align-items: center;
     }
 
+    .butContainer{
+        width: 100%;
+    }
+
     .order{
         margin-bottom: .5em;
     }
@@ -468,10 +469,6 @@ const fetchNewUser = () => {
     .searchContainer button {
         flex-basis: 8em;
         font-size: .9em !important;
-    }
-
-    .butContainer button{
-        font-size: 1em !important;
     }
 
     #modalAddNew .col-form-label {

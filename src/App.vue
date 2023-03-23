@@ -44,6 +44,9 @@ h1 {
   #logo {
     width: 90%;
   }
+  h1{
+    font-size: 1.6em;
+  }
 }
 </style>
 

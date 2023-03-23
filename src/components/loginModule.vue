@@ -1,6 +1,7 @@
 <script setup>
 import axios from 'axios';
-import { ref } from 'vue'
+import { ref } from 'vue';
+import Button from './ui/Button.vue';
 
 const emit = defineEmits(['login-success'])
 const postData = {
@@ -51,7 +52,7 @@ const fetchData = () => {
           pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$" v-model="postData.password" required>
         <div id="emailHelp" class="form-text">At least 8 characters, one uppercase, one lowercase and a number</div>
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <Button :type="{color: 'primary', type: 'submit', title: 'Submit'}"></Button>
     </form>
     <hr>
     <p>Forgot your password? <a href="#">Click here</a></p>
@@ -75,18 +76,9 @@ section p{
   margin-bottom: 0;
 }
 
-button {
-  box-shadow: 0 0 10px gray;
-  transition: all 0.3s;
-}
-
 input {
   text-align: center;
   margin-bottom: .7em;
-}
-
-button:hover {
-  transform: scale(1.1);
 }
 
 div:first-child {

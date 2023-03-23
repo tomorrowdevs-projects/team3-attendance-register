@@ -60,7 +60,7 @@ const save = () => {
 </template>
 
 
-<style scope>
+<style scoped>
 label {
     color: #333;
     font-size: 1.2rem;

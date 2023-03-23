@@ -1,7 +1,7 @@
 <template>
     <div>
-      <h2>Calendario di prenotazione</h2>
-
+      <h1>Calendar</h1>
+      <h2>Work in progress</h2>
     </div>
   </template>
-  
+

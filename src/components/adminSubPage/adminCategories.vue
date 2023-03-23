@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { defineProps, ref } from 'vue';
 import trainerJson from '../../../trainer.json';
+import Button from '../ui/Button.vue';
 
 //GET categories from json
 const categories = [...new Set([...trainerJson].reduce((result, el) => result.concat(el.category), []))];
@@ -8,16 +9,16 @@ const categories = [...new Set([...trainerJson].reduce((result, el) => result.co
 const delClicked = ref(false);
 const delString = ref('');
 const catName = ref('');
+const catNewUser = ref([]);
 const red = ref('');
 
 const deleteBut = () => {
     if (delString.value === 'Now') {
-        const catNewUser = [...Array.from(document.querySelectorAll('input[name="categories"]:checked')).map(el => el.value)];
         delClicked.value = false;
         delString.value = '';
         red.value = '';
-        if (catNewUser.length > 0) {
-            console.log(catNewUser);
+        if (catNewUser.value.length > 0) {
+            console.log(catNewUser.value);
             //qui richiamo l'api
         }
     } else {
@@ -39,15 +40,14 @@ const addNew = () => {
 <template>
     <h1>Categories</h1>
     <div class="butContainer">
-        <button class="btn btn-outline-danger" type="button" @click="deleteBut">Delete {{ delString }}</button>
-        <button class="btn btn-outline-warning" type="button" data-bs-toggle="modal" data-bs-target="#modalAddNew">Add
-            New</button>
+            <Button :type="{color: 'danger', title: `Delete ${delString}`}" @click="deleteBut"></Button>
+            <Button :type="{color: 'warning', title: 'Add New'}" data-bs-toggle="modal" data-bs-target="#modalAddNew"></Button>
     </div>
 
 
     <div class="col-12 catContainer" v-for="category in categories" :key="category">
         <div class="form-check form-switch" :style="red">
-            <input v-if="delClicked" class="form-check-input" type="checkbox" role="switch" name="categories"
+            <input v-if="delClicked" class="form-check-input" type="checkbox" v-model="catNewUser" role="switch" name="categories"
                 :id="category.replace(/\s/g, '')" :value="category">
             <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category }}</label>
         </div>
@@ -69,8 +69,8 @@ const addNew = () => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-outline-warning" data-bs-dismiss="modal" @click="addNew">Add</button>
+                    <Button :type="{title: 'Close'}" data-bs-dismiss="modal"></Button>
+                    <Button :type="{color: 'warning', title: 'Add'}" data-bs-dismiss="modal" @click="addNew"></Button>
                 </div>
             </div>
         </div>
@@ -105,8 +105,8 @@ const addNew = () => {
 
 .form-check-input {
     position: absolute;
-    left: 4em;
-    top: 0.4em;
+    right: 1em;
+    top: .4em;
 }
 
 .form-switch .form-check-input:checked {
@@ -114,8 +114,9 @@ const addNew = () => {
     border: none;
 }
 
-label {
+.catContainer label {
     margin: 0;
+    font-size: 1.3em;
 }
 
 .modal-header{
