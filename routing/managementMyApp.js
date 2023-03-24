@@ -6,10 +6,10 @@ const bcrypt = require("bcryptjs");
 const { ErrorCodes } = require("vue");
 
 router.post("/", async (req, res) => {
-  const password = req.password;
-
-  const { username, name, surname, email, role } = req;
-  await connection()
+  
+  const { username, name, surname, email, role, password } = req.body;
+  console.log(username, name, surname, email, role, password)
+   await connection()
     .then(async (connection) => {
       await connection.query(queries.use);
 
@@ -26,9 +26,9 @@ router.post("/", async (req, res) => {
         role,
       ]);
       res.status(200).json({ status: 200 });
-    })
+    }) 
     .catch((error) => {
-      throw error;
+      throw error; 
     });
 });
 

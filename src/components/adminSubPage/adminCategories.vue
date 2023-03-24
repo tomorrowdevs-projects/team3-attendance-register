@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref } from 'vue';
+import {  ref } from 'vue';
 import trainerJson from '../../../trainer.json';
 import Button from '../ui/Button.vue';
 
@@ -29,27 +29,30 @@ const deleteBut = () => {
 }
 
 const addNew = () => {
-    if(catName.value !== '') {
+    if (catName.value !== '') {
         console.log(catName.value);
         catName.value = ''
     }
-    
+
 }
 </script>
 
 <template>
     <h1>Categories</h1>
-    <div class="butContainer">
-            <Button :type="{color: 'danger', title: `Delete ${delString}`}" @click="deleteBut"></Button>
-            <Button :type="{color: 'warning', title: 'Add New'}" data-bs-toggle="modal" data-bs-target="#modalAddNew"></Button>
-    </div>
+    <div class="container">
+        <div class="butContainer">
+            <Button :type="{ color: 'danger', title: `Delete ${delString}` }" @click="deleteBut"></Button>
+            <Button :type="{ color: 'warning', title: 'Add New' }" data-bs-toggle="modal"
+                data-bs-target="#modalAddNew"></Button>
+        </div>
 
 
-    <div class="col-12 catContainer" v-for="category in categories" :key="category">
-        <div class="form-check form-switch" :style="red">
-            <input v-if="delClicked" class="form-check-input" type="checkbox" v-model="catNewUser" role="switch" name="categories"
-                :id="category.replace(/\s/g, '')" :value="category">
-            <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category }}</label>
+        <div class="col-12 catContainer" v-for="category in categories" :key="category">
+            <div class="form-check form-switch" :style="red">
+                <input v-if="delClicked" class="form-check-input" type="checkbox" v-model="catNewUser" role="switch"
+                    name="categories" :id="category.replace(/\s/g, '')" :value="category">
+                <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category }}</label>
+            </div>
         </div>
     </div>
 
@@ -69,8 +72,8 @@ const addNew = () => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <Button :type="{title: 'Close'}" data-bs-dismiss="modal"></Button>
-                    <Button :type="{color: 'warning', title: 'Add'}" data-bs-dismiss="modal" @click="addNew"></Button>
+                    <Button :type="{ title: 'Close' }" data-bs-dismiss="modal"></Button>
+                    <Button :type="{ color: 'warning', title: 'Add' }" data-bs-dismiss="modal" @click="addNew"></Button>
                 </div>
             </div>
         </div>
@@ -78,6 +81,12 @@ const addNew = () => {
 </template>
 
 <style scoped>
+
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .butContainer {
     width: 40%;
     display: flex;
@@ -116,15 +125,15 @@ const addNew = () => {
 
 .catContainer label {
     margin: 0;
-    font-size: 1.3em;
+    font-size: 1.3rem;
 }
 
-.modal-header{
+.modal-header {
     text-align: center;
     display: block;
 }
 
-.modal-footer{
+.modal-footer {
     flex-wrap: nowrap;
     gap: 3em;
 }
@@ -137,7 +146,7 @@ const addNew = () => {
         font-size: .5em;
     }
 
-    .catContainer{
+    .catContainer {
         margin-bottom: 1.5em;
     }
 

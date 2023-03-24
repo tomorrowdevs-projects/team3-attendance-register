@@ -1,6 +1,7 @@
 <script setup>
-import { defineComponent, ref } from 'vue'
-
+import { ref } from 'vue';
+import axios from 'axios';
+import Button from '../ui/Button.vue';
 
 const name = ref('John Doe')
 const email = ref('johndoe@example.com')
@@ -9,17 +10,27 @@ const role = ref('user')
 const phoneNumber = ref('123-456-7890')
 const editing = ref(false)
 
+const emit = defineEmits(['profile-logout']);
+
 const save = () => {
   // Send form data to server
   editing.value = false // Disable editing after saving
 }
 
+const logout = () => {
+  axios
+    .get('http://localhost:2000/api/v1/logout')
+    .then((response) => {
+      if (response.status === 200) {
+        emit('profile-logout')
+      }
+  }) 
+}
 </script>
 
-<template> 
-
-<hr>
-<form>
+<template>
+  <hr>
+  <form>
     <div>
       <!-- Bind the "name" input to the component's "name" data property -->
       <label for="name">Name:</label>
@@ -50,25 +61,28 @@ const save = () => {
     </div>
     <div>
       <!-- Toggle the "editing" data property when the "Edit" button is clicked -->
-      <button type="button" @click="editing = true" :disabled="editing" >Edit</button>
+      <button type="button" @click="editing = true" :disabled="editing">Edit</button>
       <!-- Call the "save" method when the "Save" button is clicked -->
       <button type="submit" @click.prevent="save" :disabled="!editing">Save</button>
     </div>
   </form>
 
-
+  <section>
+    <Button :type="{ color: 'danger', title: 'Logout' }" @click="logout"></Button>
+  </section>
 </template>
 
 
 <style scoped>
 label {
-    color: #333;
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    display: block;
-  }
+  color: #333;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
 
-  input, select, button {
+input,
+select {
   width: 100%;
   padding: 5px;
   font-size: 16px;
@@ -77,37 +91,21 @@ label {
   box-sizing: border-box;
 }
 
-  input:focus, select:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
-  }
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
+}
 
-  button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 0.25rem;
-    font-size: 1rem;
-    color: #fff;
-    background-color: #007bff;
-    cursor: pointer;
-    margin-top: 3em;
-    transition: background-color 0.2s ease-in-out;
-  }
+section{
+  width: 30%;
+  margin: 1em;
+}
 
-  button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  form {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  button {
-  margin-right: 1rem;
-  margin-top: 1rem;
+form {
+  max-width: 600px;
+  margin: 0 auto;
 }
 </style>
 

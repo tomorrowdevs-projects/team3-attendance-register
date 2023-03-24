@@ -3,7 +3,7 @@ const connection = require("../src/connectMysql.js");
 
 //if the user exists in the db with params -params is a method of req-
 exports.checkUserWithParams = (req, res, next) => {
-  if (req.method = 'DELETE') return next();
+  if (req.method == 'DELETE') return next();
 
   const username = req.path.substring(1);
   connection().then(async (connection) => {
@@ -13,10 +13,10 @@ exports.checkUserWithParams = (req, res, next) => {
       .then(async ([rows]) => {
         if (rows.length === 1) next();
         else {
-          return res.status(401).json({ status: 401 });
+          return res.json({ status: 4011 });
         }
       });
-  });
+  }); 
 };
 
 //if  the user or email exists in the db it cannot be stored
@@ -24,24 +24,22 @@ exports.checkusernameExist = (req, res, next) => {
   const { username, email } = req.body;
   if (req.path != "/") {
     const username = req.params.username;
-    console.log(username);
   }
   connection().then(async (connection) => {
     await connection.query(queries.use);
     await connection
       .query(queries.selectUsernameOrEmail, [username, email])
       .then(async ([rows]) => {
-        console.log(username);
-        if (rows.length > 0) return res.status(401).json({ status: 401 });
+        if (rows.length > 0) return res.json({ status: 402 });
         else {
           next();
         }
       });
   });
-};
+}; 
 
 exports.checkEmailForEdit = async (req, res, next) => {
-  if (req.method = 'DELETE') return next();
+  if (req.method == 'DELETE') return next();
   const { email, newUsername } = req.body;
 
   connection().then(async (connection) => {
@@ -50,21 +48,21 @@ exports.checkEmailForEdit = async (req, res, next) => {
     await connection
       .query(queries.selectForEdit, [email, newUsername])
       .then(async ([rows]) => {
-        console.log(rows);
         if (rows.length === 0) next();
         else {
-          return res.status(401).json({ status: 401, code: rows });
+          return res.json({ status: 403, code: rows });
         }
       });
   });
 };
 
 exports.checkParametersRegister = (req, res, next) => {
-  if (req.method = 'DELETE') return next();
+
+  if (req.method == 'DELETE') return next();
   let {
     username,
     password,
-    passwordConfirm,
+    confirmPassword,
     newUsername,
     name,
     surname,
@@ -72,12 +70,13 @@ exports.checkParametersRegister = (req, res, next) => {
     role,
   } = req.body;
   const roles = ["admin", "trainer", "athlete"];
+console.log(req.body)
   if (req.path != "/") {
-    req.name = name.toLowerCase();
-    req.surname = surname.toLowerCase();
-    req.email = email.toLowerCase();
-    req.newUsername = newUsername.toLowerCase();
     
+    req.body.name = capFirstLetter(name);
+    req.body.surname = capFirstLetter(surname);
+    req.body.email = email.toLowerCase();
+    req.body.newUsername = capFirstLetter(newUsername);
     if (
       /^[-Za-z0-9]*$/.test(username) &&
       /^[a-zA-Z\s]*$/.test(name) &&
@@ -87,19 +86,20 @@ exports.checkParametersRegister = (req, res, next) => {
     ) {
       next();
     } else {
-      return res.status(401).json({ status: 401 });
+      return res.json({ status: 404 });
     }
   } else {
-    req.name = name.toLowerCase();
-    req.surname = surname.toLowerCase();
-    req.username = username.toLowerCase();
-    req.email = email.toLowerCase();
-    req.role = role.toLowerCase();
-    req.password = password;
+    
+    req.body.name = capFirstLetter(name);
+    req.body.surname = capFirstLetter(surname);
+    req.body.username = capFirstLetter(username);
+    req.body.email = email.toLowerCase();
+    req.body.role = role.toLowerCase();
+    req.body.password = password;
     if (
-      /^[-Za-z0-9]*$/.test(username) &&
+      /^[A-Za-z0-9]*$/.test(username) &&
       // /^(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password) &&
-      password === passwordConfirm &&
+      password === confirmPassword &&
       /^[a-zA-Z\s]*$/.test(name) &&
       /^[a-zA-Z\s]*$/.test(surname) &&
       /^[a-zA-Z\s]*$/.test(newUsername) &&
@@ -108,7 +108,7 @@ exports.checkParametersRegister = (req, res, next) => {
     )
       next();
     else {
-      return res.status(401).json({ status: 401 });
+      return res.json({ status: 405 });
     }
   }
 };
@@ -116,7 +116,11 @@ exports.checkParametersRegister = (req, res, next) => {
 exports.onlyAdmin = (req, res, next) => {
   if (req.session.role === "admin") next();
   else {
-    return res.status(401).json({ status: 401 });
+    return res.json({ status: 401 });
   }
 };
+
+function capFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
+}
 

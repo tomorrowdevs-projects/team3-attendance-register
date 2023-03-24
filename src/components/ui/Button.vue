@@ -1,4 +1,10 @@
 <script setup>
+import { defineProps } from 'vue';
+import adminProfile from "@/components/icons/adminProfile.png";
+import trainer from "@/components/icons/trainer.png";
+import athlete from "@/components/icons/athlete.png";
+import category from "@/components/icons/category.png";
+import calendar from "@/components/icons/calendar.png";
 //SCRIPT
 const props = defineProps({
     type: {
@@ -15,13 +21,13 @@ const props = defineProps({
     title: 'Save',    required!  the text of button
     class: 'otherClass'   optional - default nothing -- class to add 
 }*/
-const path = '/src/components/icons/'
+
 const icons = {
-    adminProfile: `${path}adminProfile.png`,
-    trainer: `${path}trainer.png`,
-    athlete: `${path}athlete.png`,
-    category: `${path}category.png`,
-    calendar: `${path}calendar.png`,
+    adminProfile: adminProfile,
+    trainer: trainer,
+    athlete: athlete,
+    category: category,
+    calendar: calendar,
 }
 
 </script>
@@ -57,7 +63,7 @@ button img {
 
 @media only screen and (max-width: 768px) {
     button{
-        font-size: 1em;
+        font-size: 1.1rem;
     }
 }
 </style>

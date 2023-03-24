@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ref } from 'vue';
 import Button from './ui/Button.vue';
 
-const emit = defineEmits(['login-success'])
+const emit = defineEmits(['login-success']);
 const postData = {
   username: '',
   password: '',
@@ -20,21 +20,18 @@ let message = ref('');
 const fetchData = () => {
 
   // for DEMO VERSION
-  if (postData.username === 'admin' || postData.username === 'trainer')
+  /* if (postData.username === 'admin' || postData.username === 'trainer')
       emit('login-success', { role: postData.username, username: postData.username })
-  else message.value = errors[400]
+  else message.value = errors[400] */
   // end DEMO VERSION
 
-/*   axios
+  axios
     .post('http://localhost:2000/api/v1/login', postData)
     .then((response) => {
-      console.log(response.data);
       if (response.data.status in errors) message.value = errors[response.data.status]
       else if (response.data.status === 201) emit('login-success', { role: response.data.role, username: postData.username })
-    })  */
-
+  }) 
 }
-
 </script>
 
 <template>

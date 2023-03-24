@@ -15,6 +15,11 @@ const handleLoginSuccess = (event) => {
   showLogin.value = false
 }
 
+const logout = () => {
+  userRole.value = 'none';
+  showLogin.value = true;
+}
+
 </script>
 
 <template>
@@ -24,7 +29,7 @@ const handleLoginSuccess = (event) => {
 
     <LoginModule v-if="showLogin" @login-success="handleLoginSuccess" />
 
-    <AdminPage v-if="userRole === 'admin'" :name="userName" />
+    <AdminPage v-if="userRole === 'admin'" :name="userName" @admin-logout="logout"/>
 
     <TrainerPage v-if="userRole === 'trainer'" :name="userName" />
 </template>

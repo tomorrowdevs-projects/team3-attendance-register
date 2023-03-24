@@ -1,26 +1,28 @@
 <script setup>
-import { defineProps, ref, watchEffect, computed } from 'vue';
+import axios from 'axios';
+import { ref, watchEffect, computed } from 'vue';
 import Button from '../ui/Button.vue';
 
 //JSON for test
 import trainerJson from '../../../trainer.json'
-import athleteJson from '../../../athlete.json'
+/* import athleteJson from '../../../athlete.json' */
 
 // PROPS
 const props = defineProps({
     user: {
-        type: String,
+        type: Object,
         required: true
     }
 });
 
+const emit = defineEmits(['event']);
 //VARIABLE
 const search = ref('all');
 const selectedOrder = ref('hours');
 let filteredList = computed(() => {
-    let filtered = props.user === 'trainers' ? [...trainerJson.sort(compare)] : [...athleteJson.sort(compare)];
+    let filtered = props.user.selected === 'trainer' ? [...props.user.userJson.filter(el => el.role === 'trainer').sort(compare)] : [...props.user.userJson.filter(el => el.role === 'athlete').sort(compare)];
 
-    if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value))
+    //if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value))
 
     return filtered
 });
@@ -32,11 +34,12 @@ const formError = ref('');
 const inputDisabled = ref(true);
 const catEditUser = ref([]);
 const catNewUser = ref([]);
+let oldUsername = '';
 
 //write username from name and surname and capitalize first letter
 watchEffect(() => {
     username.value = `${capitalizeFirstLetter(name.value)}${capitalizeFirstLetter(surname.value)}`;
-})
+}) 
 
 function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1)
@@ -52,27 +55,33 @@ function compare(a, b) {
 }
 
 //GET categories from json
-const categories = [...new Set(filteredList.value.reduce((result, el) => result.concat(el.category), []))]
+const categories = [...new Set(trainerJson.reduce((result, el) => result.concat(el.category), []))]
 
 /* const errors = {
   400: 'Incorrect Username and/or Password!',
   401: 'Incorrect Username and/or Password!',
   404: 'Generic error, try again'
 } */
-/*   axios
-    .post('http://localhost:2000/api/v1/edit', {type: user})
-    .then((response) => {
-      console.log(response.data);
-      
-    })  */
+
 
 const deleteItem = (element) => {
-    console.log('delete', element.name, element.surname)
+    axios
+        .delete(`http://localhost:2000/api/v1/managementMyApp/edit/del/${element.username}`)
+        .then((response) => {
+            if (response.data.status === 201) {
+                filteredList.value.forEach((el, index) => {
+                    if (el.username === element.username) filteredList.value.splice(index, 1)
+                });
+                emit('event');
+                console.log(filteredList.value)
+            } else console.log(response.data).status;
+        })
 }
 
 const editItem = (element) => {
     edit.value = true;
     inputDisabled.value = false;
+    oldUsername = element.username;
 }
 
 const cancel = (element) => {
@@ -85,12 +94,18 @@ const saveChange = () => {
     if (catEditUser.value.length === 0) {
         formError.value = 'Select at least one category.'
         return
-    } else formError.value = ''
+    } else  formError.value = '';
     const form = event.target;
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
     data.categories = [...catEditUser.value];
-    console.log(data)
+    console.log(data, oldUsername);
+    axios
+        .patch(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data })
+        .then((response) => {
+            if (response.data.status === 201) { emit('event'); edit.value = false; formError.value = ''; inputDisabled.value = true;}
+            else console.log('errore edit', response.data)
+        })
 }
 
 const printPdf = (element) => {
@@ -108,9 +123,17 @@ const fetchNewUser = () => {
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
     data.categories = [...catNewUser.value];
-    console.log(data)
+    data.password = data.username + '1000';
+    data.confirmPassword = data.password;
+    data.role = props.user.selected
+    //console.log(data)
     // fetch data qui
-
+    axios
+        .post(`http://localhost:2000/api/v1/managementMyApp`, { ...data })
+        .then((response) => {
+            if (response.data.status === 200) emit('event')
+            else console.log('errore addNew', response.data.status)
+        })
     //if response ok
     form.reset()
     //close modal
@@ -121,22 +144,25 @@ const fetchNewUser = () => {
 </script>
 
 <template>
-    <h2 class="title">List of {{ user }}</h2>
+    <h2 class="title">List of {{ user.selected }}</h2>
 
     <div class="butContainer col-6">
-        <Button :type="{ color: 'warning', title: 'Add New' }" data-bs-toggle="modal" data-bs-target="#modalAddNew"></Button>
+        <Button :type="{ color: 'warning', title: 'Add New' }" data-bs-toggle="modal"
+            data-bs-target="#modalAddNew"></Button>
 
-        <Button :type="{ color: 'danger', title: `All ${user} PDF` }"></Button>
+        <Button :type="{ color: 'danger', title: `All ${user.selected} PDF` }"></Button>
     </div>
 
     <div class="searchContainer col-6">
         <div class="order">
             <h4>Order By</h4>
             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                <input type="radio" class="btn-check" v-model="selectedOrder" name="hours" id="btnradio1" value="hours" autocomplete="off" checked>
+                <input type="radio" class="btn-check" v-model="selectedOrder" name="hours" id="btnradio1" value="hours"
+                    autocomplete="off" checked>
                 <label class="btn btn-outline-primary" for="btnradio1">Hours</label>
 
-                <input type="radio" class="btn-check" v-model="selectedOrder" name="name" id="btnradio2" value="name" autocomplete="off">
+                <input type="radio" class="btn-check" v-model="selectedOrder" name="name" id="btnradio2" value="name"
+                    autocomplete="off">
                 <label class="btn btn-outline-primary" for="btnradio2">Name</label>
             </div>
         </div>
@@ -149,15 +175,15 @@ const fetchNewUser = () => {
     <div class="container">
         <div class="accordion accordion-flush" id="accordionFlushExample">
 
-            <div v-for="trainer in filteredList" :key="trainer.id" class="accordion-item">
+            <div v-for="trainer in filteredList" :key="trainer.username" class="accordion-item">
                 <h2 class="accordion-header" id="flush-headingOne">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        :data-bs-target="'#id' + trainer.id" aria-expanded="false" :aria-controls="'id' + trainer.id">
-                        {{ `${trainer.surname} ${trainer.name}` }} <span>{{ trainer.mounthlyHoursWorked }}</span>
+                        :data-bs-target="'#'+trainer.username" aria-expanded="false" :aria-controls="'#'+trainer.username">
+                        {{ `${trainer.surname} ${trainer.name}` }} <span>{{ trainer.hours_minutes_of_training_current_month }}</span>
                     </button>
                 </h2>
 
-                <div :id="'id' + trainer.id" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+                <div :id="trainer.username" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
                     data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
 
@@ -166,7 +192,7 @@ const fetchNewUser = () => {
                             <div class="mb-3 row">
                                 <label for="username" class="col-sm-4 col-form-label">Username</label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control username" name="username"
+                                    <input type="text" class="form-control username" name="newUsername"
                                         :value="trainer.username" :disabled="inputDisabled">
                                 </div>
                             </div>
@@ -174,7 +200,8 @@ const fetchNewUser = () => {
                             <div class="mb-3 row">
                                 <label for="name" class="col-sm-4 col-form-label">Name</label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control name" name="name" :value="trainer.name" :disabled="inputDisabled">
+                                    <input type="text" class="form-control name" name="name" :value="trainer.name"
+                                        :disabled="inputDisabled">
                                 </div>
                             </div>
 
@@ -182,7 +209,7 @@ const fetchNewUser = () => {
                                 <label for="surname" class="col-sm-4 col-form-label">Surname</label>
                                 <div class="col-sm-8">
                                     <input type="text" class="form-control surname" name="surname" :value="trainer.surname"
-                                    :disabled="inputDisabled">
+                                        :disabled="inputDisabled">
                                 </div>
                             </div>
 
@@ -190,7 +217,7 @@ const fetchNewUser = () => {
                                 <label for="email" class="col-sm-4 col-form-label">Email address</label>
                                 <div class="col-sm-8">
                                     <input type="email" class="form-control email" name="email" :value="trainer.email"
-                                    :disabled="inputDisabled">
+                                        :disabled="inputDisabled">
                                 </div>
                             </div>
 
@@ -199,14 +226,15 @@ const fetchNewUser = () => {
                                 <div class="mb-3 row">
                                     <label for="category" class="col-sm-4 col-form-label">Category</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control category" :value="trainer.category" :disabled="inputDisabled">
+                                        <input type="text" class="form-control category" :value="trainer.category"
+                                            :disabled="inputDisabled">
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
                                     <label for="mounthlyHours" class="col-sm-4 col-form-label">Mounthly Hours</label>
                                     <div class="col-sm-8">
                                         <p class="mounthlyHours" style="user-select: none; margin: 6px;">{{
-                                            trainer.mounthlyHoursWorked }}</p>
+                                            trainer.hours_minutes_of_training_current_month }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -218,8 +246,8 @@ const fetchNewUser = () => {
                                     <label for="catefories" class="col-sm-4 col-form-label">Categories</label>
                                     <div class="col-sm-8">
                                         <div v-for="category in categories" :key="category" class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" v-model="catEditUser" role="switch" name="categories"
-                                                :id="category.replace(/\s/g, '')" :value="category">
+                                            <input class="form-check-input" type="checkbox" v-model="catEditUser"
+                                                role="switch" :id="category.replace(/\s/g, '')" :value="category">
                                             <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category
                                             }}</label>
                                         </div>
@@ -228,22 +256,22 @@ const fetchNewUser = () => {
                             </div>
 
                             <!--  -->
-                            <div v-if="edit" :id="'saveBtn' + trainer.id" class="save">
-                                <Button :type="{color: 'danger', title: 'Cancel'}" @click="cancel(trainer)"></Button>
-                                <Button :type="{color: 'success', title: 'Save', type: 'submit'}"></Button>
+                            <div v-if="edit" :id="'saveBtn' + trainer.username" class="save">
+                                <Button :type="{ color: 'danger', title: 'Cancel' }" @click="cancel(trainer)"></Button>
+                                <Button :type="{ color: 'success', title: 'Save', type: 'submit' }"></Button>
                             </div>
 
                             <!--  -->
-                            <div v-else :id="'saveIcon' + trainer.id" class="buttonContainer">
+                            <div v-else :id="'saveIcon' + trainer.username" class="buttonContainer">
                                 <img src="@/components/icons/trash.png" alt="delete" data-bs-toggle="modal"
-                                    :data-bs-target="'#modal' + trainer.id">
+                                    :data-bs-target="'#modal' + trainer.username">
                                 <img src="@/components/icons/edit.png" alt="edit" @click="editItem(trainer)">
                                 <img src="@/components/icons/pdf.png" alt="pdf" @click="printPdf(trainer)">
                             </div>
                         </form>
 
                         <!-- Modal for Delete-->
-                        <div class="modal fade" :id="'modal' + trainer.id" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        <div class="modal fade" :id="'modal' + trainer.username" tabindex="-1" aria-labelledby="exampleModalLabel"
                             aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
@@ -251,8 +279,9 @@ const fetchNewUser = () => {
                                         <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure to delete it?</h1>
                                     </div>
                                     <div class="modal-footer">
-                                        <Button :type="{title: 'Close'}" data-bs-dismiss="modal"></Button>
-                                        <Button :type="{color: 'danger', title: 'Delete'}" @click="deleteItem(trainer)"></Button>
+                                        <Button :type="{ title: 'Close' }" data-bs-dismiss="modal"></Button>
+                                        <Button :type="{ color: 'danger', title: 'Delete' }" data-bs-dismiss="modal"
+                                            @click="deleteItem(trainer)"></Button>
                                     </div>
                                 </div>
                             </div>
@@ -269,7 +298,7 @@ const fetchNewUser = () => {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add new {{ user }}</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add new {{ user.selected }}</h1>
                 </div>
                 <div class="modal-body">
 
@@ -303,17 +332,17 @@ const fetchNewUser = () => {
                         <div class="mb-3 row">
                             <label for="catefories" class="col-sm-3 col-form-label">Categories</label>
                             <div class="col-sm-9">
-                                <div v-for="category in categories" :key="category" class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" v-model="catNewUser" role="switch" name="categories"
-                                        :id="category.replace(/\s/g, '')" :value="category">
+                                 <div v-for="category in categories" :key="category" class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" v-model="catNewUser" role="switch"
+                                         :id="category.replace(/\s/g, '')" :value="category">
                                     <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category
                                     }}</label>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <Button :type="{color: 'danger', title: 'Close'}" data-bs-dismiss="modal"></Button>
-                            <Button :type="{ color: 'success', title: 'Save', type: 'submit'}"></Button>
+                            <Button :type="{ color: 'danger', title: 'Close' }" data-bs-dismiss="modal"></Button>
+                            <Button :type="{ color: 'success', title: 'Save', type: 'submit' }"></Button>
                         </div>
                     </form>
                 </div>
@@ -346,7 +375,7 @@ const fetchNewUser = () => {
     display: flex;
     gap: 2em;
     margin-bottom: 2em;
-    
+
 }
 
 .order {
@@ -458,11 +487,12 @@ const fetchNewUser = () => {
         align-items: center;
     }
 
-    .butContainer{
+    .butContainer {
         width: 100%;
+        padding: 0 1em;
     }
 
-    .order{
+    .order {
         margin-bottom: .5em;
     }
 

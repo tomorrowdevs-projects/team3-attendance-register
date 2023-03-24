@@ -66,10 +66,10 @@ const createAccounts = `CREATE TABLE  if not exists accounts(
   username VARCHAR(255) NOT NULL,  
   password VARCHAR(255) NOT NULL,  
   name VARCHAR(255) NOT NULL, 
-  surname VARCHAR(255) NOT NULL,  
+  surname VARCHAR(255) NOT NULL, 
   email VARCHAR(255) NOT NULL, 
   role VARCHAR(255) NOT NULL, 
-  hours_minutes_of_training_current_month INT NULL DEFAULT 0  COMMENT 'each unit equals 30 minutes',
+  hours_minutes_of_training_current_month INT DEFAULT 0  COMMENT 'each unit equals 30 minutes',
   PRIMARY KEY (username),
   KEY unique_index  (email)
  

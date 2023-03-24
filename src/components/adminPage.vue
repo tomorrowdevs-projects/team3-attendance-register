@@ -1,5 +1,6 @@
 <script setup>
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
+import axios from 'axios';
 import adminProfile from './adminSubPage/adminProfile.vue';
 import adminPeopleList from './adminSubPage/adminPeopleList.vue';
 import adminCategories from './adminSubPage/adminCategories.vue';
@@ -10,16 +11,21 @@ const props = defineProps({
     name: {
         type: String,
         required: true
-    },
-    user: {
-        type: String,
-        required: true
     }
 });
+const emit = defineEmits(['admin-logout']);
 
 const selected = ref('');
 const showBack = ref(false);
+const userJson = ref([]);
 
+async function getUsers () {
+    await axios
+    .get('http://localhost:2000/api/v1/select')
+    .then((response) => { userJson.value.length = 0; userJson.value.push(...response.data.code) })
+}
+
+getUsers();
 </script>
 
 <template>
@@ -32,7 +38,7 @@ const showBack = ref(false);
         <hr>
 
         <Button :type="{ icons: 'trainer', title: 'Trainers' }"
-            @click="[selected, showBack] = ['trainers', true]"></Button>
+            @click="[selected, showBack] = ['trainer', true]"></Button>
 
         <Button :type="{ icons: 'athlete', title: 'Athletes' }"
             @click="[selected, showBack] = ['athlete', true]"></Button>
@@ -45,8 +51,8 @@ const showBack = ref(false);
 
     </div>
 
-    <adminProfile v-if="selected === 'profile'" />
-    <adminPeopleList v-if="selected === 'trainers' || selected === 'athlete'" :user="selected" />
+    <adminProfile v-if="selected === 'profile'" @profile-logout="emit('admin-logout')"/>
+    <adminPeopleList v-if="selected === 'trainer' || selected === 'athlete'" :user="{selected, userJson}" @event="getUsers"/>
     <adminCategories v-if="selected === 'category'" />
     <adminCalendar v-if="selected === 'calendar'" />
 </template>

@@ -1,9 +1,10 @@
 <script setup>
-import { defineProps, ref, computed, watchEffect } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 import athleteJson from '../../athlete.json'
 import adminProfile from './trainerSubPage/trainerProfile.vue';
 import adminCalendar from './trainerSubPage/trainerCalendar.vue';
 import Button from './ui/Button.vue';
+import CheckableList from './ui/CheckableList.vue';
 
 //PROPS
 const props = defineProps({
@@ -21,6 +22,7 @@ const trainerProfile = {
     username: 'CarloFreedom',
     category: ['yoga', 'pilates', 'spinning', 'bocce']
 }
+
 const selectedCategory = ref(trainerProfile.category[0]);
 const athletes = computed(() => [...athleteJson.filter(el => el.category.some(cat => cat === selectedCategory.value))].sort(compare));
 const selected = ref('');
@@ -35,7 +37,6 @@ const date = new Date().toLocaleDateString('en-US', {
 }).replace(',', ' ');
 const buttonColor = ['btn-outline-primary', 'btn-outline-success', 'btn-outline-danger', 'btn-outline-secondary', 'btn-outline-info', 'btn-outline-dark', 'btn-outline-light'];
 const selectedAthletes = ref([]);
-let eventData = {};
 let durationString = '';
 
 watchEffect(() => {
@@ -63,7 +64,6 @@ const addNewEvent = () => {
         data.date = Date.now();
         data.athletes = [...selectedAthletes.value];
         data.trainer = trainerProfile.username;
-        eventData = { ...data }
         const modal = document.querySelector('#modalSummary');
         const bsModal = new bootstrap.Modal(modal);
         bsModal.show();
@@ -81,11 +81,14 @@ const addNewEvent = () => {
     <form @submit.prevent="addNewEvent" class="col-6">
         <div v-if="selected === ''" class="container">
             <div class="butContainer gap-4">
-                <Button :type="{title: 'Profile', icons: 'trainer'}" @click="[selected, showBack] = ['profile', true]"></Button>
-                <Button :type="{title: 'Calendar', icons: 'calendar'}" @click="[selected, showBack] = ['calendar', true]"></Button>
+                <Button :type="{ title: 'Profile', icons: 'trainer' }"
+                    @click="[selected, showBack] = ['profile', true]"></Button>
+                <Button :type="{ title: 'Calendar', icons: 'calendar' }"
+                    @click="[selected, showBack] = ['calendar', true]"></Button>
             </div>
 
-            <Button v-if="!newEvent" :type="{color: 'warning', title: 'ADD NEW EVENT', class: 'newEvent' }" @click="newEvent = true"></Button>
+            <Button v-if="!newEvent" :type="{ color: 'warning', title: 'ADD NEW EVENT', class: 'newEvent' }"
+                @click="newEvent = true"></Button>
 
             <div v-else class="btn-group setNewEvent" role="group" aria-label="Button group with nested dropdown">
                 <button type="button" class="btn btn-warning">{{ date }}</button>
@@ -114,8 +117,8 @@ const addNewEvent = () => {
                 </div>
             </div>
 
-
-            <div :class="'athleteList ' + red">
+            <CheckableList :list="{red: red, listItemArr: athletes}"></CheckableList>
+            <!-- <div :class="'athleteList ' + red">
                 <p>List of Athletes: {{ athletes.length }}</p>
                 <span v-if="newEvent" :class="red">Selected: {{ selectedAthletes.length }}</span>
                 <div class="col-12 catContainer" v-for="athlete in athletes" :key="athlete.id">
@@ -126,7 +129,7 @@ const addNewEvent = () => {
                         }}</label>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Modal for Summary-->
             <div class="modal fade" id="modalSummary" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -160,8 +163,8 @@ const addNewEvent = () => {
                             </div>
 
                             <div class="modal-footer">
-                                <Button :type="{color: 'danger', title: 'Cancel'}" data-bs-dismiss="modal"></Button>
-                                <Button :type="{color: 'success', title: 'Confirm', type: 'submit'}"></Button>
+                                <Button :type="{ color: 'danger', title: 'Cancel' }" data-bs-dismiss="modal"></Button>
+                                <Button :type="{ color: 'success', title: 'Confirm', type: 'submit' }"></Button>
                             </div>
                         </div>
                     </div>
@@ -318,5 +321,8 @@ select {
         width: 90%;
         margin: 0 auto;
     }
-}
-</style>
+
+    .btn-group>.btn {
+        font-size: .9em;
+    }
+}</style>

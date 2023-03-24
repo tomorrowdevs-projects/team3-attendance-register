@@ -8,11 +8,12 @@ const controller = require("../controller/auth.js");
 //edit accounts
 router.patch("/:username", async (req, res) => {
   try {
-    const username = req.params.username;
-    await connection().then(async (connection) => {
+    console.log(req.body)
+     const username = req.params.username;
+      await connection().then(async (connection) => {
       await connection.query(queries.use);
       await connection
-        .query(queries.edit_account, [req.email, req.newUsername, req.name, req.surname, username])
+        .query(queries.edit_account, [req.body.email, req.body.newUsername, req.body.name, req.body.surname, username])
         .then(async ([rows]) => {
           if (rows) res.json({ status: 201, success: true  }).end()
         else {
@@ -21,26 +22,24 @@ router.patch("/:username", async (req, res) => {
         }); 
     }); 
   } catch (error) { 
-    console.log(error)
-  } 
+    console.log(error) 
+  }  
 });
-
 
 
 
 router.delete("/del/:username", async (req, res) => {
   try {
-
     const username = req.params.username;
-    await connection().then(async (connection) => {
+      await connection().then(async (connection) => {
       await connection.query(queries.use);
       await connection.query(queries.deletAccounts, [username]);
-      res.json({ status: 201 }).end();
+      res.json({ status: 201 }).end(); 
     });
+   
   } catch (error) {
-    res.json({ status: 401, data: null }).end();
+    res.json({ status: 401 }).end();
     console.log(error)
-
   }
 });
 

@@ -44,7 +44,7 @@ app.use(
     resave: true,
     saveUninitialized: true,
   })
-);
+);  
 app.use(express.json());
 
 //-----------------------------------------------------------------------------------------------------
@@ -78,8 +78,8 @@ app.use(
 app.use(
   "/api/v1/managementMyApp",
   // controller.onlyAdmin,
-  // controller.checkParametersRegister,
-  // controller.checkusernameExist,
+  controller.checkParametersRegister,
+  controller.checkusernameExist,
   managementMyApp
 );
 
