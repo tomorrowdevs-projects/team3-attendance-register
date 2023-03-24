@@ -33,7 +33,7 @@ router.post("/login", async (req, res) => {
                 req.session.username = username;
                 req.session.role = rows[0].role;
 
-                res.json({ status: 201, role: rows});
+                res.json({ status: 201, role: rows[0].role});
               } else {
                 res.json({ status: 400 }).end();
               }

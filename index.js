@@ -5,7 +5,10 @@ const cors = require("cors");
 const db = require("./src/connectMysql.js");
 const logIn = require("./routing/logIn.js");
 const logout = require("./routing/logout.js");
+const category = require("./routing/category.js");
+
 const edit = require("./routing/editAndDelete.js");
+const calendary = require('./routing/calendary.js')
 const bcrypt = require("bcryptjs");
 const controller = require("./controller/auth.js");
 const select = require('./routing/select.js')
@@ -62,25 +65,28 @@ app.use("/api/v1", logout);
 //then edit file
 app.use(
   "/api/v1/managementMyApp/edit",
-  controller.onlyAdmin,
+  // controller.onlyAdmin,
   controller.checkUserWithParams,
   controller.checkEmailForEdit,
   controller.checkParametersRegister,
   edit
 );
-
+ 
 //first check if you are an administrator,
 //then if the credential format is respected,
 //then if there are no duplicates in the DB
 app.use(
   "/api/v1/managementMyApp",
-  controller.onlyAdmin,
-  controller.checkParametersRegister,
-  controller.checkusernameExist,
+  // controller.onlyAdmin,
+  // controller.checkParametersRegister,
+  // controller.checkusernameExist,
   managementMyApp
 );
 
 app.use("/api/v1", select)
+app.use("/api/v1", calendary)
+app.use("/api/v1", category)
+
 
 //-----------------------------------------------------------------------------------------------------
 

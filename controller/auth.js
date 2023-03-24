@@ -3,6 +3,8 @@ const connection = require("../src/connectMysql.js");
 
 //if the user exists in the db with params -params is a method of req-
 exports.checkUserWithParams = (req, res, next) => {
+  if (req.method = 'DELETE') return next();
+
   const username = req.path.substring(1);
   connection().then(async (connection) => {
     await connection.query(queries.use);
@@ -39,6 +41,7 @@ exports.checkusernameExist = (req, res, next) => {
 };
 
 exports.checkEmailForEdit = async (req, res, next) => {
+  if (req.method = 'DELETE') return next();
   const { email, newUsername } = req.body;
 
   connection().then(async (connection) => {
@@ -57,6 +60,7 @@ exports.checkEmailForEdit = async (req, res, next) => {
 };
 
 exports.checkParametersRegister = (req, res, next) => {
+  if (req.method = 'DELETE') return next();
   let {
     username,
     password,
@@ -73,7 +77,7 @@ exports.checkParametersRegister = (req, res, next) => {
     req.surname = surname.toLowerCase();
     req.email = email.toLowerCase();
     req.newUsername = newUsername.toLowerCase();
-
+    
     if (
       /^[-Za-z0-9]*$/.test(username) &&
       /^[a-zA-Z\s]*$/.test(name) &&
@@ -115,3 +119,4 @@ exports.onlyAdmin = (req, res, next) => {
     return res.status(401).json({ status: 401 });
   }
 };
+

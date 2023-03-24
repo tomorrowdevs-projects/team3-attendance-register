@@ -9,27 +9,28 @@ const controller = require("../controller/auth.js");
 router.patch("/:username", async (req, res) => {
   try {
     const username = req.params.username;
-    const { email, newUsername, name, surname} = req;
-    console.log(newUsername)
     await connection().then(async (connection) => {
       await connection.query(queries.use);
       await connection
-      
-        .query(queries.edit_accounts, [email, newUsername,  name, surname,username])
+        .query(queries.edit_account, [req.email, req.newUsername, req.name, req.surname, username])
         .then(async ([rows]) => {
-          if (rows) res.status(201).json({ status: 201 });
-        });
-    });
-  } catch (error) {
+          if (rows) res.json({ status: 201, success: true  }).end()
+        else {
+          res.json({ status: 400, data: null }).end();
+        };
+        }); 
+    }); 
+  } catch (error) { 
     console.log(error)
-  }
+  } 
 });
 
 
 
 
-router.delete("/:username", async (req, res) => {
+router.delete("/del/:username", async (req, res) => {
   try {
+
     const username = req.params.username;
     await connection().then(async (connection) => {
       await connection.query(queries.use);
@@ -38,6 +39,8 @@ router.delete("/:username", async (req, res) => {
     });
   } catch (error) {
     res.json({ status: 401, data: null }).end();
+    console.log(error)
+
   }
 });
 
