@@ -4,18 +4,26 @@ const bcrypt = require("bcryptjs");
 
 async function toFillDb(connection) {
   try {
+    //create tables on Db
     await connection.query(queries.createDb);
     await connection.query(queries.use);
     await connection.query(queries.createAccounts);
+    await connection.query(queries.calendary);
+    await connection.query(queries.category_assignment);
+
+    await connection.query(queries.createCategory);  
+ 
+
     let hashedPassowrd = await bcrypt.hash(process.env.PASSWORD_ADMIN, 12);
     let hashedPassowrdTrainer = await bcrypt.hash(
       process.env.PASSWORD_TRAINER,
-      12
+      12 
     );
     let hashedPassowrdAt00 = await bcrypt.hash(process.env.PASSWORD_AT00, 12);
     let hashedPassowrdAt01 = await bcrypt.hash(process.env.PASSWORD_AT01, 12);
     let hashedPassowrdAt02 = await bcrypt.hash(process.env.PASSWORD_AT02, 12);
 
+    //create users on Db
     await connection.query(queries.createUser, [
       process.env.USERNAME,
       hashedPassowrd,
@@ -56,9 +64,11 @@ async function toFillDb(connection) {
       process.env.EMAILAT02,  
       process.env.ROLEAT02
     ]);
+    // await connection.query(queries.alter);
+
   } catch (err) {console.log(err);}    
    
   }
-
  
+  
 module.exports = toFillDb;
