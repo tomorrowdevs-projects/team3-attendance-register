@@ -79,7 +79,7 @@ app.use(
   "/api/v1/managementMyApp",
   // controller.onlyAdmin,
   controller.checkParametersRegister,
-  controller.checkusernameExist,
+  // controller.checkusernameExist,
   managementMyApp
 );
 

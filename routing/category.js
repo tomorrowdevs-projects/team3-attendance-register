@@ -104,6 +104,7 @@ router.get("/categoryAll/list", async (req, res) => {
           )
         .then(async ([rows]) => {
           if (rows.length > 0) {
+            console.log(rows)
 
               res.json({ status: 201, data: rows }).end()
           }else {
