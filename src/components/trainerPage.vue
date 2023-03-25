@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watchEffect } from 'vue';
+import { ref, computed } from 'vue';
 import athleteJson from '../../athlete.json'
 import adminProfile from './trainerSubPage/trainerProfile.vue';
 import adminCalendar from './trainerSubPage/trainerCalendar.vue';
@@ -9,10 +9,6 @@ import CheckableList from './ui/CheckableList.vue';
 //PROPS
 const props = defineProps({
     name: {
-        type: String,
-        required: true
-    },
-    user: {
         type: String,
         required: true
     }
@@ -28,7 +24,12 @@ const athletes = computed(() => [...athleteJson.filter(el => el.category.some(ca
 const selected = ref('');
 const showBack = ref(false);
 const newEvent = ref(false);
-const red = ref('');
+const selectedAthletes = ref([]);
+const error = ref(false);
+const reset = ref(false);
+
+let dataEvent = {};
+
 const date = new Date().toLocaleDateString('en-US', {
     weekday: "long",
     day: "numeric",
@@ -36,12 +37,8 @@ const date = new Date().toLocaleDateString('en-US', {
     year: "numeric",
 }).replace(',', ' ');
 const buttonColor = ['btn-outline-primary', 'btn-outline-success', 'btn-outline-danger', 'btn-outline-secondary', 'btn-outline-info', 'btn-outline-dark', 'btn-outline-light'];
-const selectedAthletes = ref([]);
-let durationString = '';
 
-watchEffect(() => {
-    if (selectedAthletes.value.length > 0) red.value = '';
-});
+let durationString = ref('');
 
 function compare(a, b) {
     if (a.surname < b.surname) return -1;
@@ -49,16 +46,21 @@ function compare(a, b) {
     return 0;
 }
 
+const getSelected = (item) => {
+    selectedAthletes.value.length = 0;
+    selectedAthletes.value.push(...item);
+    if (selectedAthletes.value.length > 0) error.value = false
+}
+
 const addNewEvent = () => {
-    if (selectedAthletes.value.length === 0) {
-        red.value = 'red'; return
-    } else {
-        newEvent.value = false;
+    if(selectedAthletes.value.length === 0) { error.value = true; return }
+    else{
+        error.value = false;
         const form = event.target
         const formData = new FormData(form)
         const data = Object.fromEntries(formData.entries())
         let tmp = '';
-        [tmp, durationString] = data.duration.split('-');
+        [tmp, durationString.value ] = data.duration.split('-');
         data.duration = tmp;
         data.month = new Date().toLocaleDateString('en-US', { month: 'long' });
         data.date = Date.now();
@@ -67,9 +69,14 @@ const addNewEvent = () => {
         const modal = document.querySelector('#modalSummary');
         const bsModal = new bootstrap.Modal(modal);
         bsModal.show();
-        console.log(data, selectedAthletes);
-        //selectedAthletes.value.length = 0;
+        dataEvent = data
     }
+}
+
+const sendEvent = () => {
+    newEvent.value = false;
+    reset.value = true;
+    console.log(dataEvent)
 }
 
 </script>
@@ -78,17 +85,18 @@ const addNewEvent = () => {
     <img v-show="showBack" class="back" src="@/components/icons/back.png" alt="back"
         @click="[selected, showBack] = ['', false]">
 
-    <form @submit.prevent="addNewEvent" class="col-6">
-        <div v-if="selected === ''" class="container">
-            <div class="butContainer gap-4">
-                <Button :type="{ title: 'Profile', icons: 'trainer' }"
-                    @click="[selected, showBack] = ['profile', true]"></Button>
-                <Button :type="{ title: 'Calendar', icons: 'calendar' }"
-                    @click="[selected, showBack] = ['calendar', true]"></Button>
-            </div>
+    <div v-if="selected === ''" class="container col-6">
+        <div class="butContainer gap-4">
+            <Button :type="{ title: 'Profile', icons: 'trainer' }"
+                @click="[selected, showBack] = ['profile', true]"></Button>
+            <Button :type="{ title: 'Calendar', icons: 'calendar' }"
+                @click="[selected, showBack] = ['calendar', true]"></Button>
+        </div>
+
+        <form @submit.prevent="addNewEvent">
 
             <Button v-if="!newEvent" :type="{ color: 'warning', title: 'ADD NEW EVENT', class: 'newEvent' }"
-                @click="newEvent = true"></Button>
+                @click="newEvent = true; reset = false"></Button>
 
             <div v-else class="btn-group setNewEvent" role="group" aria-label="Button group with nested dropdown">
                 <button type="button" class="btn btn-warning">{{ date }}</button>
@@ -117,26 +125,14 @@ const addNewEvent = () => {
                 </div>
             </div>
 
-            <CheckableList :list="{red: red, listItemArr: athletes}"></CheckableList>
-            <!-- <div :class="'athleteList ' + red">
-                <p>List of Athletes: {{ athletes.length }}</p>
-                <span v-if="newEvent" :class="red">Selected: {{ selectedAthletes.length }}</span>
-                <div class="col-12 catContainer" v-for="athlete in athletes" :key="athlete.id">
-                    <div class="form-check form-switch">
-                        <input v-if="newEvent" v-model="selectedAthletes" class="form-check-input" type="checkbox"
-                            role="switch" :id="athlete.username" :value="athlete">
-                        <label class="form-check-label" :for="athlete.username">{{ `${athlete.surname} ${athlete.name}`
-                        }}</label>
-                    </div>
-                </div>
-            </div> -->
+            <CheckableList :list="athletes" :enableCheck="newEvent" :error="error" :reset="reset" @output-data="getSelected"></CheckableList>
 
             <!-- Modal for Summary-->
             <div class="modal fade" id="modalSummary" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">{{ selectedCategory }}</h1>
+                            <h1 class="modal-title fs-1" id="exampleModalLabel">{{ selectedCategory }}</h1>
                         </div>
                         <div class="modal-body">
 
@@ -164,15 +160,15 @@ const addNewEvent = () => {
 
                             <div class="modal-footer">
                                 <Button :type="{ color: 'danger', title: 'Cancel' }" data-bs-dismiss="modal"></Button>
-                                <Button :type="{ color: 'success', title: 'Confirm', type: 'submit' }"></Button>
+                                <Button :type="{ color: 'success', title: 'Confirm', type: 'button' }" data-bs-dismiss="modal" @click="sendEvent"></Button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </form>
+    </div>
 
-        </div>
-    </form>
     <adminProfile v-if="selected === 'profile'" />
     <adminCalendar v-if="selected === 'calendar'" />
 </template>
@@ -200,11 +196,6 @@ select {
     transform: translate(15em);
 }
 
-.red {
-    color: red !important;
-    border: 1px solid red !important;
-}
-
 .newEvent,
 .setNewEvent {
     margin-top: 1.5em;
@@ -225,46 +216,8 @@ select {
     text-transform: uppercase;
 }
 
-.athleteList {
-    border: 1px solid gray;
-    border-radius: 1em;
-    padding: 1em;
-}
-
-.form-switch {
-    box-shadow: 0 0 13px gray;
-    border-radius: 1em;
-    margin: 1em 0;
-    padding: 5px 1em;
-    text-align: center;
-}
-
-.form-switch label {
-    font-size: 1.3em;
-}
-
-.form-check-input[type=checkbox] {
-    position: absolute;
-    right: 1.5em;
-    top: .6em;
-}
-
-.athleteList p {
-    text-align: center;
-    margin-top: -1.9em;
-    width: 135px;
-    background-color: aliceblue;
-}
-
-.athleteList span {
-    position: absolute;
-    top: -13px;
-    right: 15px;
-    background-color: aliceblue;
-    width: 90px;
-    text-align: center;
-    color: green;
-    font-weight: 700;
+form {
+    padding-bottom: 2em;
 }
 
 .save {
@@ -275,6 +228,11 @@ select {
     display: block;
     text-align: center;
     text-transform: uppercase;
+    text-shadow: 1px 1px 5px black;
+}
+
+.modal-title{
+    margin: 0;
 }
 
 .modal-body {
@@ -285,6 +243,8 @@ select {
     padding: 6px;
     box-shadow: 0 0 13px gray;
     border-radius: .5em;
+    width: 60%;
+    background-color: blanchedalmond;
 }
 
 .modal-footer {
@@ -325,4 +285,5 @@ select {
     .btn-group>.btn {
         font-size: .9em;
     }
-}</style>
+}
+</style>

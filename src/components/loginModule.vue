@@ -56,7 +56,7 @@ const fetchData = () => {
   </section>
 
   <!-- For DEMO VERSION -->
-  <p class="demo">( DEMO VERSION => Type ' admin ' or ' trainer ' in Username and a password that meets the minimum requirements )</p>
+  <!-- <p class="demo">( DEMO VERSION => Type ' admin ' or ' trainer ' in Username and a password that meets the minimum requirements )</p> -->
   <!-- end DEMO VERSION -->
 </template>
 

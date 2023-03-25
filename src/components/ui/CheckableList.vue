@@ -1,28 +1,55 @@
 <script setup>
 //SCRIPT
+import { ref, watchEffect } from 'vue';
+
 const props = defineProps({
     list: {
-        type: Object,
+        type: Array,
         required: true
+    },
+    enableCheck: {
+        type: Boolean,
+        default: false
+    },
+    error: {
+        type: Boolean,
+        default: false
+    },
+    reset: {
+        type: Boolean,
+        default: false
     }
 });
 
-const emits = defineEmits(['output-data']);
+const selected = ref([]);
+
+const emit = defineEmits(['output-data']);
+
+const getSelected = () => {
+    emit('output-data', selected.value);
+}
+
+watchEffect(() => { if(props.reset) selected.value.length = 0 });
+
+const text = (elem) => props.list[0].surname ? `${elem.surname} ${elem.name}` : elem
 
 </script>
 
 
 <template>
     <!-- TEMPLATE -->
-    <div :class="'athleteList ' + props.list.red">
-        <p>List of Athletes: {{ props.list.listItemArr.length }}</p>
-        <span :class="red">Selected: 1</span>
-        <div class="col-12 catContainer" v-for="athlete in props.list.listItemArr" :key="athlete.username">
+    <div :class="[ 'athleteList', { 'red': error } ]">
+        <p>List of Athletes: {{ props.list.length }}</p>
+
+        <span v-if="enableCheck" :class="{ 'red': error }">Selected: {{ selected.length }}</span>
+
+        <div class="col-12 catContainer" v-for="item in props.list" :key="item.username || item">
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch"
-                    :id="athlete.username" :value="athlete">
-                <label class="form-check-label" :for="athlete.username">{{ `${athlete.surname} ${athlete.name}`
-                }}</label>
+
+                <input v-if="enableCheck" v-model="selected" class="form-check-input" type="checkbox" role="switch" :id="item.username || item.replace(/\s/g, '')" :value="item" @change="getSelected">
+
+                <label class="form-check-label" :for="item.username || item.replace(/\s/g, '')">{{ text(item) }}</label>
+
             </div>
         </div>
     </div>
@@ -36,6 +63,7 @@ const emits = defineEmits(['output-data']);
     border: 1px solid gray;
     border-radius: 1em;
     padding: 1em;
+    width: 100%;
 }
 
 .form-switch {
@@ -77,13 +105,10 @@ const emits = defineEmits(['output-data']);
 .red {
     color: red !important;
     border: 1px solid red !important;
+    border-radius: 1em;
 }
 
 @media only screen and (max-width: 768px) {
-
-    form {
-        width: 100%;
-    }
 
     .col-form-label {
         text-align: center;

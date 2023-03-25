@@ -18,14 +18,22 @@ const emit = defineEmits(['admin-logout']);
 const selected = ref('');
 const showBack = ref(false);
 const userJson = ref([]);
+const categoryJson = ref([]);
 
 async function getUsers () {
     await axios
-    .get('http://localhost:2000/api/v1/select')
-    .then((response) => { userJson.value.length = 0; userJson.value.push(...response.data.code) })
+        .get('http://localhost:2000/api/v1/select')
+        .then((response) => { userJson.value.length = 0; userJson.value.push(...response.data.code) });
+
+    await axios
+        .get('http://localhost:2000/api/v1/categoryAll/list')
+        .then((response) => { categoryJson.value.length = 0; categoryJson.value.push(...response.data.data.reduce((acc, el) => { acc.push(el.category); return acc }, [])) })
+        //categoryJson.value.length = 0
+    return userJson.value.length === 0 || categoryJson.value.length === 0
 }
 
-getUsers();
+getUsers().then((res) => { if(res) selected.value = 'dbError' })
+
 </script>
 
 <template>
@@ -51,9 +59,14 @@ getUsers();
 
     </div>
 
+    <div v-if="selected === 'dbError'" class="dbError">DB ERROR => unable to access the DB, contact the administrator</div>
+
     <adminProfile v-if="selected === 'profile'" @profile-logout="emit('admin-logout')"/>
-    <adminPeopleList v-if="selected === 'trainer' || selected === 'athlete'" :user="{selected, userJson}" @event="getUsers"/>
-    <adminCategories v-if="selected === 'category'" />
+
+    <adminPeopleList v-if="selected === 'trainer' || selected === 'athlete'" :user="{selected, userJson, categoryJson}" @event="getUsers"/>
+
+    <adminCategories v-if="selected === 'category'" :category="categoryJson" @cat-changed="getUsers"/>
+
     <adminCalendar v-if="selected === 'calendar'" />
 </template>
 
@@ -63,6 +76,18 @@ getUsers();
     width: 3em;
     cursor: pointer;
     transform: translate(15em);
+}
+
+.dbError{
+    color: red;
+    font-weight: 700;
+    font-size: 2em;
+    text-align: center;
+    border: 1px solid red;
+    border-radius: 2em;
+    padding: 2em;
+    box-shadow: 0 0 20px black;
+    width: 90%;
 }
 
 @media only screen and (max-width: 768px) {

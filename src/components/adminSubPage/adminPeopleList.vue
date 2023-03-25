@@ -4,7 +4,7 @@ import { ref, watchEffect, computed } from 'vue';
 import Button from '../ui/Button.vue';
 
 //JSON for test
-import trainerJson from '../../../trainer.json'
+//import trainerJson from '../../../trainer.json'
 /* import athleteJson from '../../../athlete.json' */
 
 // PROPS
@@ -16,13 +16,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['event']);
+
 //VARIABLE
 const search = ref('all');
 const selectedOrder = ref('hours');
 let filteredList = computed(() => {
     let filtered = props.user.selected === 'trainer' ? [...props.user.userJson.filter(el => el.role === 'trainer').sort(compare)] : [...props.user.userJson.filter(el => el.role === 'athlete').sort(compare)];
 
-    //if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value))
+    if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value))
 
     return filtered
 });
@@ -34,12 +35,14 @@ const formError = ref('');
 const inputDisabled = ref(true);
 const catEditUser = ref([]);
 const catNewUser = ref([]);
+let errorMessage = '';
+const error = ref(false);
 let oldUsername = '';
 
 //write username from name and surname and capitalize first letter
 watchEffect(() => {
     username.value = `${capitalizeFirstLetter(name.value)}${capitalizeFirstLetter(surname.value)}`;
-}) 
+})
 
 function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1)
@@ -54,16 +57,6 @@ function compare(a, b) {
     return 0;
 }
 
-//GET categories from json
-const categories = [...new Set(trainerJson.reduce((result, el) => result.concat(el.category), []))]
-
-/* const errors = {
-  400: 'Incorrect Username and/or Password!',
-  401: 'Incorrect Username and/or Password!',
-  404: 'Generic error, try again'
-} */
-
-
 const deleteItem = (element) => {
     axios
         .delete(`http://localhost:2000/api/v1/managementMyApp/edit/del/${element.username}`)
@@ -73,9 +66,25 @@ const deleteItem = (element) => {
                     if (el.username === element.username) filteredList.value.splice(index, 1)
                 });
                 emit('event');
+                const modal = document.querySelector('#modal' + element.username);
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                bsModal.hide();
                 console.log(filteredList.value)
-            } else console.log(response.data).status;
+            } else {
+                errorMessage = `Unexpected error (${response.data.status}), user not deleted, try again!`;
+                error.value = true;
+            }
         })
+}
+
+const resetForm = () => {
+    const form = document.querySelector('#addNewForm');
+    form.reset();
+    catNewUser.value.length = 0;
+    name.value = '';
+    surname.value = '';
+    username.value = '';
+    error.value = false;
 }
 
 const editItem = (element) => {
@@ -87,14 +96,15 @@ const editItem = (element) => {
 const cancel = (element) => {
     edit.value = false;
     formError.value = '';
+    error.value = false;
     inputDisabled.value = true;
 }
 
-const saveChange = () => {
+const saveChange = (event) => {
     if (catEditUser.value.length === 0) {
         formError.value = 'Select at least one category.'
         return
-    } else  formError.value = '';
+    } else formError.value = '';
     const form = event.target;
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
@@ -103,8 +113,11 @@ const saveChange = () => {
     axios
         .patch(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data })
         .then((response) => {
-            if (response.data.status === 201) { emit('event'); edit.value = false; formError.value = ''; inputDisabled.value = true;}
-            else console.log('errore edit', response.data)
+            if (response.data.status === 201) { emit('event'); edit.value = false; formError.value = ''; inputDisabled.value = true; }
+            else {
+                errorMessage = `Unexpected error (${response.data.status}), user not edited, try again!`;
+                error.value = true;
+            }
         })
 }
 
@@ -112,9 +125,13 @@ const printPdf = (element) => {
     console.log('pdf')
 }
 
-
+/* const errors = {
+  400: 'Incorrect Username and/or Password!',
+  401: 'Incorrect Username and/or Password!',
+  404: 'Generic error, try again'
+} */
 //Add new user
-const fetchNewUser = () => {
+const fetchNewUser = (event) => {
     if (catNewUser.value.length === 0) {
         formError.value = 'Select at least one category.'
         return
@@ -126,20 +143,22 @@ const fetchNewUser = () => {
     data.password = data.username + '1000';
     data.confirmPassword = data.password;
     data.role = props.user.selected
-    //console.log(data)
-    // fetch data qui
+
     axios
         .post(`http://localhost:2000/api/v1/managementMyApp`, { ...data })
         .then((response) => {
-            if (response.data.status === 200) emit('event')
-            else console.log('errore addNew', response.data.status)
+            if (response.data.status === 201) {
+                emit('event');
+                const modal = document.querySelector('#modalAddNew');
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                bsModal.hide();
+                resetForm()
+            }
+            else {
+                errorMessage = `Unexpected error (${response.data.status}), try again!`;
+                error.value = true;
+            }
         })
-    //if response ok
-    form.reset()
-    //close modal
-    const modal = document.querySelector('#modalAddNew')
-    const bsModal = bootstrap.Modal.getInstance(modal)
-    bsModal.hide()
 }
 </script>
 
@@ -148,7 +167,7 @@ const fetchNewUser = () => {
 
     <div class="butContainer col-6">
         <Button :type="{ color: 'warning', title: 'Add New' }" data-bs-toggle="modal"
-            data-bs-target="#modalAddNew"></Button>
+            data-bs-target="#modalAddNew" @click="resetForm"></Button>
 
         <Button :type="{ color: 'danger', title: `All ${user.selected} PDF` }"></Button>
     </div>
@@ -168,7 +187,7 @@ const fetchNewUser = () => {
         </div>
         <select v-model="search" @change="filtered" class="form-select search" aria-label="Default select example">
             <option value="all" selected>ALL CATEGORIES</option>
-            <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
+            <option v-for="category in props.user.categoryJson" :key="category" :value="category">{{ category }}</option>
         </select>
     </div>
 
@@ -178,8 +197,9 @@ const fetchNewUser = () => {
             <div v-for="trainer in filteredList" :key="trainer.username" class="accordion-item">
                 <h2 class="accordion-header" id="flush-headingOne">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        :data-bs-target="'#'+trainer.username" aria-expanded="false" :aria-controls="'#'+trainer.username">
-                        {{ `${trainer.surname} ${trainer.name}` }} <span>{{ trainer.hours_minutes_of_training_current_month }}</span>
+                        :data-bs-target="'#' + trainer.username" aria-expanded="false" :aria-controls="'#' + trainer.username">
+                        {{ `${trainer.surname} ${trainer.name}` }} <span>{{ trainer.hours_minutes_of_training_current_month
+                        }}</span>
                     </button>
                 </h2>
 
@@ -187,6 +207,8 @@ const fetchNewUser = () => {
                     data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
 
+                        <p v-show="error" class="errorMessage"> {{ errorMessage }} </p>
+                        
                         <form class="needs-validation" id="editForm" @submit.prevent="saveChange">
 
                             <div class="mb-3 row">
@@ -245,7 +267,8 @@ const fetchNewUser = () => {
                                 <div class="mb-3 row">
                                     <label for="catefories" class="col-sm-4 col-form-label">Categories</label>
                                     <div class="col-sm-8">
-                                        <div v-for="category in categories" :key="category" class="form-check form-switch">
+                                        <div v-for="category in props.user.categoryJson" :key="category"
+                                            class="form-check form-switch">
                                             <input class="form-check-input" type="checkbox" v-model="catEditUser"
                                                 role="switch" :id="category.replace(/\s/g, '')" :value="category">
                                             <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category
@@ -264,24 +287,24 @@ const fetchNewUser = () => {
                             <!--  -->
                             <div v-else :id="'saveIcon' + trainer.username" class="buttonContainer">
                                 <img src="@/components/icons/trash.png" alt="delete" data-bs-toggle="modal"
-                                    :data-bs-target="'#modal' + trainer.username">
+                                    :data-bs-target="'#modal' + trainer.username" @click="error= false">
                                 <img src="@/components/icons/edit.png" alt="edit" @click="editItem(trainer)">
                                 <img src="@/components/icons/pdf.png" alt="pdf" @click="printPdf(trainer)">
                             </div>
                         </form>
 
                         <!-- Modal for Delete-->
-                        <div class="modal fade" :id="'modal' + trainer.username" tabindex="-1" aria-labelledby="exampleModalLabel"
-                            aria-hidden="true">
+                        <div class="modal fade" :id="'modal' + trainer.username" tabindex="-1"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
+                                        <p v-show="error" class="errorMessage"> {{ errorMessage }} </p>
                                         <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure to delete it?</h1>
                                     </div>
                                     <div class="modal-footer">
                                         <Button :type="{ title: 'Close' }" data-bs-dismiss="modal"></Button>
-                                        <Button :type="{ color: 'danger', title: 'Delete' }" data-bs-dismiss="modal"
-                                            @click="deleteItem(trainer)"></Button>
+                                        <Button :type="{ color: 'danger', title: 'Delete' }" @click="deleteItem(trainer)"></Button>
                                     </div>
                                 </div>
                             </div>
@@ -298,11 +321,12 @@ const fetchNewUser = () => {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
+                    <p v-show="error" class="errorMessage"> {{ errorMessage }} </p>
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Add new {{ user.selected }}</h1>
                 </div>
                 <div class="modal-body">
 
-                    <form class="needs-validation" @submit.prevent="fetchNewUser">
+                    <form class="needs-validation" @submit.prevent="fetchNewUser" id="addNewForm">
                         <div class="mb-3 row">
                             <label for="name" class="col-sm-3 col-form-label">Name</label>
                             <div class="col-sm-9">
@@ -332,16 +356,17 @@ const fetchNewUser = () => {
                         <div class="mb-3 row">
                             <label for="catefories" class="col-sm-3 col-form-label">Categories</label>
                             <div class="col-sm-9">
-                                 <div v-for="category in categories" :key="category" class="form-check form-switch">
+                                <div v-for="category in props.user.categoryJson" :key="category"
+                                    class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" v-model="catNewUser" role="switch"
-                                         :id="category.replace(/\s/g, '')" :value="category">
+                                        :id="category.replace(/\s/g, '')" :value="category">
                                     <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category
                                     }}</label>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <Button :type="{ color: 'danger', title: 'Close' }" data-bs-dismiss="modal"></Button>
+                            <Button :type="{ color: 'danger', title: 'Cancel' }" data-bs-dismiss="modal"></Button>
                             <Button :type="{ color: 'success', title: 'Save', type: 'submit' }"></Button>
                         </div>
                     </form>
@@ -378,6 +403,13 @@ const fetchNewUser = () => {
 
 }
 
+.errorMessage{
+    color: red;
+    font-weight: 700;
+    border-bottom: 1px solid red;
+    text-align: center;
+}
+
 .order {
     display: flex;
     gap: .5em;
@@ -401,6 +433,7 @@ const fetchNewUser = () => {
     margin: 1em;
     height: 100%;
     max-width: 50%;
+    padding-bottom: 3em;
 }
 
 .buttonContainer {
@@ -510,5 +543,4 @@ const fetchNewUser = () => {
     .accordion-flush .accordion-item .accordion-button.collapsed {
         font-size: .9em !important;
     }
-}
-</style>
+}</style>

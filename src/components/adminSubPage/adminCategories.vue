@@ -1,22 +1,40 @@
 <script setup>
-import {  ref } from 'vue';
-import trainerJson from '../../../trainer.json';
+import { ref } from 'vue';
+import axios from 'axios';
+//import trainerJson from '../../../trainer.json';
 import Button from '../ui/Button.vue';
+import CheckableList from '../ui/CheckableList.vue';
 
-//GET categories from json
-const categories = [...new Set([...trainerJson].reduce((result, el) => result.concat(el.category), []))];
+
+// PROPS
+const props = defineProps({
+    category: {
+        type: Object,
+        required: true
+    }
+});
+
+const emits = defineEmits(['cat-changed']);
 
 const delClicked = ref(false);
 const delString = ref('');
 const catName = ref('');
 const catNewUser = ref([]);
-const red = ref('');
+const error = ref(false);
+const reset = ref(false);
+
+const getSelected = (item) => {
+    catNewUser.value.length = 0;
+    catNewUser.value.push(...item);
+    if (catNewUser.value.length > 0) error.value = false
+}
 
 const deleteBut = () => {
     if (delString.value === 'Now') {
         delClicked.value = false;
         delString.value = '';
-        red.value = '';
+        error.value = false;
+        reset.value = true;
         if (catNewUser.value.length > 0) {
             console.log(catNewUser.value);
             //qui richiamo l'api
@@ -24,36 +42,35 @@ const deleteBut = () => {
     } else {
         delClicked.value = true;
         delString.value = 'Now';
-        red.value = 'border: 1px solid red';
+        error.value = true;
+        reset.value = false
     }
 }
 
 const addNew = () => {
     if (catName.value !== '') {
-        console.log(catName.value);
+        axios
+            .post('http://localhost:2000/api/v1/category', {category: catName.value})
+            .then((response) => {
+                console.log(response)
+            })
+        emits('cat-changed')
         catName.value = ''
     }
-
 }
 </script>
 
 <template>
     <h1>Categories</h1>
-    <div class="container">
+    <div class="container col-6">
         <div class="butContainer">
             <Button :type="{ color: 'danger', title: `Delete ${delString}` }" @click="deleteBut"></Button>
             <Button :type="{ color: 'warning', title: 'Add New' }" data-bs-toggle="modal"
                 data-bs-target="#modalAddNew"></Button>
         </div>
 
-
-        <div class="col-12 catContainer" v-for="category in categories" :key="category">
-            <div class="form-check form-switch" :style="red">
-                <input v-if="delClicked" class="form-check-input" type="checkbox" v-model="catNewUser" role="switch"
-                    name="categories" :id="category.replace(/\s/g, '')" :value="category">
-                <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category }}</label>
-            </div>
-        </div>
+        <CheckableList :list="props.category" :enableCheck="delClicked" :error="error" :reset="reset"
+            @output-data="getSelected"></CheckableList>
     </div>
 
     <!-- Modal for Add New Category-->
@@ -81,51 +98,17 @@ const addNew = () => {
 </template>
 
 <style scoped>
-
-.container{
+.container {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+
 .butContainer {
-    width: 40%;
+    width: 100%;
     display: flex;
     gap: 3em;
     margin-bottom: 2em;
-}
-
-.catContainer {
-    width: 40%;
-    text-align: center;
-
-}
-
-.catContainer div {
-    border-radius: 2em;
-    box-shadow: 0 0 15px gray;
-    margin-bottom: 1em;
-    text-transform: uppercase;
-    padding: 2px;
-}
-
-.catContainer h4 {
-    margin: 0;
-}
-
-.form-check-input {
-    position: absolute;
-    right: 1em;
-    top: .4em;
-}
-
-.form-switch .form-check-input:checked {
-    background-color: red;
-    border: none;
-}
-
-.catContainer label {
-    margin: 0;
-    font-size: 1.3rem;
 }
 
 .modal-header {
@@ -139,22 +122,14 @@ const addNew = () => {
 }
 
 @media only screen and (max-width: 768px) {
+    .container {
+        width: 100%;
+    }
 
-    .catContainer,
     .butContainer {
         width: 100%;
         font-size: .5em;
+        margin-bottom: 5em;
     }
-
-    .catContainer {
-        margin-bottom: 1.5em;
-    }
-
-    .form-check-input {
-        top: 1em;
-        width: 4em;
-        height: 2em;
-    }
-
 }
 </style>
