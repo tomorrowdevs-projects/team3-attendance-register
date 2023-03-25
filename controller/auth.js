@@ -71,7 +71,6 @@ exports.checkParametersRegister = (req, res, next) => {
     category
   } = req.body;
   const roles = ["admin", "trainer", "athlete"];
-console.log(req.body)
   if (req.path != "/") {
     
     req.body.name = capFirstLetter(name);
@@ -98,7 +97,7 @@ console.log(req.body)
     req.body.role = role.toLowerCase();
     req.body.password = password;
     req.body.category = category;
-
+    
     if (
       /^[A-Za-z0-9]*$/.test(username) &&
       // /^(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password) &&
