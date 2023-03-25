@@ -9,20 +9,23 @@ const calendary = `CREATE TABLE if not exists calendary(
    current_month VARCHAR(15) NOT NULL ,
    year INT NOT NULL,
    other_date DATE NOT NULL ,
-   name_category VARCHAR(255),
+   category
+    VARCHAR(255),
    number_of_training INT NULL DEFAULT 0,
    FOREIGN KEY(username) REFERENCES accounts(username)
   )`;
 
 const selectUnitTime =
   "SELECT number_of_training  FROM calendary WHERE username  = ? AND year = ? AND current_month = ? ";
-const insertIntoCalendary = `INSERT IGNORE INTO calendary (username, current_month, year, other_date, name_category, number_of_training) VALUES (?, ?, ?, ?,?, ?) `;
+const insertIntoCalendary = `INSERT IGNORE INTO calendary (username, current_month, year, other_date, category
+  , number_of_training) VALUES (?, ?, ?, ?,?, ?) `;
 
 const updatehours_minutes_of_training = ` UPDATE IGNORE  accounts SET hours_minutes_of_training_current_month = ? WHERE username = ? `;
 
 const createCategory = `CREATE TABLE if not exists category(
   username_trainer VARCHAR(255) NOT NULL ,
-  name_category VARCHAR(255) NOT NULL,
+  category
+   VARCHAR(255) NOT NULL,
   id_course int NOT NULL ,
   username_athlete VARCHAR(255)  NULL, 
   date DATE  NULL,
@@ -38,29 +41,42 @@ const createCategory = `CREATE TABLE if not exists category(
 
 const category_assignment = `CREATE TABLE if not exists category_assignment(
   id_course int NOT NULL AUTO_INCREMENT ,
-  username_trainer VARCHAR(255) NOT NULL , 
-  name_category VARCHAR(255) NOT NULL unique,
+  username_trainer VARCHAR(255)  NULL , 
+  category
+   VARCHAR(255) NOT NULL unique, 
   FOREIGN KEY(username_trainer) REFERENCES accounts(username),
 
   PRIMARY KEY (id_course)
  
  
- 
+  
  )`;
 
-const select_athlete_category = `SELECT id_course FROM category WHERE name_category = ? AND username_athlete = ?`;
-const select_category_from_category_assignment = `SELECT id_course, username_trainer FROM category_assignment WHERE name_category = ?   `;
-const insert_new_athleteToCategory = `INSERT IGNORE INTO category (username_trainer, name_category, id_course, username_athlete) VALUES (?, ?,?,?)`;
+const select_athlete_category = `SELECT id_course FROM category WHERE category
+ = ? AND username_athlete = ?`;
+const select_category_from_category_assignment = `SELECT id_course, username_trainer FROM category_assignment WHERE category
+ = ?   `;
+const insert_new_athleteToCategory = `INSERT IGNORE INTO category (username_trainer, category
+  , id_course, username_athlete) VALUES (?, ?,?,?)`;
 
-const select_list_from_category = `SELECT * FROM category WHERE name_category = ? AND username_athlete = ? `;
-const insertInto_category_assignment = `INSERT IGNORE INTO category_assignment (username_trainer, name_category) VALUES (?, ?)`;
-const change_trainer = ` UPDATE IGNORE  category  SET username_trainer = ? WHERE name_category = ?`;
+const select_list_from_category = `SELECT * FROM category WHERE category
+ = ? AND username_athlete = ? `;
+const insertInto_category_assignment = `INSERT IGNORE INTO category_assignment (username_trainer, category
+  ) VALUES (?, ?)`;
+
+const insertInto_category_assignment_no_username = `INSERT IGNORE INTO category_assignment ( category
+    ) VALUES ( ?)`;
+const change_trainer = ` UPDATE IGNORE  category  SET username_trainer = ? WHERE category
+ = ?`;
 const attendance_absences = ` UPDATE IGNORE  category  SET attendance_absences = ?, date = ? WHERE code_registration = ? `;
-const delete_category = `DELETE FROM category WHERE  name_category = ?`;
-const select_username_athlete_from_attendance_absences = `SELECT username_athlete, code_registration FROM category WHERE name_category = ?  `;
+const delete_category = `DELETE FROM category WHERE  category
+ = ?`;
+const select_username_athlete_from_attendance_absences = `SELECT username_athlete, code_registration FROM category WHERE category
+ = ?  `;
 
 
-const select_category = `SELECT * FROM category WHERE name_category = ?`;
+const select_category = `SELECT * FROM category WHERE category
+ = ?`;
 
 const createAccounts = `CREATE TABLE  if not exists accounts( 
   username VARCHAR(255) NOT NULL,  
@@ -112,5 +128,6 @@ module.exports = {
   select_list_from_category,
   select_category_from_category_assignment,
   select_athlete_category,
-  select_username_athlete_from_attendance_absences
+  select_username_athlete_from_attendance_absences,
+  insertInto_category_assignment_no_username
 };

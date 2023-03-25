@@ -3,21 +3,21 @@ const express = require("express");
 const connection = require("../src/connectMysql.js");
 const router = express.Router();
 
-//let's create a new course by associating it with a trainer -category_assignment-
-router.post("/category/:username", async (req, res) => {
+//let's create a new course 
+router.post("/category", async (req, res) => {
   try {
-    const username = req.params.username;
-    const category = req.body.name_category;
-    await connection().then(async (connection) => {
-      await connection.query(queries.use);
-      await connection
+    const category = req.body.category;
+     await connection().then(async (connection) => {
+    await connection.query(queries.use);
+    await connection
 
-        .query(queries.insertInto_category_assignment, [username, category])
+        .query(queries.insertInto_category_assignment_no_username, [ category])
         .then(async ([rows]) => {
+          console.log(rows)
           if (rows.affectedRows === 1)
             res.json({ status: 201, success: true }).end();
           else {
-            res.json({ status: 400, data: null }).end();
+            res.json({ status: 400}).end();
           }
         });
     });
