@@ -94,6 +94,32 @@ router.get("/category/insert/:username", async (req, res) => {
   }
 });
 
+router.get("/categoryAll/list", async (req, res) => {
+  try {
+    await connection().then(async (connection) => {
+      await connection.query(queries.use);
+      await connection
+
+        .query(queries.  select_category_list_from_category_assignment
+          )
+        .then(async ([rows]) => {
+          if (rows.length > 0) {
+
+              res.json({ status: 201, data: rows }).end()
+          }else {
+              res.json({ status: 400}).end();
+            }
+                  });
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ status: 401}).end();
+  }
+});
+
+
+
+
 //list of all the athletes enrolled in a category
 
 router.get("/category/list", async (req, res) => {

@@ -51,7 +51,7 @@ const category_assignment = `CREATE TABLE if not exists category_assignment(
  
   
  )`;
-
+const select_category_list_from_category_assignment = `SELECT category FROM category_assignment `;
 const select_athlete_category = `SELECT id_course FROM category WHERE category
  = ? AND username_athlete = ?`;
 const select_category_from_category_assignment = `SELECT id_course, username_trainer FROM category_assignment WHERE category
@@ -129,5 +129,6 @@ module.exports = {
   select_category_from_category_assignment,
   select_athlete_category,
   select_username_athlete_from_attendance_absences,
-  insertInto_category_assignment_no_username
+  insertInto_category_assignment_no_username,
+  select_category_list_from_category_assignment
 };
