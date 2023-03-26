@@ -6,7 +6,7 @@ const selectTrainerorAtlete = `SELECT * FROM accounts WHERE role = 'trainer' OR 
 
 const calendary = `CREATE TABLE if not exists calendary(
    username VARCHAR(255) NOT NULL ,
-   current_month VARCHAR(15) NOT NULL ,
+   mounth VARCHAR(15) NOT NULL ,
    year INT NOT NULL,
    other_date DATE NOT NULL ,
    category
@@ -16,11 +16,11 @@ const calendary = `CREATE TABLE if not exists calendary(
   )`;
 
 const selectUnitTime =
-  "SELECT number_of_training  FROM calendary WHERE username  = ? AND year = ? AND current_month = ? ";
-const insertIntoCalendary = `INSERT IGNORE INTO calendary (username, current_month, year, other_date, category
+  "SELECT number_of_training  FROM calendary WHERE username  = ? AND year = ? AND mounth = ? ";
+const insertIntoCalendary = `INSERT IGNORE INTO calendary (username, mounth, year, other_date, category
   , number_of_training) VALUES (?, ?, ?, ?,?, ?) `;
 
-const updatehours_minutes_of_training = ` UPDATE IGNORE  accounts SET hours_minutes_of_training_current_month = ? WHERE username = ? `;
+const updatehours_minutes_of_training = ` UPDATE IGNORE  accounts SET hours_minutes_of_training_mounth = ? WHERE username = ? `;
 
 const createCategory = `CREATE TABLE if not exists category(
   username_trainer VARCHAR(255) NOT NULL ,
@@ -74,9 +74,9 @@ const delete_category = `DELETE FROM category WHERE  category
 const select_username_athlete_from_attendance_absences = `SELECT username_athlete, code_registration FROM category WHERE category
  = ?  `;
 
-
 const select_category = `SELECT * FROM category WHERE category
  = ?`;
+ const select_my_category = `SELECT category FROM category WHERE username = ?`;
 
 const createAccounts = `CREATE TABLE  if not exists accounts( 
   username VARCHAR(255) NOT NULL,  
@@ -85,7 +85,7 @@ const createAccounts = `CREATE TABLE  if not exists accounts(
   surname VARCHAR(255) NOT NULL, 
   email VARCHAR(255) NOT NULL, 
   role VARCHAR(255) NOT NULL, 
-  hours_minutes_of_training_current_month INT DEFAULT 0  COMMENT 'each unit equals 30 minutes',
+  hours_minutes_of_training_mounth INT DEFAULT 0  COMMENT 'each unit equals 30 minutes',
   PRIMARY KEY (username),
   KEY unique_index  (email)
  
@@ -99,6 +99,17 @@ const selectUsernameOrEmail = `SELECT username OR email  FROM accounts WHERE  us
 const edit_account = ` UPDATE IGNORE  accounts SET email = ?, username = ? ,name = ?, surname = ? WHERE username = ? `;
 const deletAccounts = `DELETE FROM accounts WHERE username = ?`;
 const selectForEdit = `SELECT username , email FROM accounts WHERE username = ? OR   email = ?`;
+const select_monthly_hours_mounth = ` SELECT hours_minutes_of_training_mounth FROM accounts WHERE  username = ?`;
+const select_monthly_hours_mounth_all = ` SELECT hours_minutes_of_training_mounth FROM accounts `;
+const select_monthly_hours_for_specific_mounth = ` SELECT number_of_training FROM calendary WHERE  username = ? AND year = ? AND mounth = ? `;
+
+const check_data_category =  ` SELECT date FROM category WHERE  code_registration = ? `;
+
+
+
+
+
+
 
 module.exports = {
   selectLogin,
@@ -126,9 +137,14 @@ module.exports = {
   select_category,
   category_assignment,
   select_list_from_category,
+  select_my_category,
   select_category_from_category_assignment,
   select_athlete_category,
   select_username_athlete_from_attendance_absences,
   insertInto_category_assignment_no_username,
-  select_category_list_from_category_assignment
+  select_category_list_from_category_assignment,
+  select_monthly_hours_mounth,
+  select_monthly_hours_mounth_all,
+  select_monthly_hours_for_specific_mounth,
+  check_data_category
 };

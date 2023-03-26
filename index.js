@@ -1,4 +1,6 @@
 //import { initializeApp } from "firebase/app";
+require("dotenv").config();
+
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -17,7 +19,6 @@ const managementMyApp = require("./routing/managementMyApp.js");
 const routing = express.Router();
 const session = require("express-session");
 const queries = require("./model/queries.js");
-require("dotenv").config();
 app.use(
   cors({
     origin: "*",
@@ -78,7 +79,7 @@ app.use(
 app.use(
   "/api/v1/managementMyApp",
   // controller.onlyAdmin,
-  controller.checkParametersRegister,
+  // controller.checkParametersRegister,
   // controller.checkusernameExist,
   managementMyApp
 );

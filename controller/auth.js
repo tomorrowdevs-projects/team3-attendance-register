@@ -126,3 +126,16 @@ function capFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
+exports.sevenDays = (date) =>{
+  const seven_days_forward = new Date(Date.now()- 7 * 24 * 60 * 60 * 1000);
+ 
+  console.log(seven_days_forward.getTime(), date.getTime())
+  if(date.getTime() < seven_days_forward.getTime()){
+    res.json({ status: 400 }).end();
+
+   console.log('After 7 days it is not possible to make changes!!')
+  }else{
+
+
+  }
+}
