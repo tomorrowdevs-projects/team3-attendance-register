@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { ref, watchEffect, computed } from 'vue';
 import Button from '../ui/Button.vue';
+import ErrorMessage from '../ui/ErrorMessage.vue';
 
 //JSON for test
 //import trainerJson from '../../../trainer.json'
@@ -21,7 +22,7 @@ const emit = defineEmits(['event']);
 const search = ref('all');
 const selectedOrder = ref('hours');
 let filteredList = computed(() => {
-    let filtered = props.user.selected === 'trainer' ? [...props.user.userJson.filter(el => el.role === 'trainer').sort(compare)] : [...props.user.userJson.filter(el => el.role === 'athlete').sort(compare)];
+    let filtered = props.user.selected === 'trainer' ? [...props.user.users.filter(el => el.role === 'trainer').sort(compare)] : [...props.user.users.filter(el => el.role === 'athlete').sort(compare)];
 
     if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value))
 
@@ -38,7 +39,7 @@ const catNewUser = ref([]);
 let errorMessage = '';
 const error = ref(false);
 let oldUsername = '';
-
+console.log(filteredList)
 //write username from name and surname and capitalize first letter
 watchEffect(() => {
     username.value = `${capitalizeFirstLetter(name.value)}${capitalizeFirstLetter(surname.value)}`;
@@ -108,7 +109,7 @@ const saveChange = (event) => {
     const form = event.target;
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
-    data.categories = [...catEditUser.value];
+    data.category = [...catEditUser.value];
     console.log(data, oldUsername);
     axios
         .patch(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data })
@@ -139,7 +140,7 @@ const fetchNewUser = (event) => {
     const form = event.target
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
-    data.categories = [...catNewUser.value];
+    data.category = [...catNewUser.value];
     data.password = data.username + '1000';
     data.confirmPassword = data.password;
     data.role = props.user.selected
@@ -187,7 +188,7 @@ const fetchNewUser = (event) => {
         </div>
         <select v-model="search" @change="filtered" class="form-select search" aria-label="Default select example">
             <option value="all" selected>ALL CATEGORIES</option>
-            <option v-for="category in props.user.categoryJson" :key="category" :value="category">{{ category }}</option>
+            <option v-for="category in props.user.categories" :key="category" :value="category">{{ category }}</option>
         </select>
     </div>
 
@@ -198,7 +199,7 @@ const fetchNewUser = (event) => {
                 <h2 class="accordion-header" id="flush-headingOne">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         :data-bs-target="'#' + trainer.username" aria-expanded="false" :aria-controls="'#' + trainer.username">
-                        {{ `${trainer.surname} ${trainer.name}` }} <span>{{ trainer.hours_minutes_of_training_current_month
+                        {{ `${trainer.surname} ${trainer.name}` }} <span>{{ trainer.hours_minutes_of_training_mounth
                         }}</span>
                     </button>
                 </h2>
@@ -207,7 +208,7 @@ const fetchNewUser = (event) => {
                     data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
 
-                        <p v-show="error" class="errorMessage"> {{ errorMessage }} </p>
+                        <ErrorMessage v-show="error" :message="errorMessage"></ErrorMessage>
                         
                         <form class="needs-validation" id="editForm" @submit.prevent="saveChange">
 
@@ -256,7 +257,7 @@ const fetchNewUser = (event) => {
                                     <label for="mounthlyHours" class="col-sm-4 col-form-label">Mounthly Hours</label>
                                     <div class="col-sm-8">
                                         <p class="mounthlyHours" style="user-select: none; margin: 6px;">{{
-                                            trainer.hours_minutes_of_training_current_month }}</p>
+                                            trainer.hours_minutes_of_training_mounth }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -267,7 +268,7 @@ const fetchNewUser = (event) => {
                                 <div class="mb-3 row">
                                     <label for="catefories" class="col-sm-4 col-form-label">Categories</label>
                                     <div class="col-sm-8">
-                                        <div v-for="category in props.user.categoryJson" :key="category"
+                                        <div v-for="category in props.user.categories" :key="category"
                                             class="form-check form-switch">
                                             <input class="form-check-input" type="checkbox" v-model="catEditUser"
                                                 role="switch" :id="category.replace(/\s/g, '')" :value="category">
@@ -299,7 +300,7 @@ const fetchNewUser = (event) => {
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <p v-show="error" class="errorMessage"> {{ errorMessage }} </p>
+                                        <ErrorMessage v-show="error" :message="errorMessage"></ErrorMessage>
                                         <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure to delete it?</h1>
                                     </div>
                                     <div class="modal-footer">
@@ -321,7 +322,7 @@ const fetchNewUser = (event) => {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <p v-show="error" class="errorMessage"> {{ errorMessage }} </p>
+                    <ErrorMessage v-show="error" :message="errorMessage"></ErrorMessage>
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Add new {{ user.selected }}</h1>
                 </div>
                 <div class="modal-body">
@@ -356,7 +357,7 @@ const fetchNewUser = (event) => {
                         <div class="mb-3 row">
                             <label for="catefories" class="col-sm-3 col-form-label">Categories</label>
                             <div class="col-sm-9">
-                                <div v-for="category in props.user.categoryJson" :key="category"
+                                <div v-for="category in props.user.categories" :key="category"
                                     class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" v-model="catNewUser" role="switch"
                                         :id="category.replace(/\s/g, '')" :value="category">
@@ -401,13 +402,6 @@ const fetchNewUser = (event) => {
     gap: 2em;
     margin-bottom: 2em;
 
-}
-
-.errorMessage{
-    color: red;
-    font-weight: 700;
-    border-bottom: 1px solid red;
-    text-align: center;
 }
 
 .order {

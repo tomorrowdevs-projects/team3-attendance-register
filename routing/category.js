@@ -15,7 +15,7 @@ router.post("/category", async (req, res) => {
         .then(async ([rows]) => {
           console.log(rows);
           if (rows.affectedRows === 1)
-            res.json({ status: 201, success: true }).end();
+            res.json({ status: 201 }).end();
           //already present
           else if (rows.affectedRows === 0) res.json({ status: 404 }).end();
           else {
@@ -73,27 +73,27 @@ router.get("/category/insert/:username", async (req, res) => {
                       // console.log(rows)
 
                       if (rows.affectedRows === 1) {
-                        res.json({ status: 201, success: true }).end();
+                        res.json({ status: 201 }).end();
                       } else {
-                        res.json({ status: 400, data: null }).end();
+                        res.json({ status: 400 }).end();
                       }
                     });
                 } else {
                   //user already registered in the course
 
-                  res.json({ status: 400, data: null }).end();
+                  res.json({ status: 400 }).end();
                 }
               });
           } else {
             //category not yet created
 
-            res.json({ status: 400, data: null }).end();
+            res.json({ status: 400 }).end();
           }
         });
     });
   } catch (error) {
     console.log(error);
-    res.json({ status: 401, data: null }).end();
+    res.json({ status: 401 }).end();
   }
 });
 
@@ -199,7 +199,7 @@ router.patch(
           ])
           .then(async ([rows]) => {
             if (rows.affectedRows === 1) {
-              res.json({ status: 201, success: true }).end();
+              res.json({ status: 201 }).end();
             } else {
               res.json({ status: 400 }).end();
             }
@@ -226,7 +226,7 @@ router.patch(
           .query(queries.change_trainer, [username_trainer, name_category])
           .then(async ([rows]) => {
             if (rows.affectedRows === 1)
-              res.json({ status: 201, success: true }).end();
+              res.json({ status: 201 }).end();
             else {
               res.json({ status: 400 }).end();
             }

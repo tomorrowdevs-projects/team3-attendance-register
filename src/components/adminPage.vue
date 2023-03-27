@@ -1,11 +1,12 @@
 <script setup>
 import { ref } from 'vue';
-import axios from 'axios';
+import getData from '../JS/getData.js';
 import adminProfile from './adminSubPage/adminProfile.vue';
 import adminPeopleList from './adminSubPage/adminPeopleList.vue';
 import adminCategories from './adminSubPage/adminCategories.vue';
-import adminCalendar from './adminSubPage/adminCalendar.vue';
+import Calendar from './calendar.vue';
 import Button from './ui/Button.vue';
+import DbError from './ui/DbError.vue';
 
 const props = defineProps({
     name: {
@@ -17,39 +18,28 @@ const emit = defineEmits(['admin-logout']);
 
 const selected = ref('');
 const showBack = ref(false);
-const userJson = ref([]);
-const categoryJson = ref([]);
+const users = ref([]);
+const categories = ref([]);
 
-async function getUsers () {
-    await axios
-        .get('http://localhost:2000/api/v1/select')
-        .then((response) => { userJson.value.length = 0; userJson.value.push(...response.data.code) });
-
-    await axios
-        .get('http://localhost:2000/api/v1/categoryAll/list')
-        .then((response) => { categoryJson.value.length = 0; categoryJson.value.push(...response.data.data.reduce((acc, el) => { acc.push(el.category); return acc }, [])) })
-        //categoryJson.value.length = 0
-    return userJson.value.length === 0 || categoryJson.value.length === 0
+function get() {
+    getData.getData().then((res) => { users.value = res.users; categories.value = res.categories; if (res.status) selected.value = 'dbError' })
 }
 
-getUsers().then((res) => { if(res) selected.value = 'dbError' })
-
+get()
 </script>
 
 <template>
     <img v-show="showBack" class="back" src="@/components/icons/back.png" alt="back"
-    @click="[selected, showBack] = ['', false]">
+        @click="[selected, showBack] = ['', false]">
 
     <div v-if="selected === ''" class="d-grid gap-4 col-4 mx-auto butContainer">
         <Button :type="{ icons: 'adminProfile', title: `${name.toLocaleUpperCase()} 's Profile` }"
             @click="[selected, showBack] = ['profile', true]"></Button>
         <hr>
 
-        <Button :type="{ icons: 'trainer', title: 'Trainers' }"
-            @click="[selected, showBack] = ['trainer', true]"></Button>
+        <Button :type="{ icons: 'trainer', title: 'Trainers' }" @click="[selected, showBack] = ['trainer', true]"></Button>
 
-        <Button :type="{ icons: 'athlete', title: 'Athletes' }"
-            @click="[selected, showBack] = ['athlete', true]"></Button>
+        <Button :type="{ icons: 'athlete', title: 'Athletes' }" @click="[selected, showBack] = ['athlete', true]"></Button>
 
         <Button :type="{ icons: 'category', title: 'Categories' }"
             @click="[selected, showBack] = ['category', true]"></Button>
@@ -59,35 +49,22 @@ getUsers().then((res) => { if(res) selected.value = 'dbError' })
 
     </div>
 
-    <div v-if="selected === 'dbError'" class="dbError">DB ERROR => unable to access the DB, contact the administrator</div>
+    <DbError v-if="selected === 'dbError'"></DbError>
 
-    <adminProfile v-if="selected === 'profile'" @profile-logout="emit('admin-logout')"/>
+    <adminProfile v-if="selected === 'profile'" @profile-logout="emit('admin-logout')" />
 
-    <adminPeopleList v-if="selected === 'trainer' || selected === 'athlete'" :user="{selected, userJson, categoryJson}" @event="getUsers"/>
+    <adminPeopleList v-if="selected === 'trainer' || selected === 'athlete'" :user="{ selected, users, categories }" @event="get" />
 
-    <adminCategories v-if="selected === 'category'" :category="categoryJson" @cat-changed="getUsers"/>
+    <adminCategories v-if="selected === 'category'" :category="categories" @cat-changed="get" />
 
-    <adminCalendar v-if="selected === 'calendar'" />
+    <Calendar v-if="selected === 'calendar'" />
 </template>
 
 <style scoped>
-
 .back {
     width: 3em;
     cursor: pointer;
     transform: translate(15em);
-}
-
-.dbError{
-    color: red;
-    font-weight: 700;
-    font-size: 2em;
-    text-align: center;
-    border: 1px solid red;
-    border-radius: 2em;
-    padding: 2em;
-    box-shadow: 0 0 20px black;
-    width: 90%;
 }
 
 @media only screen and (max-width: 768px) {
@@ -104,4 +81,5 @@ getUsers().then((res) => { if(res) selected.value = 'dbError' })
         align-self: flex-end;
         transform: none;
     }
-}</style>
+}
+</style>

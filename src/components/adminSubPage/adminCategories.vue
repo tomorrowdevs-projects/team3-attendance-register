@@ -4,6 +4,7 @@ import axios from 'axios';
 //import trainerJson from '../../../trainer.json';
 import Button from '../ui/Button.vue';
 import CheckableList from '../ui/CheckableList.vue';
+import ErrorMessage from '../ui/ErrorMessage.vue';
 
 
 // PROPS
@@ -22,6 +23,8 @@ const catName = ref('');
 const catNewUser = ref([]);
 const error = ref(false);
 const reset = ref(false);
+const errorMessage = '';
+const errorAddNew = ref(false);
 
 const getSelected = (item) => {
     catNewUser.value.length = 0;
@@ -52,7 +55,15 @@ const addNew = () => {
         axios
             .post('http://localhost:2000/api/v1/category', {category: catName.value})
             .then((response) => {
-                console.log(response)
+                console.log(response.data)
+                if(response.data.status === 404) { errorAddNew.value = true; errorMessage = 'This category already exists'}
+                else if(response.data.status === 400) { errorAddNew.value = true; errorMessage = 'Unexpected error, please try again'}
+                else if (response.data.status === 201) {
+                    errorAddNew.value = false;
+                    const modal = document.querySelector('#modalAddNew');
+                    const bsModal = bootstrap.Modal.getInstance(modal);
+                    bsModal.hide();
+                }
             })
         emits('cat-changed')
         catName.value = ''
@@ -78,6 +89,7 @@ const addNew = () => {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
+                    <ErrorMessage v-show="errorAddNew" :message="errorMessage"></ErrorMessage>
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Add new Category</h1>
                 </div>
                 <div class="modal-body">
@@ -90,7 +102,7 @@ const addNew = () => {
                 </div>
                 <div class="modal-footer">
                     <Button :type="{ title: 'Close' }" data-bs-dismiss="modal"></Button>
-                    <Button :type="{ color: 'warning', title: 'Add' }" data-bs-dismiss="modal" @click="addNew"></Button>
+                    <Button :type="{ color: 'warning', title: 'Add' }" @click="addNew"></Button>
                 </div>
             </div>
         </div>

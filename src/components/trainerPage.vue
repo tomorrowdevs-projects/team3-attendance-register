@@ -1,9 +1,11 @@
 <script setup>
 import { ref, computed } from 'vue';
-import athleteJson from '../../athlete.json'
+import athleteJson from '../../athlete.json';
+import getData from '../JS/getData.js';
 import adminProfile from './trainerSubPage/trainerProfile.vue';
-import adminCalendar from './trainerSubPage/trainerCalendar.vue';
+import Calendar from './calendar.vue';
 import Button from './ui/Button.vue';
+import DbError from './ui/DbError.vue';
 import CheckableList from './ui/CheckableList.vue';
 
 //PROPS
@@ -30,6 +32,8 @@ const reset = ref(false);
 
 let dataEvent = {};
 
+getData.getData().then((res) => { if(res.status) selected.value = 'dbError' })
+
 const date = new Date().toLocaleDateString('en-US', {
     weekday: "long",
     day: "numeric",
@@ -52,7 +56,7 @@ const getSelected = (item) => {
     if (selectedAthletes.value.length > 0) error.value = false
 }
 
-const addNewEvent = () => {
+const addNewEvent = (event) => {
     if(selectedAthletes.value.length === 0) { error.value = true; return }
     else{
         error.value = false;
@@ -169,8 +173,10 @@ const sendEvent = () => {
         </form>
     </div>
 
+    <DbError v-if="selected === 'dbError'"></DbError>
+
     <adminProfile v-if="selected === 'profile'" />
-    <adminCalendar v-if="selected === 'calendar'" />
+    <Calendar v-if="selected === 'calendar'" />
 </template>
 
 <style scoped>
