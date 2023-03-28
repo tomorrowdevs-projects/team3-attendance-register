@@ -24,7 +24,7 @@ async function toFillDb(connection) {
 
     //create users on Db
     await connection.query(queries.createUser, [
-      process.env.USERNAME,
+      process.env.USERNAME_ADMIN,
       hashedPassowrd,
       process.env.NAME,
       process.env.SURNAME,
