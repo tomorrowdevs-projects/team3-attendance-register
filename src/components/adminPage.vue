@@ -9,8 +9,8 @@ import Button from './ui/Button.vue';
 import DbError from './ui/DbError.vue';
 
 const props = defineProps({
-    name: {
-        type: String,
+    userInfo: {
+        type: Object,
         required: true
     }
 });
@@ -33,7 +33,7 @@ get()
         @click="[selected, showBack] = ['', false]">
 
     <div v-if="selected === ''" class="d-grid gap-4 col-4 mx-auto butContainer">
-        <Button :type="{ icons: 'adminProfile', title: `${name.toLocaleUpperCase()} 's Profile` }"
+        <Button :type="{ icons: 'adminProfile', title: `${userInfo.name.toLocaleUpperCase()} 's Profile` }"
             @click="[selected, showBack] = ['profile', true]"></Button>
         <hr>
 
@@ -51,7 +51,7 @@ get()
 
     <DbError v-if="selected === 'dbError'"></DbError>
 
-    <adminProfile v-if="selected === 'profile'" @profile-logout="emit('admin-logout')" />
+    <adminProfile v-if="selected === 'profile'" @profile-logout="emit('admin-logout')" :userInfo="userInfo"/>
 
     <adminPeopleList v-if="selected === 'trainer' || selected === 'athlete'" :user="{ selected, users, categories }" @event="get" />
 

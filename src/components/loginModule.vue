@@ -28,8 +28,10 @@ const fetchData = () => {
   axios
     .post('http://localhost:2000/api/v1/login', postData)
     .then((response) => {
+      console.log(response.status)
+      console.log(response.data)
       if (response.data.status in errors) message.value = errors[response.data.status]
-      else if (response.data.status === 201) emit('login-success', { role: response.data.role, username: postData.username })
+      else if (response.data.status === 201) emit('login-success',response.data.data[0])
   }) 
 }
 </script>
