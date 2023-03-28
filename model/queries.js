@@ -111,11 +111,12 @@ const select_monthly_hours_for_specific_mounth = ` SELECT number_of_training FRO
 
 const check_data_category =  ` SELECT date FROM category WHERE  code_registration = ? `;
 
+const categories_of_trainers = ` SELECT category, username  FROM category_assignment INNSER JOIN accounts ON username_trainer = username `
+
+const categories_of_athlese = ` SELECT category, username_athlete  FROM category INNSER JOIN accounts ON username_athlete = username `
 
 
-
-
-
+ 
 
 module.exports = {
   selectLogin,
@@ -152,5 +153,7 @@ module.exports = {
   select_monthly_hours_mounth,
   select_monthly_hours_mounth_all,
   select_monthly_hours_for_specific_mounth,
-  check_data_category
+  check_data_category,
+  categories_of_trainers,
+  categories_of_athlese
 };

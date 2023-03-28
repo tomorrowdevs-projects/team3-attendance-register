@@ -34,11 +34,14 @@ const seven_days_forward_ligth = seven_days_forward
   .replace("-", "/");
 let year = d.getFullYear();
 
+
+
+//entering hours worked by the trainer
 router.post("/calendary/:username", async (req, res) => {
   try {
     const username = req.params.username;
     let { number_of_training } = req.body;
-    //When a teacher enters the hours worked for a category, the following operations are these:
+    //When a trainer enters the hours worked for a category, the following operations are these:
     //1) data entry in DB with reference category,
     //2)selection of all the hours done in that month by the specific teacher,
     //3)the total teaching hours are recorded in the account table.
@@ -165,5 +168,9 @@ router.get("/calendary/list_monthly_hours/:username", async (req, res) => {
     res.json({ status: 401 }).end();
   }
 });
+
+
+
+
 
 module.exports = router;

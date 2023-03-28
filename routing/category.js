@@ -53,7 +53,7 @@ router.get("/category/insert/:username", async (req, res) => {
                 category,
                 username_athlete,
               ])
-
+ 
               .then(async ([rows]) => {
                 console.log(rows);
 
@@ -251,5 +251,55 @@ router.delete("/category/del_category/:category", async (req, res) => {
     res.json({ status: 401 }).end();
   }
 });
+
+//categories_of_trainers
+router.get("/categories_of_trainers", async (req, res) => {
+  try {
+    await connection().then(async (connection) => {
+      await connection.query(queries.use);
+      await connection
+
+        .query(queries.categories_of_trainers)
+        .then(async ([rows]) => {
+          if (rows.length > 0) {
+            console.log(rows);
+
+            res.json({ status: 201, data: rows }).end();
+          } else {
+            res.json({ status: 400 }).end();
+          }
+        });
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ status: 401 }).end();
+  }
+});
+
+//athletes enrolled in what
+router.get("/categories_of_athlete", async (req, res) => {
+  try {
+    await connection().then(async (connection) => {
+      await connection.query(queries.use);
+      await connection
+
+        .query(queries.categories_of_athlese)
+        .then(async ([rows]) => {
+          if (rows.length > 0) {
+            console.log(rows);
+
+            res.json({ status: 201, data: rows }).end();
+          } else {
+            res.json({ status: 400 }).end();
+          }
+        });
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ status: 401 }).end();
+  }
+});
+
+
 
 module.exports = router;
