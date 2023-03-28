@@ -13,6 +13,8 @@ const calendary = `CREATE TABLE if not exists calendary(
     VARCHAR(255),
    number_of_training INT NULL DEFAULT 0,
    FOREIGN KEY(username) REFERENCES accounts(username)
+   ON UPDATE CASCADE ON DELETE CASCADE
+
   )`;
 
 const selectUnitTime =
@@ -35,18 +37,21 @@ const createCategory = `CREATE TABLE if not exists category(
   FOREIGN KEY(username_athlete) REFERENCES accounts(username),
   FOREIGN KEY(id_course) REFERENCES category_assignment(id_course)
 
-  ON UPDATE CASCADE ON DELETE RESTRICT
+  ON UPDATE CASCADE ON DELETE CASCADE
     
 ) `;
 
 const category_assignment = `CREATE TABLE if not exists category_assignment(
-  id_course int NOT NULL AUTO_INCREMENT ,
+  id_course int NOT NULL AUTO_INCREMENT PRIMARY KEY ,
   username_trainer VARCHAR(255)  NULL , 
   category
    VARCHAR(255) NOT NULL unique, 
-  FOREIGN KEY(username_trainer) REFERENCES accounts(username),
+  FOREIGN KEY(username_trainer) REFERENCES accounts(username)
+  ON UPDATE CASCADE ON DELETE CASCADE
 
-  PRIMARY KEY (id_course)
+   
+   
+  
  
  
   
@@ -69,8 +74,7 @@ const insertInto_category_assignment_no_username = `INSERT IGNORE INTO category_
 const change_trainer = ` UPDATE IGNORE  category  SET username_trainer = ? WHERE category
  = ?`;
 const attendance_absences = ` UPDATE IGNORE  category  SET attendance_absences = ?, date = ? WHERE code_registration = ? `;
-const delete_category = `DELETE FROM category WHERE  category
- = ?`;
+const delete_category = `DELETE FROM category_assignment  WHERE  category = ?`;
 const select_username_athlete_from_attendance_absences = `SELECT username_athlete, code_registration FROM category WHERE category
  = ?  `;
 
@@ -88,6 +92,8 @@ const createAccounts = `CREATE TABLE  if not exists accounts(
   hours_minutes_of_training_mounth INT DEFAULT 0  COMMENT 'each unit equals 30 minutes',
   PRIMARY KEY (username),
   KEY unique_index  (email)
+  
+  
  
     
    

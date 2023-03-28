@@ -14,8 +14,7 @@ router.post("/category", async (req, res) => {
         .query(queries.insertInto_category_assignment_no_username, [category])
         .then(async ([rows]) => {
           console.log(rows);
-          if (rows.affectedRows === 1)
-            res.json({ status: 201 }).end();
+          if (rows.affectedRows === 1) res.json({ status: 201 }).end();
           //already present
           else if (rows.affectedRows === 0) res.json({ status: 404 }).end();
           else {
@@ -225,8 +224,7 @@ router.patch(
 
           .query(queries.change_trainer, [username_trainer, name_category])
           .then(async ([rows]) => {
-            if (rows.affectedRows === 1)
-              res.json({ status: 201 }).end();
+            if (rows.affectedRows === 1) res.json({ status: 201 }).end();
             else {
               res.json({ status: 400 }).end();
             }
@@ -238,5 +236,20 @@ router.patch(
     }
   }
 );
+//delete
+router.delete("/category/del_category/:category", async (req, res) => {
+  try {
+    const category = req.params.category;
+    await connection().then(async (connection) => {
+      await connection.query(queries.use);
+      await connection.query(queries.delete_category, [category]);
+      res.json({ status: 201 }).end();
+    });
+    console.log(category)
+  } catch (error) {
+    console.log(error);
+    res.json({ status: 401 }).end();
+  }
+});
 
 module.exports = router;
