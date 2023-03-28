@@ -23,7 +23,7 @@ const catName = ref('');
 const catNewUser = ref([]);
 const error = ref(false);
 const reset = ref(false);
-const errorMessage = '';
+let errorMessage = '';
 const errorAddNew = ref(false);
 
 const getSelected = (item) => {
