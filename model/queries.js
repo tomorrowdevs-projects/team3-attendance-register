@@ -1,6 +1,6 @@
 const createDb = `CREATE DATABASE IF NOT EXISTS team3`;
 const selectLogin =
-  "SELECT * FROM accounts WHERE username = ? AND password = ?";
+  "SELECT * FROM accounts WHERE username = ? ";
 const use = "USE team3";
 const selectTrainerorAtlete = `SELECT * FROM accounts WHERE role = 'trainer' OR role = 'athlete' `;
 
@@ -45,12 +45,12 @@ const category_assignment = `CREATE TABLE if not exists category_assignment(
   id_course int NOT NULL AUTO_INCREMENT PRIMARY KEY ,
   username_trainer VARCHAR(255)  NULL , 
   category
-   VARCHAR(255) NOT NULL unique, 
+   VARCHAR(255) NOT NULL , 
   FOREIGN KEY(username_trainer) REFERENCES accounts(username)
   ON UPDATE CASCADE ON DELETE CASCADE
 
    
-   
+    
   
  
  
@@ -111,10 +111,11 @@ const select_monthly_hours_for_specific_mounth = ` SELECT number_of_training FRO
 
 const check_data_category =  ` SELECT date FROM category WHERE  code_registration = ? `;
 
-const categories_of_trainers = ` SELECT category, username  FROM category_assignment INNSER JOIN accounts ON username_trainer = username `
+const categories_of_trainers = ` SELECT category, username  FROM category_assignment INNSER JOIN accounts ON username_trainer = username  FROM accounts`
 
-const categories_of_athlese = ` SELECT category, username_athlete  FROM category INNSER JOIN accounts ON username_athlete = username `
+const categories_of_athlese = ` SELECT category, username_athlete  FROM category INNSER JOIN accounts ON username_athlete = username   `
 
+const categories_of_trainers2 = ` SELECT name, surname, username, email FROM accounts INNSER JOIN category_assignment ON username_trainer = username `
 
  
 

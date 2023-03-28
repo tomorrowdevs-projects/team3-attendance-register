@@ -15,7 +15,6 @@ router.post("/login", async (req, res) => {
         await connection
           .query(queries.passwordAndRole, [username])
           .then(([rows]) => {  
-          
             //if there is no password, therefore user inside DB
             if (rows.length === 0) res.json({ status: 400 }).end();
             else {
@@ -28,18 +27,23 @@ router.post("/login", async (req, res) => {
               let hashedPassowrd = bcrypt.compareSync(password, hashPasswordDb);
 
               // If the pass is ok and user exist:
+              
+
               if (hashedPassowrd) {
                 //   // Authenticate the user
                 req.session.loggedin = true;
                 req.session.username = username;
                 req.session.role = rows[0].role;
-
-                res.json({ status: 201, role: rows[0].role});
+                  connection.query(queries.selectLogin, [username])
+                  .then(([rows]) => {  
+                    console.log(rows)
+                
+                res.json({ status: 201, data: rows})})
               } else {
                 res.json({ status: 401 }).end();
               }
             }
-          });
+          })
       })
       .catch((error) => {
         throw error;
