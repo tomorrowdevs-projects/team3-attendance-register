@@ -6,7 +6,7 @@ async function db() {
     host: process.env.LOCALHOST,
     user: process.env.ROOT,
     password: process.env.PASSWORD,
-    port: ''
+    port: process.env.PORT_DB,
   });
 }
 
