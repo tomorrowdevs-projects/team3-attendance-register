@@ -275,7 +275,7 @@ router.get("/categories_of_trainers", async (req, res) => {
         .query(queries.categories_of_trainers)
         .then(async ([rows]) => {
           if (rows.length > 0) {
-            rows.forEach((el) => el.values(object1));
+            //rows.forEach((el) => el.values(object1));
 
             const result = Object.values(
               rows.reduce((acc, el) => {
@@ -294,7 +294,7 @@ router.get("/categories_of_trainers", async (req, res) => {
                 return acc;
               }, {})
             );
-
+              console.log('trainersssssss',rows, result)
             res.json({ status: 201, data: result }).end();
           } else {
             res.json({ status: 400 }).end();

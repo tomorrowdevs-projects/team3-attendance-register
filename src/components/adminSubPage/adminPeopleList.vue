@@ -17,13 +17,13 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['event']);
-
+console.log(props.user.selected)
 //VARIABLE
 const search = ref('all');
 const selectedOrder = ref('hours');
 let filteredList = computed(() => {
-    let filtered = props.user.selected === 'trainer' ? [...props.user.users.filter(el => el.role === 'trainer').sort(compare)] : [...props.user.users.filter(el => el.role === 'athlete').sort(compare)];
-
+    let filtered = props.user.selected === 'trainer' ? [...props.user.trainers.sort(compare)] : [...props.user.athletes.sort(compare)];
+    console.log('filtered',filtered)
     if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value))
 
     return filtered
@@ -39,7 +39,7 @@ const catNewUser = ref([]);
 let errorMessage = '';
 const error = ref(false);
 let oldUsername = '';
-console.log(filteredList)
+console.log('sssssssssssssssss',props.user.athletes)
 //write username from name and surname and capitalize first letter
 watchEffect(() => {
     username.value = `${capitalizeFirstLetter(name.value)}${capitalizeFirstLetter(surname.value)}`;
@@ -92,6 +92,7 @@ const editItem = (element) => {
     edit.value = true;
     inputDisabled.value = false;
     oldUsername = element.username;
+    catEditUser.value.push(...element.category)
 }
 
 const cancel = (element) => {
@@ -112,7 +113,7 @@ const saveChange = (event) => {
     data.category = [...catEditUser.value];
     console.log(data, oldUsername);
     axios
-        .patch(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data })
+        .patch(`http://localhost:2000/api/v1/managementMyApp`, { ...data })
         .then((response) => {
             if (response.data.status === 201) { emit('event'); edit.value = false; formError.value = ''; inputDisabled.value = true; }
             else {
@@ -144,7 +145,7 @@ const fetchNewUser = (event) => {
     data.password = data.username + '1000';
     data.confirmPassword = data.password;
     data.role = props.user.selected
-
+console.log(data, 'qqqqqqqqqq')
     axios
         .post(`http://localhost:2000/api/v1/managementMyApp`, { ...data })
         .then((response) => {
@@ -215,7 +216,7 @@ const fetchNewUser = (event) => {
                             <div class="mb-3 row">
                                 <label for="username" class="col-sm-4 col-form-label">Username</label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control username" name="newUsername"
+                                    <input type="text" class="form-control username" name="username"
                                         :value="trainer.username" :disabled="inputDisabled">
                                 </div>
                             </div>

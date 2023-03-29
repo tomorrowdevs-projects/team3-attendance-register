@@ -32,7 +32,7 @@ const reset = ref(false);
 
 let dataEvent = {};
 
-getData.getData().then((res) => { if(res.status) selected.value = 'dbError' })
+getData.getData().then((res) => { if (res.status) selected.value = 'dbError' })
 
 const date = new Date().toLocaleDateString('en-US', {
     weekday: "long",
@@ -57,14 +57,14 @@ const getSelected = (item) => {
 }
 
 const addNewEvent = (event) => {
-    if(selectedAthletes.value.length === 0) { error.value = true; return }
-    else{
+    if (selectedAthletes.value.length === 0) { error.value = true; return }
+    else {
         error.value = false;
         const form = event.target
         const formData = new FormData(form)
         const data = Object.fromEntries(formData.entries())
         let tmp = '';
-        [tmp, durationString.value ] = data.duration.split('-');
+        [tmp, durationString.value] = data.duration.split('-');
         data.duration = tmp;
         data.month = new Date().toLocaleDateString('en-US', { month: 'long' });
         data.date = Date.now();
@@ -129,7 +129,8 @@ const sendEvent = () => {
                 </div>
             </div>
 
-            <CheckableList :list="athletes" :enableCheck="newEvent" :error="error" :reset="reset" @output-data="getSelected"></CheckableList>
+            <CheckableList :list="athletes" :enableCheck="newEvent" :error="error" :reset="reset"
+                @output-data="getSelected"></CheckableList>
 
             <!-- Modal for Summary-->
             <div class="modal fade" id="modalSummary" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -164,7 +165,8 @@ const sendEvent = () => {
 
                             <div class="modal-footer">
                                 <Button :type="{ color: 'danger', title: 'Cancel' }" data-bs-dismiss="modal"></Button>
-                                <Button :type="{ color: 'success', title: 'Confirm', type: 'button' }" data-bs-dismiss="modal" @click="sendEvent"></Button>
+                                <Button :type="{ color: 'success', title: 'Confirm', type: 'button' }"
+                                    data-bs-dismiss="modal" @click="sendEvent"></Button>
                             </div>
                         </div>
                     </div>
@@ -237,7 +239,7 @@ form {
     text-shadow: 1px 1px 5px black;
 }
 
-.modal-title{
+.modal-title {
     margin: 0;
 }
 

@@ -1,20 +1,27 @@
 import axios from 'axios';
 
 async function getData () {
-    const user = [];
+    const trainer = [];
+    const athlete = [];
     const category = [];
 
     await axios
-        .get('http://localhost:2000/api/v1/select')
-        .then((response) => user.push(...response.data.code));
+        .get('http://localhost:2000/api/v1/categoryAll/list')
+        .then((response) => category.push(...response.data.data))
+        
+    await axios
+        .get('http://localhost:2000/api/v1/categories_of_trainers')
+        .then((response) => {console.log('ciao',response.data);trainer.push(...response.data.data)});
 
     await axios
-        .get('http://localhost:2000/api/v1/categoryAll/list')
-        .then((response) => category.push(...response.data.data.reduce((acc, el) => { acc.push(el.category); return acc }, [])))
+        .get('http://localhost:2000/api/v1/categories_of_athlete')
+        .then((response) => athlete.push(...response.data.data));
+console.log(athlete, 'ggggggggghhhhhh')
 
     return {
-        status: user.length === 0 || category.length === 0,
-        users: user,
+        status: trainer.length === 0 || athlete.length === 0 || category.length === 0,
+        trainers: trainer,
+        athletes: athlete,
         categories: category
     }
 }

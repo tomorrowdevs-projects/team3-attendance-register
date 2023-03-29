@@ -40,7 +40,12 @@ const deleteBut = () => {
         reset.value = true;
         if (catNewUser.value.length > 0) {
             console.log(catNewUser.value);
-            //qui richiamo l'api
+        axios
+            .delete(`http://localhost:2000/api/v1//category/del_category/${catNewUser.value}`)
+            .then((response) => {
+            console.log('res', response);
+            emits('cat-changed')
+        })
         }
     } else {
         delClicked.value = true;
@@ -80,7 +85,7 @@ const addNew = () => {
                 data-bs-target="#modalAddNew"></Button>
         </div>
 
-        <CheckableList :list="props.category" :enableCheck="delClicked" :error="error" :reset="reset"
+        <CheckableList :list="category" :enableCheck="delClicked" :error="error" :reset="reset"
             @output-data="getSelected"></CheckableList>
     </div>
 
