@@ -43,7 +43,6 @@ async function toFillDb(connection) {
     await connection
       .query(queries.select_trainer_category, [process.env.USERNAMETR, "akido"])
       .then(async ([rows]) => {
-
         if (rows.length == 0)
           await connection.query(queries.insertInto_category_assignment, [
             process.env.USERNAMETR,
@@ -74,7 +73,21 @@ async function toFillDb(connection) {
       process.env.EMAILAT02,
       process.env.ROLEAT02,
     ]);
-    // await connection.query(queries.alter);
+
+    await connection
+      .query(queries.select_athlete_from_category, ["Paskal", "akido", "Adele"])
+      .then(async ([rows]) => {
+        console.log(rows);
+        if (rows.length < 1)
+          await connection.query(queries.insert_new_athleteToCategory, [
+            "Paskal",
+            "akido",
+            1,
+            "Adele",
+          ]);
+        // await connection.query(queries.insert_new_athleteToCategory, ["Paskal", "akido", 1, "Balery"]);
+        // await connection.query(queries.insert_new_athleteToCategory, ["Paskal", "akido", 1, "Lee"]);
+      });
   } catch (err) {
     console.log(err);
   }

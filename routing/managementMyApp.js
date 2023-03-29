@@ -15,42 +15,41 @@ router.post("/", async (req, res) => {
       //create cryptoPassowrd
       let hashedPassowrd = await bcrypt.hash(password, 12);
       //add user inside Db
-      await connection.query(queries.createUser, [
-        username,
-        hashedPassowrd,
-        name,
-        surname,
-        email,
-        role,
-      ]);
-      //the trainer's category is recorded on the DB
-
-      category.forEach(async (element) => {
-        await connection
-          .query(queries.select_trainer_category, [username, element])
-          .then(async ([rows]) => {
-            if (rows.length === 0) {
-              connection
-                .query(queries.insertInto_category_assignment, [
-                  username,
-                  element,
-                ])
-                .then(([rows]) => {
-                  //when element is the last inside category
-                  if (element == category[category.length - 1])
-                    res.json({ status: 201, success: true }).end();
-                  else {
-                    res.json({ status: 400 }).end();
+      await connection
+        .query(queries.createUser, [
+          username,
+          hashedPassowrd,
+          name,
+          surname,
+          email,
+          role,
+        ])
+        .then(async ([rows]) => {
+          if (rows.affectedRows === 0) res.json({ status: 404 }).end();
+          else {
+            category.forEach(async (element) => {
+              await connection
+                .query(queries.select_trainer_category, [username, element])
+                .then(async ([rows]) => {
+                  if (rows.length === 0) {
+                    await connection
+                      .query(queries.insertInto_category_assignment, [
+                        username,
+                        element,
+                      ])
+                      .then(([rows]) => {
+                        console.log(rows);
+                      });
                   }
                 });
-            }
-          });
-      });
-      res.json({ status: 401, data: null }).end();
+            });
+            res.json({ status: 201 }).end();
+          }
+        });
     });
   } catch (error) {
     console.log(error);
-    res.json({ status: 401, data: null }).end();
+    res.json({ status: 404 }).end();
   }
 });
 

@@ -4,7 +4,6 @@ const connection = require("../src/connectMysql.js");
 const router = express.Router();
 const aut = require("../controller/auth.js");
 
-
 //let's create a new course
 router.post("/category", async (req, res) => {
   try {
@@ -55,7 +54,7 @@ router.get("/category/insert/:username", async (req, res) => {
                 category,
                 username_athlete,
               ])
- 
+
               .then(async ([rows]) => {
                 console.log(rows);
 
@@ -247,7 +246,7 @@ router.delete("/category/del_category/:category", async (req, res) => {
       await connection.query(queries.delete_category, [category]);
       res.json({ status: 201 }).end();
     });
-    console.log(category)
+    console.log(category);
   } catch (error) {
     console.log(error);
     res.json({ status: 401 }).end();
@@ -264,7 +263,7 @@ router.get("/categories_of_trainers", async (req, res) => {
         .query(queries.categories_of_trainers)
         .then(async ([rows]) => {
           if (rows.length > 0) {
-            console.log(rows);
+            rows.forEach((el) => el.values(object1));
 
             res.json({ status: 201, data: rows }).end();
           } else {
@@ -301,7 +300,5 @@ router.get("/categories_of_athlete", async (req, res) => {
     res.json({ status: 401 }).end();
   }
 });
-
-
 
 module.exports = router;

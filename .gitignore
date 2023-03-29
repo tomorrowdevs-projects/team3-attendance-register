@@ -17,7 +17,6 @@ firebase.json
 .firebaserc
 database.rules.json
 .firebase
-.env
 /cypress/videos/
 /cypress/screenshots/
 

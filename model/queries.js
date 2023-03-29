@@ -55,6 +55,8 @@ const category_assignment = `CREATE TABLE if not exists category_assignment(
  
   
  )`;
+
+const select_athlete_from_category = `SELECT username_trainer, category, username_athlete FROM category WHERE username_trainer = ? AND category = ? AND username_athlete=? `;
 const select_category_list_from_category_assignment = `SELECT category FROM category_assignment `;
 const select_athlete_category = `SELECT id_course FROM category WHERE category
  = ? AND username_athlete = ?`;
@@ -154,4 +156,5 @@ module.exports = {
   categories_of_trainers,
   categories_of_athlese,
   select_trainer_category,
+  select_athlete_from_category,
 };
