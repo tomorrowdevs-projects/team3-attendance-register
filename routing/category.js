@@ -3,6 +3,8 @@ const express = require("express");
 const connection = require("../src/connectMysql.js");
 const router = express.Router();
 const aut = require("../controller/auth.js");
+
+
 //let's create a new course
 router.post("/category", async (req, res) => {
   try {

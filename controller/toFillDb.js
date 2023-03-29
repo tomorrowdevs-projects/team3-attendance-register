@@ -39,10 +39,17 @@ async function toFillDb(connection) {
       process.env.EMAILTR,
       process.env.ROLETR,
     ]);
-    await connection.query(queries.insertInto_category_assignment, [
-      process.env.USERNAMETR,
-      "akido",
-    ]);
+
+    await connection
+      .query(queries.select_trainer_category, [process.env.USERNAMETR, "akido"])
+      .then(async ([rows]) => {
+
+        if (rows.length == 0)
+          await connection.query(queries.insertInto_category_assignment, [
+            process.env.USERNAMETR,
+            "akido",
+          ]);
+      });
     await connection.query(queries.createUser, [
       process.env.USERNAME00,
       hashedPassowrdAt00,

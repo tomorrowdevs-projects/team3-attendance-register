@@ -44,6 +44,7 @@ app.use(
     secret: "secret",
     resave: true,
     saveUninitialized: true,
+    maxAge: Date.now() + (30 * 86400 * 1000) 
   })
 );  
 app.use(express.json());

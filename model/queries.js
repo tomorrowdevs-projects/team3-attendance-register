@@ -1,6 +1,5 @@
 const createDb = `CREATE DATABASE IF NOT EXISTS team3`;
-const selectLogin =
-  "SELECT * FROM accounts WHERE username = ? ";
+const selectLogin = "SELECT * FROM accounts WHERE username = ? ";
 const use = "USE team3";
 const selectTrainerorAtlete = `SELECT * FROM accounts WHERE role = 'trainer' OR role = 'athlete' `;
 
@@ -80,7 +79,7 @@ const select_username_athlete_from_attendance_absences = `SELECT username_athlet
 
 const select_category = `SELECT * FROM category WHERE category
  = ?`;
- const select_my_category = `SELECT category FROM category WHERE username = ?`;
+const select_my_category = `SELECT category FROM category WHERE username = ?`;
 
 const createAccounts = `CREATE TABLE  if not exists accounts( 
   username VARCHAR(255) NOT NULL,  
@@ -95,9 +94,10 @@ const createAccounts = `CREATE TABLE  if not exists accounts(
   
   
  
-    
+     
    
   )`;
+const select_trainer_category = `SELECT username_trainer, category FROM category_assignment WHERE  username_trainer = ? AND category = ?`;
 const passwordAndRole = `SELECT password ,role FROM accounts WHERE username = ?  `;
 const selectUser = "SELECT * FROM accounts WHERE username = ?";
 const createUser = `INSERT IGNORE INTO accounts (username, password, name, surname, email, role) VALUES (?, ?, ?, ?, ?, ?) `;
@@ -109,15 +109,11 @@ const select_monthly_hours_mounth = ` SELECT hours_minutes_of_training_mounth FR
 const select_monthly_hours_mounth_all = ` SELECT hours_minutes_of_training_mounth FROM accounts `;
 const select_monthly_hours_for_specific_mounth = ` SELECT number_of_training FROM calendary WHERE  username = ? AND year = ? AND mounth = ? `;
 
-const check_data_category =  ` SELECT date FROM category WHERE  code_registration = ? `;
+const check_data_category = ` SELECT date FROM category WHERE  code_registration = ? `;
 
-const categories_of_trainers = ` SELECT category, username  FROM category_assignment INNSER JOIN accounts ON username_trainer = username  FROM accounts`
+const categories_of_trainers = ` SELECT username, name, surname, email, category  FROM accounts FULL JOIN category_assignment ON username = username_trainer `;
 
-const categories_of_athlese = ` SELECT category, username_athlete  FROM category INNSER JOIN accounts ON username_athlete = username   `
-
-const categories_of_trainers2 = ` SELECT name, surname, username, email FROM accounts INNSER JOIN category_assignment ON username_trainer = username `
-
- 
+const categories_of_athlese = `  SELECT username, name, surname, email, category  FROM  category FULL JOIN accounts ON username_athlete = username   `;
 
 module.exports = {
   selectLogin,
@@ -156,5 +152,6 @@ module.exports = {
   select_monthly_hours_for_specific_mounth,
   check_data_category,
   categories_of_trainers,
-  categories_of_athlese
+  categories_of_athlese,
+  select_trainer_category,
 };
