@@ -109,7 +109,19 @@ router.get("/categoryAll/list", async (req, res) => {
           if (rows.length > 0) {
             console.log(rows);
 
-            res.json({ status: 201, data: rows }).end();
+            res
+              .json({
+                status: 201,
+                data: [
+                  ...new Set(
+                    rows.reduce((acc, el) => {
+                      acc.push(el.category);
+                      return acc;
+                    }, [])
+                  ),
+                ],
+              })
+              .end();
           } else {
             res.json({ status: 400 }).end();
           }
@@ -265,7 +277,25 @@ router.get("/categories_of_trainers", async (req, res) => {
           if (rows.length > 0) {
             rows.forEach((el) => el.values(object1));
 
-            res.json({ status: 201, data: rows }).end();
+            const result = Object.values(
+              rows.reduce((acc, el) => {
+                if (!acc[el.username]) {
+                  acc[el.username] = {
+                    email: el.email,
+                    name: el.name,
+                    username: el.username,
+                    surname: el.surname,
+                    category: [el.category],
+                    role: el.role,
+                    hours_minutes_of_training_mounth:
+                      el.hours_minutes_of_training_mounth,
+                  };
+                } else acc[el.username].category.push(el.category);
+                return acc;
+              }, {})
+            );
+
+            res.json({ status: 201, data: result }).end();
           } else {
             res.json({ status: 400 }).end();
           }
@@ -289,7 +319,25 @@ router.get("/categories_of_athlete", async (req, res) => {
           if (rows.length > 0) {
             console.log(rows);
 
-            res.json({ status: 201, data: rows }).end();
+            const result = Object.values(
+              rows.reduce((acc, el) => {
+                if (!acc[el.username]) {
+                  acc[el.username] = {
+                    email: el.email,
+                    name: el.name,
+                    username: el.username,
+                    surname: el.surname,
+                    category: [el.category],
+                    role: el.role,
+                  };
+                } else acc[el.username].category.push(el.category);
+                return acc;
+              }, {})
+            );
+
+            console.log("athl", rows, result);
+
+            res.json({ status: 201, data: result }).end();
           } else {
             res.json({ status: 400 }).end();
           }

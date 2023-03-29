@@ -113,9 +113,10 @@ const select_monthly_hours_for_specific_mounth = ` SELECT number_of_training FRO
 
 const check_data_category = ` SELECT date FROM category WHERE  code_registration = ? `;
 
-const categories_of_trainers = ` SELECT username, name, surname, email, category  FROM accounts FULL JOIN category_assignment ON username = username_trainer `;
+const categories_of_trainers = ` SELECT username, name, surname, email, category, role, hours_minutes_of_training_mounth
+FROM accounts FULL JOIN category_assignment ON username = username_trainer `;
 
-const categories_of_athlese = `  SELECT username, name, surname, email, category  FROM  category FULL JOIN accounts ON username_athlete = username   `;
+const categories_of_athlese = `  SELECT username, name, surname, email, category, role  FROM  category FULL JOIN accounts ON username_athlete = username   `;
 
 module.exports = {
   selectLogin,
