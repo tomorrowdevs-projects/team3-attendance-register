@@ -2,12 +2,15 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import Button from '../ui/Button.vue';
+import DynamicForm from '../ui/DynamicForm.vue';
 
-const name = ref('John Doe')
-const email = ref('johndoe@example.com')
-const password = ref('********')
-const role = ref('user')
-const phoneNumber = ref('123-456-7890')
+const props = defineProps({
+  userInfo:{
+      type:Object,
+      require: true
+  },
+});
+
 const editing = ref(false)
 
 const emit = defineEmits(['profile-logout']);
@@ -26,87 +29,40 @@ const logout = () => {
       }
   }) 
 }
+
+const formUpdate = (data) => {
+  console.log(data)
+  axios
+        .patch(`http://localhost:2000/api/v1/managementMyApp/edit/${props.userInfo.username}`, { ...data })
+        
+        .then((response) => {
+            console.log(response)
+        })
+}
+
 </script>
 
 <template>
-  <hr>
-  <form>
-    <div>
-      <!-- Bind the "name" input to the component's "name" data property -->
-      <label for="name">Name:</label>
-      <input type="text" id="name" v-model="name" :disabled="!editing">
-    </div>
-    <div>
-      <!-- Bind the "email" input to the component's "email" data property -->
-      <label for="email">Email:</label>
-      <input type="email" id="email" v-model="email" :disabled="!editing">
-    </div>
-    <div>
-      <!-- Bind the "password" input to the component's "password" data property -->
-      <label for="password">Password:</label>
-      <input type="password" id="password" v-model="password" :disabled="!editing">
-    </div>
-    <div>
-      <!-- Bind the "role" select to the component's "role" data property -->
-      <label for="role">Role:</label>
-      <select id="role" v-model="role" :disabled="!editing">
-        <option value="admin">Admin</option>
-        <option value="user">User</option>
-      </select>
-    </div>
-    <div>
-      <!-- Bind the "phoneNumber" input to the component's "phoneNumber" data property -->
-      <label for="phone">Phone Number:</label>
-      <input type="tel" id="phone" v-model="phoneNumber" :disabled="!editing">
-    </div>
-    <div>
-      <!-- Toggle the "editing" data property when the "Edit" button is clicked -->
-      <button type="button" @click="editing = true" :disabled="editing">Edit</button>
-      <!-- Call the "save" method when the "Save" button is clicked -->
-      <button type="submit" @click.prevent="save" :disabled="!editing">Save</button>
-    </div>
-  </form>
 
   <section>
     <Button :type="{ color: 'danger', title: 'Logout' }" @click="logout"></Button>
   </section>
+
+<DynamicForm :field="['name','surname','psw','username','email']" 
+  :custom="[{label: 'User name',name: 'username', type: 'text', value: userInfo.username, disable: true},
+            {label: 'Password',name: 'password', type: 'password', value: 'da fare'},
+            {label: 'Name',name: 'name', type: 'text', value: userInfo.name},
+            {label: 'Surname',name: 'surname', type: 'text', value: userInfo.surname},
+            {label: 'e-mail',name: 'email', type: 'email', value: userInfo.email},
+            {label: 'Role',name: 'role', type: 'text',disable: true, value: userInfo.role},
+            ]"
+  @form-data="formUpdate"> 
+</DynamicForm>
+
 </template>
 
-
 <style scoped>
-label {
-  color: #333;
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
-  display: block;
-}
 
-input,
-select {
-  width: 100%;
-  padding: 5px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-input:focus,
-select:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
-}
-
-section{
-  width: 30%;
-  margin: 1em;
-}
-
-form {
-  max-width: 600px;
-  margin: 0 auto;
-}
 </style>
 
 
