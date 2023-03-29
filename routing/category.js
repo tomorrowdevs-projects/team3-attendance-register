@@ -275,7 +275,6 @@ router.get("/categories_of_trainers", async (req, res) => {
         .query(queries.categories_of_trainers)
         .then(async ([rows]) => {
           if (rows.length > 0) {
-            rows.forEach((el) => el.values(object1));
 
             const result = Object.values(
               rows.reduce((acc, el) => {

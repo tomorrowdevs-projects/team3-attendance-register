@@ -77,7 +77,6 @@ async function toFillDb(connection) {
     await connection
       .query(queries.select_athlete_from_category, ["Paskal", "akido", "Adele"])
       .then(async ([rows]) => {
-        console.log(rows);
         if (rows.length < 1)
           await connection.query(queries.insert_new_athleteToCategory, [
             "Paskal",
