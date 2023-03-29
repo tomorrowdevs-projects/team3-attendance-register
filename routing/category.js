@@ -293,7 +293,7 @@ router.get("/categories_of_trainers", async (req, res) => {
                 return acc;
               }, {})
             );
-
+              console.log('trainersssssss',rows, result)
             res.json({ status: 201, data: result }).end();
           } else {
             res.json({ status: 400 }).end();
