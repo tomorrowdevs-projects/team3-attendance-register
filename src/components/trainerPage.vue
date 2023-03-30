@@ -264,7 +264,7 @@ form {
 
 @media only screen and (max-width: 768px) {
 
-    form {
+    .container {
         width: 100%;
     }
 

@@ -21,7 +21,7 @@ const editProfile = (event) =>{
     const data = Object.fromEntries(formData.entries())
     emit('form-data', data)
 }
-
+console.log('custom',props.custom)
 </script>
 
 <template>   
