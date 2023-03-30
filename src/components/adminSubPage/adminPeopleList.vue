@@ -47,7 +47,7 @@ watchEffect(() => {
 })
 
 function capitalizeFirstLetter(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1)
+    return str.charAt(0).toUpperCase() + str.toLowerCase().slice(1)
 }
 
 //function to sort the list of trainers/athletes by name or by monthly hours

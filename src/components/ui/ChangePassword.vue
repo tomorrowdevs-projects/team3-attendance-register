@@ -5,16 +5,28 @@ import ErrorMessage from './ErrorMessage.vue';
 import Button from './Button.vue';
 import DynamicForm from './DynamicForm.vue';
 
+const props = defineProps({
+    forgotPassword: {
+        type: Boolean,
+    }
+});
 
 const errorMessage = ref('All fields are required, please enter them');
 const error = ref(false);
 const getData = ref(false);
+const title = ref('change password');
 
 const fieldsForm = [
   { label: 'Old Password', name: 'oldPassword', type: 'password'},
   { label: 'Password', name: 'password', type: 'password'},
   { label: 'Confirm Password', name: 'confirmPassword', type: 'password'}
-]
+];
+
+if(props.forgotPassword) { 
+    fieldsForm.length = 0; 
+    fieldsForm.push({ label: 'Email', name: 'email', type: 'email'});
+    title.value = 'We will send you an email with the procedure to reset your password';
+}
 
 const checkInput = (data) => { 
     if(!data.oldPassword || !data.password || !data.confirmPassword) { errorMessage.value = 'All fields are required, please enter them'; return true }
@@ -26,14 +38,13 @@ const checkInput = (data) => {
 }
 
 const sendPassword = (data) => {
-    error.value = checkInput(data);
+    props.forgotPassword ? error.value = false : error.value = checkInput(data);
 
     getData.value = false;
     console.log('send',data);
 }
 
 </script>
-
 
 <template>
     <!-- TEMPLATE -->
@@ -43,7 +54,7 @@ const sendPassword = (data) => {
                 <div class="modal-header">
 
                     <ErrorMessage v-show="error" :message="errorMessage"></ErrorMessage>
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Change Password</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel"> {{ title }}</h1>
                 </div>
                 <div class="modal-body">
 
