@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import getData from '../JS/getData.js';
-import adminProfile from './adminSubPage/adminProfile.vue';
+import personalProfile from './personalProfile.vue';
 import adminPeopleList from './adminSubPage/adminPeopleList.vue';
 import adminCategories from './adminSubPage/adminCategories.vue';
 import Calendar from './calendar.vue';
@@ -14,7 +14,7 @@ const props = defineProps({
         required: true
     }
 });
-const emit = defineEmits(['admin-logout']);
+const emit = defineEmits(['logout']);
 
 const selected = ref('');
 const showBack = ref(false);
@@ -51,7 +51,7 @@ get()
 
     <DbError v-if="selected === 'dbError'"></DbError>
 
-    <adminProfile v-if="selected === 'profile'" @profile-logout="emit('admin-logout')" :userInfo="userInfo"/>
+    <personalProfile v-if="selected === 'profile'" @profile-logout="emit('logout')" :userInfo="userInfo" @updateProfile="get"/>
 
     <adminPeopleList v-if="selected === 'trainer' || selected === 'athlete'" :user="{ selected, users, categories }" @event="get" />
 

@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import athleteJson from '../../athlete.json';
 import getData from '../JS/getData.js';
-import adminProfile from './trainerSubPage/trainerProfile.vue';
+import personalProfile from './personalProfile.vue';
 import Calendar from './calendar.vue';
 import Button from './ui/Button.vue';
 import DbError from './ui/DbError.vue';
@@ -10,11 +10,13 @@ import CheckableList from './ui/CheckableList.vue';
 
 //PROPS
 const props = defineProps({
-    name: {
-        type: String,
+    userInfo: {
+        type: Object,
         required: true
     }
 });
+
+const emit = defineEmits(['logout']);
 
 const trainerProfile = {
     username: 'CarloFreedom',
@@ -175,7 +177,7 @@ const sendEvent = () => {
 
     <DbError v-if="selected === 'dbError'"></DbError>
 
-    <adminProfile v-if="selected === 'profile'" />
+    <personalProfile v-if="selected === 'profile'" :userInfo="userInfo" @profile-logout="emit('logout')"/>
     <Calendar v-if="selected === 'calendar'" />
 </template>
 

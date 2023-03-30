@@ -29,9 +29,9 @@ const logout = () => {
 
     <LoginModule v-if="showLogin" @login-success="handleLoginSuccess" />
 
-    <AdminPage v-if="userRole === 'admin'" :userInfo="userInfo" @admin-logout="logout"/>
+    <AdminPage v-if="userRole === 'admin'" :userInfo="userInfo" @logout="logout"/>
 
-    <TrainerPage v-if="userRole === 'trainer'" :userInfo="userInfo" />
+    <TrainerPage v-if="userRole === 'trainer'" :userInfo="userInfo" @logout="logout"/>
 </template>
 
 <style scoped>
