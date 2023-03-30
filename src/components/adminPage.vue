@@ -53,7 +53,7 @@ get()
 
     <DbError v-if="selected === 'dbError'"></DbError>
 
-    <personalProfile v-if="selected === 'profile'" @profile-logout="emit('logout')" :userInfo="userInfo" @updateProfile="get"/>
+    <personalProfile v-if="selected === 'profile'" @profile-logout="emit('logout')" :userInfo="userInfo" @update-profile="get"/>
 
     <adminPeopleList v-if="selected === 'trainer' || selected === 'athlete'" :user="{ selected, trainers, athletes, categories }" @event="get" />
 
