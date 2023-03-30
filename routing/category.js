@@ -3,6 +3,7 @@ const express = require("express");
 const connection = require("../src/connectMysql.js");
 const router = express.Router();
 const aut = require("../controller/auth.js");
+
 //let's create a new course
 router.post("/category", async (req, res) => {
   try {
@@ -53,7 +54,7 @@ router.get("/category/insert/:username", async (req, res) => {
                 category,
                 username_athlete,
               ])
- 
+
               .then(async ([rows]) => {
                 console.log(rows);
 
@@ -108,7 +109,19 @@ router.get("/categoryAll/list", async (req, res) => {
           if (rows.length > 0) {
             console.log(rows);
 
-            res.json({ status: 201, data: rows }).end();
+            res
+              .json({
+                status: 201,
+                data: [
+                  ...new Set(
+                    rows.reduce((acc, el) => {
+                      acc.push(el.category);
+                      return acc;
+                    }, [])
+                  ),
+                ],
+              })
+              .end();
           } else {
             res.json({ status: 400 }).end();
           }
@@ -245,7 +258,7 @@ router.delete("/category/del_category/:category", async (req, res) => {
       await connection.query(queries.delete_category, [category]);
       res.json({ status: 201 }).end();
     });
-    console.log(category)
+    console.log(category);
   } catch (error) {
     console.log(error);
     res.json({ status: 401 }).end();
@@ -262,9 +275,26 @@ router.get("/categories_of_trainers", async (req, res) => {
         .query(queries.categories_of_trainers)
         .then(async ([rows]) => {
           if (rows.length > 0) {
-            console.log(rows);
 
-            res.json({ status: 201, data: rows }).end();
+            const result = Object.values(
+              rows.reduce((acc, el) => {
+                if (!acc[el.username]) {
+                  acc[el.username] = {
+                    email: el.email,
+                    name: el.name,
+                    username: el.username,
+                    surname: el.surname,
+                    category: [el.category],
+                    role: el.role,
+                    hours_minutes_of_training_mounth:
+                      el.hours_minutes_of_training_mounth,
+                  };
+                } else acc[el.username].category.push(el.category);
+                return acc;
+              }, {})
+            );
+              console.log('trainersssssss',rows, result)
+            res.json({ status: 201, data: result }).end();
           } else {
             res.json({ status: 400 }).end();
           }
@@ -288,7 +318,25 @@ router.get("/categories_of_athlete", async (req, res) => {
           if (rows.length > 0) {
             console.log(rows);
 
-            res.json({ status: 201, data: rows }).end();
+            const result = Object.values(
+              rows.reduce((acc, el) => {
+                if (!acc[el.username]) {
+                  acc[el.username] = {
+                    email: el.email,
+                    name: el.name,
+                    username: el.username,
+                    surname: el.surname,
+                    category: [el.category],
+                    role: el.role,
+                  };
+                } else acc[el.username].category.push(el.category);
+                return acc;
+              }, {})
+            );
+
+            console.log("athl", rows, result);
+
+            res.json({ status: 201, data: result }).end();
           } else {
             res.json({ status: 400 }).end();
           }
@@ -299,7 +347,5 @@ router.get("/categories_of_athlete", async (req, res) => {
     res.json({ status: 401 }).end();
   }
 });
-
-
 
 module.exports = router;

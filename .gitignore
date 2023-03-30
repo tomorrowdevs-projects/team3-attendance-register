@@ -17,10 +17,9 @@ firebase.json
 .firebaserc
 database.rules.json
 .firebase
-.env
 /cypress/videos/
 /cypress/screenshots/
-
+.env
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

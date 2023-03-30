@@ -44,6 +44,7 @@ app.use(
     secret: "secret",
     resave: true,
     saveUninitialized: true,
+    maxAge: Date.now() + (30 * 86400 * 1000) 
   })
 );  
 app.use(express.json());
@@ -67,9 +68,9 @@ app.use("/api/v1", logout);
 app.use(
   "/api/v1/managementMyApp/edit",
   // controller.onlyAdmin,
-  controller.checkUserWithParams,
-  controller.checkEmailForEdit,
-  controller.checkParametersRegister,
+  // controller.checkUserWithParams,
+  // controller.checkEmailForEdit,
+  // controller.checkParametersRegister,
   edit
 );
  
