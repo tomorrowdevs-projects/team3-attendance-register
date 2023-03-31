@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { ref } from 'vue';
 import Button from './ui/Button.vue';
+import ChangePassword from './ui/ChangePassword.vue';
 
 const emit = defineEmits(['login-success']);
 const postData = {
@@ -28,8 +29,6 @@ const fetchData = () => {
   axios
     .post('http://localhost:2000/api/v1/login', postData)
     .then((response) => {
-      console.log(response.status)
-      console.log(response.data)
       if (response.data.status in errors) message.value = errors[response.data.status]
       else if (response.data.status === 201) emit('login-success',response.data.data[0])
   }) 
@@ -54,8 +53,11 @@ const fetchData = () => {
       <Button :type="{color: 'primary', type: 'submit', title: 'Submit'}"></Button>
     </form>
     <hr>
-    <p>Forgot your password? <a href="#">Click here</a></p>
+    <p>Forgot your password? <a href="#" data-bs-toggle="modal"
+      data-bs-target="#modalChangePassword">Click here</a></p>
   </section>
+
+  <ChangePassword :forgotPassword="true"></ChangePassword>
 
   <!-- For DEMO VERSION -->
   <!-- <p class="demo">( DEMO VERSION => Type ' admin ' or ' trainer ' in Username and a password that meets the minimum requirements )</p> -->

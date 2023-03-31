@@ -39,11 +39,10 @@ const deleteBut = () => {
         error.value = false;
         reset.value = true;
         if (catNewUser.value.length > 0) {
-            console.log(catNewUser.value);
+
         axios
             .delete(`http://localhost:2000/api/v1//category/del_category/${catNewUser.value}`)
             .then((response) => {
-            console.log('res', response);
             emits('cat-changed')
         })
         }
@@ -60,17 +59,17 @@ const addNew = () => {
         axios
             .post('http://localhost:2000/api/v1/category', {category: catName.value})
             .then((response) => {
-                console.log(response.data)
                 if(response.data.status === 404) { errorAddNew.value = true; errorMessage = 'This category already exists'}
                 else if(response.data.status === 400) { errorAddNew.value = true; errorMessage = 'Unexpected error, please try again'}
                 else if (response.data.status === 201) {
+                    emits('cat-changed')
                     errorAddNew.value = false;
                     const modal = document.querySelector('#modalAddNew');
                     const bsModal = bootstrap.Modal.getInstance(modal);
                     bsModal.hide();
                 }
             })
-        emits('cat-changed')
+        
         catName.value = ''
     }
 }

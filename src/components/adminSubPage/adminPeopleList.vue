@@ -17,13 +17,13 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['event']);
-console.log(props.user.selected)
+
 //VARIABLE
 const search = ref('all');
 const selectedOrder = ref('hours');
 let filteredList = computed(() => {
     let filtered = props.user.selected === 'trainer' ? [...props.user.trainers.sort(compare)] : [...props.user.athletes.sort(compare)];
-    console.log('filtered',filtered)
+
     if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value))
 
     return filtered
@@ -39,14 +39,15 @@ const catNewUser = ref([]);
 let errorMessage = '';
 const error = ref(false);
 let oldUsername = '';
-console.log('sssssssssssssssss',props.user.athletes)
+let oldCategory = '';
+
 //write username from name and surname and capitalize first letter
 watchEffect(() => {
     username.value = `${capitalizeFirstLetter(name.value)}${capitalizeFirstLetter(surname.value)}`;
 })
 
 function capitalizeFirstLetter(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1)
+    return str.charAt(0).toUpperCase() + str.toLowerCase().slice(1)
 }
 
 //function to sort the list of trainers/athletes by name or by monthly hours
@@ -70,7 +71,7 @@ const deleteItem = (element) => {
                 const modal = document.querySelector('#modal' + element.username);
                 const bsModal = bootstrap.Modal.getInstance(modal);
                 bsModal.hide();
-                console.log(filteredList.value)
+
             } else {
                 errorMessage = `Unexpected error (${response.data.status}), user not deleted, try again!`;
                 error.value = true;
@@ -91,8 +92,8 @@ const resetForm = () => {
 const editItem = (element) => {
     edit.value = true;
     inputDisabled.value = false;
-    oldUsername = element.username;
-    catEditUser.value.push(...element.category)
+    [ oldUsername, oldCategory ] = [ element.username, element.category ];
+    catEditUser.value.push(...element.category);
 }
 
 const cancel = (element) => {
@@ -111,9 +112,10 @@ const saveChange = (event) => {
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
     data.category = [...catEditUser.value];
-    console.log(data, oldUsername);
+    data.old_Category = oldCategory;
+    console.log('datanewuser',data)
     axios
-        .patch(`http://localhost:2000/api/v1/managementMyApp`, { ...data })
+        .patch(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data })
         .then((response) => {
             if (response.data.status === 201) { emit('event'); edit.value = false; formError.value = ''; inputDisabled.value = true; }
             else {
@@ -145,7 +147,7 @@ const fetchNewUser = (event) => {
     data.password = data.username + '1000';
     data.confirmPassword = data.password;
     data.role = props.user.selected
-console.log(data, 'qqqqqqqqqq')
+    
     axios
         .post(`http://localhost:2000/api/v1/managementMyApp`, { ...data })
         .then((response) => {
@@ -216,7 +218,7 @@ console.log(data, 'qqqqqqqqqq')
                             <div class="mb-3 row">
                                 <label for="username" class="col-sm-4 col-form-label">Username</label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control username" name="username"
+                                    <input type="text" class="form-control username" name="newUsername"
                                         :value="trainer.username" :disabled="inputDisabled">
                                 </div>
                             </div>
