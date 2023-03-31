@@ -18,12 +18,13 @@ const emit = defineEmits(['logout']);
 
 const selected = ref('');
 const showBack = ref(false);
-const trainers = ref([]);
+/* const trainers = ref([]);
 const athletes = ref([]);
-const categories = ref([]);
+const categories = ref([]); */
+const data = ref([]);
 
 function get() {
-    getData.getData().then((res) => { trainers.value = res.trainers; athletes.value = res.athletes; categories.value = res.categories; if (res.status) selected.value = 'dbError' })
+    getData.getData().then((res) => { data.value = res; if (res.status) selected.value = 'dbError' })
     
 }
 
@@ -55,9 +56,9 @@ get()
 
     <personalProfile v-if="selected === 'profile'" @profile-logout="emit('logout')" :userInfo="userInfo" @update-profile="get"/>
 
-    <adminPeopleList v-if="selected === 'trainer' || selected === 'athlete'" :user="{ selected, trainers, athletes, categories }" @event="get" />
+    <adminPeopleList v-if="selected === 'trainer' || selected === 'athlete'" :user="{ selected, ...data }" @event="get" />
 
-    <adminCategories v-if="selected === 'category'" :category="categories" @cat-changed="get" />
+    <adminCategories v-if="selected === 'category'" :category="data.categories" @cat-changed="get" />
 
     <Calendar v-if="selected === 'calendar'" />
 </template>

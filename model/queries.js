@@ -53,7 +53,7 @@ const category_assignment = `CREATE TABLE if not exists category_assignment(
 const alter = `ALTER TABLE category ADD FOREIGN KEY (id_course) REFERENCES category_assignment(id_course) ON DELETE CASCADE ON UPDATE CASCADE`;
 
 const select_athlete_from_category = `SELECT username_trainer, category, username_athlete FROM category WHERE username_trainer = ? AND category = ? AND username_athlete=? `;
-const select_category_list_from_category_assignment = `SELECT category FROM category_assignment `;
+const select_category_list_from_category_assignment = `SELECT category, username_trainer FROM category_assignment `;
 const select_athlete_category = `SELECT id_course FROM category WHERE category
  = ? AND username_athlete = ?`;
 const select_category_from_category_assignment = `SELECT id_course, username_trainer FROM category_assignment WHERE category

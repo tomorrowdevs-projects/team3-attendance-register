@@ -104,19 +104,10 @@ router.get("/categoryAll/list", async (req, res) => {
         .query(queries.select_category_list_from_category_assignment)
         .then(async ([rows]) => {
           if (rows.length > 0) {
-            console.log(rows);
-
             res
               .json({
                 status: 201,
-                data: [
-                  ...new Set(
-                    rows.reduce((acc, el) => {
-                      acc.push(el.category);
-                      return acc;
-                    }, [])
-                  ),
-                ],
+                data: rows
               })
               .end();
           } else {

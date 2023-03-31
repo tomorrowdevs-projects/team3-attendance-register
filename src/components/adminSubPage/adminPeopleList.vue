@@ -22,11 +22,22 @@ const emit = defineEmits(['event']);
 const search = ref('all');
 const selectedOrder = ref('hours');
 let filteredList = computed(() => {
-    let filtered = props.user.selected === 'trainer' ? [...props.user.trainers.sort(compare)] : [...props.user.athletes.sort(compare)];
+    let filtered = [];
+    let listCategory = [];
+    if(props.user.selected === 'trainer'){
+        filtered.push(...props.user.trainers.sort(compare));
+        listCategory.push(...props.user.categories)
+    } else {
+        filtered.push(...props.user.athletes.sort(compare));
+        listCategory.push(...props.user.categoryAthlete)
+    }
+
+    //let filtered = props.user.selected === 'trainer' ? [...props.user.trainers.sort(compare)] : [...props.user.athletes.sort(compare)];
+    //let listCategory = props.user.selected === 'trainer' ? [...props.user.trainers.sort(compare)] : [...props.user.athletes.sort(compare)];
 
     if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value))
 
-    return filtered
+    return [ filtered, listCategory ]
 });
 const name = ref('');
 const surname = ref('');
@@ -64,8 +75,8 @@ const deleteItem = (element) => {
         .delete(`http://localhost:2000/api/v1/managementMyApp/edit/del/${element.username}`)
         .then((response) => {
             if (response.data.status === 201) {
-                filteredList.value.forEach((el, index) => {
-                    if (el.username === element.username) filteredList.value.splice(index, 1)
+                filteredList[0].value.forEach((el, index) => {
+                    if (el.username === element.username) filteredList[0].value.splice(index, 1)
                 });
                 emit('event');
                 const modal = document.querySelector('#modal' + element.username);
@@ -181,7 +192,7 @@ const fetchNewUser = (event) => {
     <div class="searchContainer col-6">
         <select v-model="search" @change="filtered" class="form-select search" aria-label="Default select example">
             <option value="all" selected>ALL CATEGORIES</option>
-            <option v-for="category in props.user.categories" :key="category" :value="category">{{ category }}</option>
+            <option v-for="category in filteredList[1]" :key="category" :value="category">{{ category }}</option>
         </select>
         <div class="order">
             <h5>Order By</h5>
@@ -201,7 +212,7 @@ const fetchNewUser = (event) => {
     <div class="container">
         <div class="accordion accordion-flush" id="accordionFlushExample">
 
-            <div v-for="trainer in filteredList" :key="trainer.username" class="accordion-item">
+            <div v-for="trainer in filteredList[0]" :key="trainer.username" class="accordion-item">
                 <h2 class="accordion-header" id="flush-headingOne">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         :data-bs-target="'#' + trainer.username" aria-expanded="false" :aria-controls="'#' + trainer.username">
@@ -255,7 +266,7 @@ const fetchNewUser = (event) => {
                                 <div class="mb-3 row">
                                     <label for="category" class="col-sm-4 col-form-label">Category</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control category" :value="trainer.category.join(' - ') || catEditUser.join(' - ')"
+                                        <input type="text" class="form-control category" :value="trainer.category.join(' - ')"
                                             :disabled="inputDisabled">
                                     </div>
                                 </div>
@@ -274,7 +285,7 @@ const fetchNewUser = (event) => {
                                 <div class="mb-3 row">
                                     <label for="catefories" class="col-sm-4 col-form-label">Categories</label>
                                     <div class="col-sm-8">
-                                        <div v-for="category in props.user.categories" :key="category"
+                                        <div v-for="category in filteredList[1]" :key="category"
                                             class="form-check form-switch">
                                             <input class="form-check-input" type="checkbox" v-model="catEditUser"
                                                 role="switch" :id="category.replace(/\s/g, '')" :value="category">
@@ -363,7 +374,7 @@ const fetchNewUser = (event) => {
                         <div class="mb-3 row">
                             <label for="catefories" class="col-sm-3 col-form-label">Categories</label>
                             <div class="col-sm-9">
-                                <div v-for="category in props.user.categories" :key="category"
+                                <div v-for="category in filteredList[1]" :key="category"
                                     class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" v-model="catNewUser" role="switch"
                                         :id="category.replace(/\s/g, '')" :value="category">
