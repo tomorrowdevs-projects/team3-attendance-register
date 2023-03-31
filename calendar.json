@@ -4,7 +4,7 @@
         "category": "Judo",
         "id_course": "23",
         "username_athlete": "JenniferCiao",
-        "date" : "15-10-2023",
+        "date" : "2023-10-15",
         "attendance_absences": true
     },
     {
@@ -12,7 +12,7 @@
         "category": "Yoga",
         "id_course": "15",
         "username_athlete": "JenniferCiao",
-        "date" : "15-04-2023",
+        "date" : "2023-04-15",
         "attendance_absences": true
     },
     {
@@ -20,7 +20,7 @@
         "category": "Pilates",
         "id_course": "2",
         "username_athlete": "JenniferCiao",
-        "date" : "15-08-2023",
+        "date" : "2023-08-15",
         "attendance_absences": true
     },
     {
@@ -28,7 +28,7 @@
         "category": "Volley",
         "id_course": "3",
         "username_athlete": "JenniferCiao",
-        "date" : "17-10-2023",
+        "date" : "2023-10-17",
         "attendance_absences": true
     },
     {
@@ -36,7 +36,7 @@
         "category": "Judo",
         "id_course": "231",
         "username_athlete": "JenniferCiao",
-        "date" : "11-10-2023",
+        "date" : "2023-10-11",
         "attendance_absences": true
     },
     {
@@ -44,7 +44,7 @@
         "category": "Judo",
         "id_course": "20",
         "username_athlete": "LudovicaDDD",
-        "date" : "19-10-2023",
+        "date" : "2023-10-19",
         "attendance_absences": true
     }
 ]

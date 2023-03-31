@@ -14,7 +14,6 @@ router.post("/category", async (req, res) => {
 
         .query(queries.insertInto_category_assignment_no_username, [category])
         .then(async ([rows]) => {
-          console.log(rows);
           if (rows.affectedRows === 1) res.json({ status: 201 }).end();
           //already present
           else if (rows.affectedRows === 0) res.json({ status: 404 }).end();
@@ -56,7 +55,6 @@ router.post("/category/insert/:username", async (req, res) => {
               ])
 
               .then(async ([rows]) => {
-                console.log(rows);
 
                 if (rows.length === 0) {
                   req.method = this.post;
@@ -70,7 +68,6 @@ router.post("/category/insert/:username", async (req, res) => {
                     ])
 
                     .then(([rows]) => {
-                      // console.log(rows)
 
                       if (rows.affectedRows === 1) {
                         res.json({ status: 201 }).end();
@@ -258,7 +255,7 @@ router.delete("/category/del_category/:category", async (req, res) => {
       await connection.query(queries.delete_category, [category]);
       res.json({ status: 201 }).end();
     });
-    console.log(category);
+
   } catch (error) {
     console.log(error);
     res.json({ status: 401 }).end();
@@ -293,7 +290,6 @@ router.get("/categories_of_trainers", async (req, res) => {
                 return acc;
               }, {})
             );
-              console.log('trainersssssss',rows, result)
             res.json({ status: 201, data: result }).end();
           } else {
             res.json({ status: 400 }).end();
@@ -316,7 +312,6 @@ router.get("/categories_of_athlete", async (req, res) => {
         .query(queries.categories_of_athlese)
         .then(async ([rows]) => {
           if (rows.length > 0) {
-            console.log(rows);
 
             const result = Object.values(
               rows.reduce((acc, el) => {
@@ -333,8 +328,6 @@ router.get("/categories_of_athlete", async (req, res) => {
                 return acc;
               }, {})
             );
-
-            console.log("athl", rows, result);
 
             res.json({ status: 201, data: result }).end();
           } else {

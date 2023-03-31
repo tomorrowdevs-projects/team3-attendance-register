@@ -9,7 +9,7 @@ const controller = require("../controller/auth.js");
 
 router.put("/:username", async (req, res) => {
   try {
-    req.session.role = "athlete"; 
+    req.session.role = "trainer"; 
     const username = req.params.username;
 
     const { newUsername, name, surname, email, category, old_category } =
@@ -29,7 +29,7 @@ router.put("/:username", async (req, res) => {
           if (rows.affectedRows === 0) res.json({ status: 404 }).end();
 
           if (req.session.role === "trainer") {
-            old_category.forEach(async (element) => {
+            category.forEach(async (element) => {
               await connection
                 .query(queries.select_id_course_from_category_assignment, [
                   newUsername,
@@ -37,53 +37,66 @@ router.put("/:username", async (req, res) => {
                 ])
                 //delete old_categories
                 .then(async ([rows]) => {
-                  console.log(rows);
-                  if (rows.length > 0) {
-                    let id = rows[0].id_course; 
-                    await connection.query(
-                      queries.delete_category_assignment_ID,
-                      [id]
-                    );  
-                  }  
-                  //add new categories
-                  category.forEach(async (el) => {
+                  if (rows.length === 0) { 
                     await connection.query(
                       queries.insertInto_category_assignment,
-                      [newUsername, el]
-                    );
-                  });
+                      [newUsername, element])
+                  }
                 });
-            });  
+            });
+
+            old_category.forEach(async (el) => {
+              if (!category.includes(el)) {
+                await connection
+                .query(queries.select_id_course_from_category_assignment, [
+                  newUsername,
+                  el,
+                ])
+                //delete old_categories
+                .then(async ([rows]) => {
+                  let id = rows[0].id_course; 
+                  await connection.query(
+                    queries.delete_category_assignment_ID,
+                    [id]
+                  );
+                })
+              }
+            })
           }
 
           if (req.session.role === "athlete") {
-            old_category.forEach(async (element) => {
-              await connection.query(queries.delete_category_athlete, [
-                element,
-                newUsername,
-              ]);
-            });
             category.forEach(async (el) => {
               await connection
                 .query(queries.select_all_from_category_assignment, [el])
                 .then(async ([rows]) => {
                   if (rows.length > 0) {
+                    console.log('rowDB', rows)
                     //category not yet assigned to any trainer
-                    if (!rows[0].username_trainer) {
-                      //when the category is not assigned to any traine the athlete cannot register!!
-                      return; 
-                    } else {
-                      let username_trainer = rows[0].username_trainer;
-                      let id = rows[0].id_course;
+                    rows.forEach( async (row) => {
+                      if (row.username_trainer) {
 
-                      await connection.query(
-                        queries.insert_new_athleteToCategory,
-                        [username_trainer, el, id, newUsername]
-                      );
-                    }
+                        let username_trainer = row.username_trainer;
+                        let id = row.id_course;
+  
+                        await connection.query(
+                          queries.insert_new_athleteToCategory,
+                          [username_trainer, el, id, newUsername]
+                        );
+                      }
+                    })
+                    
                   }
                 });
             });
+
+            old_category.forEach(async (element) => {
+              if (!category.includes(element)) {
+                await connection.query(queries.delete_category_athlete, [
+                  element,
+                  newUsername,
+                ]);
+              }
+            })
           }
         });
 
@@ -91,7 +104,7 @@ router.put("/:username", async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({ status: 404 }).end();
+    res.json({ status: 40444 }).end();
   }
 });
 

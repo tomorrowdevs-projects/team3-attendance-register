@@ -39,7 +39,7 @@ const catNewUser = ref([]);
 let errorMessage = '';
 const error = ref(false);
 let oldUsername = '';
-let oldCategory = '';
+let old_category = '';
 
 //write username from name and surname and capitalize first letter
 watchEffect(() => {
@@ -92,8 +92,10 @@ const resetForm = () => {
 const editItem = (element) => {
     edit.value = true;
     inputDisabled.value = false;
-    [ oldUsername, oldCategory ] = [ element.username, element.category ];
+    oldUsername = element.username;
+    catEditUser.value.length = 0;
     catEditUser.value.push(...element.category);
+    old_category = element.category;
 }
 
 const cancel = (element) => {
@@ -112,12 +114,12 @@ const saveChange = (event) => {
     const formData = new FormData(form)
     const data = Object.fromEntries(formData.entries())
     data.category = [...catEditUser.value];
-    data.old_Category = oldCategory;
+    data.old_category = old_category;
     console.log('datanewuser',data)
     axios
-        .patch(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data })
+        .put(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data })
         .then((response) => {
-            if (response.data.status === 201) { emit('event'); edit.value = false; formError.value = ''; inputDisabled.value = true; }
+            if (response.data.status === 201) { emit('event'); edit.value = false; formError.value = ''; inputDisabled.value = true; console.log('catedituser',catEditUser);}
             else {
                 errorMessage = `Unexpected error (${response.data.status}), user not edited, try again!`;
                 error.value = true;
@@ -147,7 +149,7 @@ const fetchNewUser = (event) => {
     data.password = data.username + '1000';
     data.confirmPassword = data.password;
     data.role = props.user.selected
-    
+    console.log('newuser', data)
     axios
         .post(`http://localhost:2000/api/v1/managementMyApp`, { ...data })
         .then((response) => {
@@ -177,8 +179,12 @@ const fetchNewUser = (event) => {
     </div>
 
     <div class="searchContainer col-6">
+        <select v-model="search" @change="filtered" class="form-select search" aria-label="Default select example">
+            <option value="all" selected>ALL CATEGORIES</option>
+            <option v-for="category in props.user.categories" :key="category" :value="category">{{ category }}</option>
+        </select>
         <div class="order">
-            <h4>Order By</h4>
+            <h5>Order By</h5>
             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                 <input type="radio" class="btn-check" v-model="selectedOrder" name="hours" id="btnradio1" value="hours"
                     autocomplete="off" checked>
@@ -189,10 +195,7 @@ const fetchNewUser = (event) => {
                 <label class="btn btn-outline-primary" for="btnradio2">Name</label>
             </div>
         </div>
-        <select v-model="search" @change="filtered" class="form-select search" aria-label="Default select example">
-            <option value="all" selected>ALL CATEGORIES</option>
-            <option v-for="category in props.user.categories" :key="category" :value="category">{{ category }}</option>
-        </select>
+        
     </div>
 
     <div class="container">
@@ -252,7 +255,7 @@ const fetchNewUser = (event) => {
                                 <div class="mb-3 row">
                                     <label for="category" class="col-sm-4 col-form-label">Category</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control category" :value="trainer.category"
+                                        <input type="text" class="form-control category" :value="trainer.category.join(' - ') || catEditUser.join(' - ')"
                                             :disabled="inputDisabled">
                                     </div>
                                 </div>
@@ -413,7 +416,7 @@ const fetchNewUser = (event) => {
     align-items: center;
 }
 
-.order h4 {
+.order h5 {
     width: 4em;
     margin-top: 2px;
 }

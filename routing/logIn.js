@@ -18,10 +18,8 @@ router.post("/login", async (req, res) => {
             //if there is no password, therefore user inside DB
             if (rows.length === 0) res.json({ status: 400 }).end();
             else {
-              //NOTE : to fix when we'll solve the problem with unique inside queries
-
+              //NOTE : to fi when we'll solve the problem with unique inside queries
               hashPasswordDb = rows[0].password;
-              console.log(hashPasswordDb);
  
               //compare cryptoPassowrd
               let hashedPassowrd = bcrypt.compareSync(password, hashPasswordDb);
@@ -34,9 +32,9 @@ router.post("/login", async (req, res) => {
                 req.session.loggedin = true;
                 req.session.username = username;
                 req.session.role = rows[0].role;
+
                   connection.query(queries.selectLogin, [username])
                   .then(([rows]) => {  
-                    console.log(rows)
                 
                 res.json({ status: 201, data: rows})})
               } else {

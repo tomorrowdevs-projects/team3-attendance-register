@@ -26,8 +26,8 @@ const updatehours_minutes_of_training = ` UPDATE IGNORE  accounts SET hours_minu
 const createCategory = `CREATE TABLE if not exists category(
   username_trainer VARCHAR(255) NOT NULL ,
   category
-   VARCHAR(255) NOT NULL,
-   id_course int NOT NULL  unique,
+   VARCHAR(255) NOT NULL, 
+   id_course int NOT NULL,
   username_athlete VARCHAR(255) NULL, 
   date DATE NULL,
   attendance_absences VARCHAR(255)  NULL,
@@ -98,7 +98,7 @@ const createAccounts = `CREATE TABLE  if not exists accounts(
   )`;
 const select_trainer_from_category = `SELECT username_trainer FROM category_assignment WHERE category = ?`;
 
-const select_id_course_from_category_assignment = `SELECT id_course FROM category_assignment WHERE  username_trainer = ? AND category = ?`;
+const select_id_course_from_category_assignment = `SELECT id_course, category FROM category_assignment WHERE  username_trainer = ? AND category = ?`;
 const edit_category_assignment = ` UPDATE IGNORE  category_assignment SET username_trainer = ?, category = ?  WHERE id_course = ? `;
 const edit_category = ` UPDATE IGNORE  category SET  category = ?  WHERE id_course = ? `;
 const select_trainer_category = `SELECT username_trainer, category FROM category_assignment WHERE  username_trainer = ? AND category = ?`;

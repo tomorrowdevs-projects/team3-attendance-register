@@ -16,7 +16,6 @@ async function getData () {
     await axios
         .get('http://localhost:2000/api/v1/categories_of_athlete')
         .then((response) => athlete.push(...response.data.data));
-console.log(athlete,trainer,category, 'getData')
 
     return {
         status: trainer.length === 0 || athlete.length === 0 || category.length === 0,

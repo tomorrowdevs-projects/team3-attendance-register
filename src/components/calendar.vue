@@ -1,6 +1,9 @@
 <script setup>
 //SCRIPT
 import calendarJson from '../../calendar.json';
+
+calendarJson.sort((a, b) => {console.log('dataA',new Date(a.date),'dataB',new Date(b.date));new Date(a.date) - new Date(b.date)});
+
 const color = ['-primary', '-success', '-danger', '-secondary', '-info', '-dark', '-light'];
 console.log(calendarJson)
 </script>
