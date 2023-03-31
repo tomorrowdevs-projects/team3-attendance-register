@@ -27,6 +27,61 @@ router.post("/", async (req, res) => {
         .then(async ([rows]) => {
           if (rows.affectedRows === 0) res.json({ status: 404 }).end();
           else {
+            category.forEach(async (el) => {
+              if (role === "athlete") {
+                await connection
+                  .query(queries.select_athlete_category, [el, username])
+                  .then(async ([rows]) => {
+                    //athlete already registered in that category
+                    if (rows.length > 0) {
+                      res.json({ status: 403 }).end();
+                    } else {
+                      let username_trainer = rows[0].username_trainer;
+                      let id = rows[0].id_course;
+
+                      await connection.query(
+                        queries.insert_new_athleteToCategory,
+                        [username_trainer, el, id, username]
+                      );
+                    }
+                  });
+              } else {
+                await connection.query(queries.insertInto_category_assignment, [
+                  username,
+                  el,
+                ]);
+              }
+            });
+          }
+        });
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ status: 404 }).end();
+  }
+});
+
+router.patch("/", async (req, res) => {
+  try {
+    const { username, name, surname, email, role, password, category } =
+      req.body;
+    await connection().then(async (connection) => {
+      await connection.query(queries.use);
+
+      //create cryptoPassowrd
+      //let hashedPassowrd = await bcrypt.hash(password, 12);
+      //add user inside Db
+      await connection
+        .query(queries.edit_account, [
+          req.body.email,
+          req.body.username,
+          req.body.name,
+          req.body.surname,
+          req.body.category,
+        ])
+        .then(async ([rows]) => {
+          if (rows.affectedRows === 0) res.json({ status: 404 }).end();
+          else {
             category.forEach(async (element) => {
               await connection
                 .query(queries.select_trainer_category, [username, element])
@@ -52,48 +107,5 @@ router.post("/", async (req, res) => {
     res.json({ status: 404 }).end();
   }
 });
-
-router.patch("/", async (req, res) => {
-  try {
-    const { username, name, surname, email, role, password, category } =
-      req.body;
-    await connection().then(async (connection) => {
-      await connection.query(queries.use);
-
-      //create cryptoPassowrd
-      //let hashedPassowrd = await bcrypt.hash(password, 12);
-      //add user inside Db
-      console.log('reqqqqqqqqq',req.body)
-      await connection
-      .query(queries.edit_account, [req.body.email, req.body.username, req.body.name, req.body.surname, req.body.category])
-        .then(async ([rows]) => {
-          if (rows.affectedRows === 0) res.json({ status: 404 }).end();
-          else {
-            category.forEach(async (element) => {
-              await connection
-                .query(queries.select_trainer_category, [username, element])
-                .then(async ([rows]) => {
-                  if (rows.length === 0) {
-                    await connection
-                      .query(queries.insertInto_category_assignment, [
-                        username,
-                        element, 
-                      ])
-                      .then(([rows]) => {
-                        console.log(rows);
-                      });
-                  }
-                });
-            });
-            res.json({ status: 201 }).end();
-          }
-        });
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({ status: 404 }).end();
-  }
-});
-
 
 module.exports = router;

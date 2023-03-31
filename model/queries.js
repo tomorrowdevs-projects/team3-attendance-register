@@ -10,7 +10,7 @@ const calendary = `CREATE TABLE if not exists calendary(
    other_date DATE NOT NULL ,
    category
     VARCHAR(255),
-   number_of_training INT NULL DEFAULT 0,
+   number_of_training INT NULL DEFAULT 0, 
    FOREIGN KEY(username) REFERENCES accounts(username)
    ON UPDATE CASCADE ON DELETE CASCADE
 
@@ -27,40 +27,39 @@ const createCategory = `CREATE TABLE if not exists category(
   username_trainer VARCHAR(255) NOT NULL ,
   category
    VARCHAR(255) NOT NULL,
-  id_course int NOT NULL ,
-  username_athlete VARCHAR(255)  NULL, 
-  date DATE  NULL,
+   id_course int NOT NULL  unique,
+  username_athlete VARCHAR(255) NULL, 
+  date DATE NULL,
   attendance_absences VARCHAR(255)  NULL,
   code_registration int NOT NULL AUTO_INCREMENT unique  COMMENT "refers to course registration",
-  FOREIGN KEY(username_trainer) REFERENCES accounts(username),
-  FOREIGN KEY(username_athlete) REFERENCES accounts(username),
-  FOREIGN KEY(id_course) REFERENCES category_assignment(id_course)
+  PRIMARY KEY (category),
+ 
+  FOREIGN KEY(username_athlete) REFERENCES accounts(username)   ON UPDATE CASCADE ON DELETE CASCADE,
 
-  ON UPDATE CASCADE ON DELETE CASCADE
-    
+  FOREIGN KEY(username_trainer) REFERENCES accounts(username) ON UPDATE CASCADE ON DELETE CASCADE
 ) `;
 
 const category_assignment = `CREATE TABLE if not exists category_assignment(
   id_course int NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-  username_trainer VARCHAR(255)  NULL , 
-  category
-   VARCHAR(255) NOT NULL , 
-  FOREIGN KEY(username_trainer) REFERENCES accounts(username)
-  ON UPDATE CASCADE ON DELETE CASCADE
-
+  username_trainer VARCHAR(255)  NULL ,  
+  category 
+   VARCHAR(255) NOT NULL ,  
    
-    
-  
+  FOREIGN KEY(username_trainer) REFERENCES accounts(username) ON UPDATE CASCADE ON DELETE CASCADE
  
  
-  
+   
  )`;
+
+const alter = `ALTER TABLE category ADD FOREIGN KEY (id_course) REFERENCES category_assignment(id_course) ON DELETE CASCADE ON UPDATE CASCADE`;
 
 const select_athlete_from_category = `SELECT username_trainer, category, username_athlete FROM category WHERE username_trainer = ? AND category = ? AND username_athlete=? `;
 const select_category_list_from_category_assignment = `SELECT category FROM category_assignment `;
 const select_athlete_category = `SELECT id_course FROM category WHERE category
  = ? AND username_athlete = ?`;
 const select_category_from_category_assignment = `SELECT id_course, username_trainer FROM category_assignment WHERE category
+ = ?   `;
+const select_all_from_category_assignment = `SELECT * FROM category_assignment WHERE category
  = ?   `;
 const insert_new_athleteToCategory = `INSERT IGNORE INTO category (username_trainer, category
   , id_course, username_athlete) VALUES (?, ?,?,?)`;
@@ -83,25 +82,25 @@ const select_category = `SELECT * FROM category WHERE category
  = ?`;
 const select_my_category = `SELECT category FROM category WHERE username = ?`;
 
+const delete_category_athlete = `DELETE FROM category  WHERE  category = ? AND username_athlete = ?`;
 const createAccounts = `CREATE TABLE  if not exists accounts( 
   username VARCHAR(255) NOT NULL,  
   password VARCHAR(255) NOT NULL,  
   name VARCHAR(255) NOT NULL, 
-  surname VARCHAR(255) NOT NULL, 
+  surname VARCHAR(255) NOT NULL,  
   email VARCHAR(255) NOT NULL, 
   role VARCHAR(255) NOT NULL, 
   hours_minutes_of_training_mounth INT DEFAULT 0  COMMENT 'each unit equals 30 minutes',
   PRIMARY KEY (username),
-  KEY unique_index  (email)
+  KEY unique_index  (email) 
   
-  
- 
-     
-   
+         
   )`;
+const select_trainer_from_category = `SELECT username_trainer FROM category_assignment WHERE category = ?`;
 
 const select_id_course_from_category_assignment = `SELECT id_course FROM category_assignment WHERE  username_trainer = ? AND category = ?`;
 const edit_category_assignment = ` UPDATE IGNORE  category_assignment SET username_trainer = ?, category = ?  WHERE id_course = ? `;
+const edit_category = ` UPDATE IGNORE  category SET  category = ?  WHERE id_course = ? `;
 const select_trainer_category = `SELECT username_trainer, category FROM category_assignment WHERE  username_trainer = ? AND category = ?`;
 const passwordAndRole = `SELECT password ,role FROM accounts WHERE username = ?  `;
 const selectUser = "SELECT * FROM accounts WHERE username = ?";
@@ -121,8 +120,12 @@ FROM accounts FULL JOIN category_assignment ON username = username_trainer `;
 
 const categories_of_athlese = `  SELECT username, name, surname, email, category, role  FROM  category FULL JOIN accounts ON username_athlete = username   `;
 
+const delete_category_ID = `DELETE FROM category  WHERE  id_course = ?`;
+const delete_category_assignment_ID = `DELETE FROM category_assignment  WHERE  id_course = ?`;
+
 module.exports = {
   selectLogin,
+  alter,
   createAccounts,
   createDb,
   passwordAndRole,
@@ -162,5 +165,10 @@ module.exports = {
   select_trainer_category,
   select_athlete_from_category,
   select_id_course_from_category_assignment,
-  edit_category_assignment
+  edit_category_assignment,
+  delete_category_athlete,
+  select_trainer_from_category,
+  select_all_from_category_assignment,
+  delete_category_ID,
+  delete_category_assignment_ID,
 };

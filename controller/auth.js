@@ -70,15 +70,17 @@ exports.checkParametersRegister = (req, res, next) => {
     role,
     category
   } = req.body;
+
   const roles = ["admin", "trainer", "athlete"];
   if (req.path != "/") {
-    
+
     req.body.name = capFirstLetter(name);
-    req.body.surname = capFirstLetter(surname);
+    req.body.usurname = capFirstLetter(surname);
     req.body.email = email.toLowerCase();
     req.body.newUsername = capFirstLetter(newUsername);
+    console.log(req.body.newUsername)
     if (
-      /^[-Za-z0-9]*$/.test(username) &&
+      /^[A-Za-z0-9]*$/.test(username) &&
       /^[a-zA-Z\s]*$/.test(name) &&
       /^[a-zA-Z\s]*$/.test(surname) &&
       /^[a-zA-Z\s]*$/.test(newUsername) &&
@@ -97,6 +99,7 @@ exports.checkParametersRegister = (req, res, next) => {
     req.body.role = role.toLowerCase();
     req.body.password = password;
     req.body.category = category;
+   
     
     if (
       /^[A-Za-z0-9]*$/.test(username) &&
@@ -123,7 +126,7 @@ exports.onlyAdmin = (req, res, next) => {
 };
 
 function capFirstLetter(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1)
+    return str.charAt(0).toUpperCase() + str.toLowerCase().slice(1)
 }
 
 exports.sevenDays = (date) =>{

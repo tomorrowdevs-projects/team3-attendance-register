@@ -35,7 +35,7 @@ router.post("/category", async (req, res) => {
 //first look for the category in the -category_assignment-
 //then we check if the athlete is not already enrolled in the category
 // and then insert the athlete in category
-router.get("/category/insert/:username", async (req, res) => {
+router.post("/category/insert/:username", async (req, res) => {
   try {
     const username_athlete = req.params.username;
     const category = req.body.name_category;

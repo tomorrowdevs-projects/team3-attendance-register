@@ -67,10 +67,10 @@ app.use("/api/v1", logout);
 //then edit file
 app.use(
   "/api/v1/managementMyApp/edit",
-  // controller.onlyAdmin,
-  // controller.checkUserWithParams,
-  // controller.checkEmailForEdit,
-  // controller.checkParametersRegister,
+  // controller.onlyAdmin, 
+  controller.checkUserWithParams,
+  controller.checkEmailForEdit,
+  controller.checkParametersRegister,
   edit
 );
  
