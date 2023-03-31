@@ -32,7 +32,6 @@ router.post("/", async (req, res) => {
                 await connection
                   .query(queries.select_all_from_category_assignment, [el])
                   .then(async ([rows]) => {
-
                     //athlete already registered in that category
                     /* if (rows.length === 0) {
                       //res.json({ status: 403 }).end();
@@ -40,14 +39,12 @@ router.post("/", async (req, res) => {
                     if (rows.length > 0) {
                       let username_trainer = rows[0].username_trainer;
                       let id = rows[0].id_course;
-                      console.log('dati',username_trainer, el, id, username)
 
                       await connection.query(
                         queries.insert_new_athleteToCategory,
                         [username_trainer, el, id, username]
                       );
                     }
-                    console.log('rows',rows)
                   });
               } else {
                 await connection.query(queries.insertInto_category_assignment, [
@@ -58,7 +55,9 @@ router.post("/", async (req, res) => {
             });
           }
         });
-    });
+    })
+    res.json({ status: 201 }).end();
+          
   } catch (error) {
     console.log(error);
     res.json({ status: 404 }).end();
@@ -96,8 +95,7 @@ router.patch("/", async (req, res) => {
                         username,
                         element,
                       ])
-                      .then(([rows]) => {
-                      });
+                      .then(([rows]) => {});
                   }
                 });
             });

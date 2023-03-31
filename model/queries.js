@@ -29,10 +29,9 @@ const createCategory = `CREATE TABLE if not exists category(
    VARCHAR(255) NOT NULL, 
    id_course int NOT NULL,
   username_athlete VARCHAR(255) NULL, 
-  date DATE NULL,
+  date DATE NULL, 
   attendance_absences VARCHAR(255)  NULL,
   code_registration int NOT NULL AUTO_INCREMENT unique  COMMENT "refers to course registration",
-  PRIMARY KEY (category),
  
   FOREIGN KEY(username_athlete) REFERENCES accounts(username)   ON UPDATE CASCADE ON DELETE CASCADE,
 
