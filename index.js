@@ -8,17 +8,15 @@ const db = require("./src/connectMysql.js");
 const logIn = require("./routing/logIn.js");
 const logout = require("./routing/logout.js");
 const category = require("./routing/category.js");
+const cookieParser = require("cookie-parser");
 
 const edit = require("./routing/editAndDelete.js");
-const calendary = require('./routing/calendary.js')
-const bcrypt = require("bcryptjs");
+const calendary = require("./routing/calendary.js");
 const controller = require("./controller/auth.js");
-const select = require('./routing/select.js')
+const select = require("./routing/select.js");
 const fillDb = require("./controller/toFillDb.js");
 const managementMyApp = require("./routing/managementMyApp.js");
-const routing = express.Router();
-const session = require("express-session");
-const queries = require("./model/queries.js");
+app.use(cookieParser("Murubutu"));
 app.use(
   cors({
     origin: "*",
@@ -39,14 +37,7 @@ const firebaseConfig = {
 //app.initializeApp(firebaseConfig);
 //-----------------------------------------------------------------------------------------------------
 //session is like cookie
-app.use(
-  session({
-    secret: "secret",
-    resave: true,
-    saveUninitialized: true,
-    maxAge: Date.now() + (30 * 86400 * 1000) 
-  })
-);  
+
 app.use(express.json());
 
 //-----------------------------------------------------------------------------------------------------
@@ -57,8 +48,6 @@ db().then(async (connection) => {
 });
 //-----------------------------------------------------------------------------------------------------
 
-
-
 app.use("/api/v1", logIn);
 app.use("/api/v1", logout);
 //first check if you are an administrator,
@@ -67,13 +56,13 @@ app.use("/api/v1", logout);
 //then edit file
 app.use(
   "/api/v1/managementMyApp/edit",
-  // controller.onlyAdmin, 
+  // controller.onlyAdmin,
   controller.checkUserWithParams,
   controller.checkEmailForEdit,
   controller.checkParametersRegister,
   edit
 );
- 
+
 //first check if you are an administrator,
 //then if the credential format is respected,
 //then if there are no duplicates in the DB
@@ -85,10 +74,9 @@ app.use(
   managementMyApp
 );
 
-app.use("/api/v1", select)
-app.use("/api/v1", calendary)
-app.use("/api/v1", category)
-
+app.use("/api/v1", select);
+app.use("/api/v1", calendary);
+app.use("/api/v1", category);
 
 //-----------------------------------------------------------------------------------------------------
 

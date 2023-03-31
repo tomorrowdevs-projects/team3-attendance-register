@@ -8,8 +8,8 @@ const controller = require("../controller/auth.js");
 //edit accounts
 
 router.put("/:username", async (req, res) => {
+  console.log(req.cookies);
   try {
-    req.session.role = "trainer"; 
     const username = req.params.username;
 
     const { newUsername, name, surname, email, category, old_category } =
@@ -28,7 +28,7 @@ router.put("/:username", async (req, res) => {
         .then(async ([rows]) => {
           if (rows.affectedRows === 0) res.json({ status: 404 }).end();
 
-          if (req.session.role === "trainer") {
+          if (req.cookies.role === "trainer") {
             category.forEach(async (element) => {
               await connection
                 .query(queries.select_id_course_from_category_assignment, [
@@ -37,10 +37,11 @@ router.put("/:username", async (req, res) => {
                 ])
                 //delete old_categories
                 .then(async ([rows]) => {
-                  if (rows.length === 0) { 
+                  if (rows.length === 0) {
                     await connection.query(
                       queries.insertInto_category_assignment,
-                      [newUsername, element])
+                      [newUsername, element]
+                    );
                   }
                 });
             });
@@ -48,43 +49,41 @@ router.put("/:username", async (req, res) => {
             old_category.forEach(async (el) => {
               if (!category.includes(el)) {
                 await connection
-                .query(queries.select_id_course_from_category_assignment, [
-                  newUsername,
-                  el,
-                ])
-                //delete old_categories
-                .then(async ([rows]) => {
-                  let id = rows[0].id_course; 
-                  await connection.query(
-                    queries.delete_category_assignment_ID,
-                    [id]
-                  );
-                })
+                  .query(queries.select_id_course_from_category_assignment, [
+                    newUsername,
+                    el,
+                  ])
+                  //delete old_categories
+                  .then(async ([rows]) => {
+                    let id = rows[0].id_course;
+                    await connection.query(
+                      queries.delete_category_assignment_ID,
+                      [id]
+                    );
+                  });
               }
-            })
+            });
           }
 
-          if (req.session.role === "athlete") {
+          if (req.cookies.role === "athlete") {
             category.forEach(async (el) => {
               await connection
                 .query(queries.select_all_from_category_assignment, [el])
                 .then(async ([rows]) => {
                   if (rows.length > 0) {
-                    console.log('rowDB', rows)
+                    console.log("rowDB", rows);
                     //category not yet assigned to any trainer
-                    rows.forEach( async (row) => {
+                    rows.forEach(async (row) => {
                       if (row.username_trainer) {
-
                         let username_trainer = row.username_trainer;
                         let id = row.id_course;
-  
+
                         await connection.query(
                           queries.insert_new_athleteToCategory,
                           [username_trainer, el, id, newUsername]
                         );
                       }
-                    })
-                    
+                    });
                   }
                 });
             });
@@ -96,7 +95,7 @@ router.put("/:username", async (req, res) => {
                   newUsername,
                 ]);
               }
-            })
+            });
           }
         });
 
@@ -118,7 +117,7 @@ router.delete("/del/:username", async (req, res) => {
     });
   } catch (error) {
     res.json({ status: 401 }).end();
-    console.log(error); 
+    console.log(error);
   }
 });
 

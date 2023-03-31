@@ -99,7 +99,6 @@ const select_trainer_from_category = `SELECT username_trainer FROM category_assi
 
 const select_id_course_from_category_assignment = `SELECT id_course, category FROM category_assignment WHERE  username_trainer = ? AND category = ?`;
 const edit_category_assignment = ` UPDATE IGNORE  category_assignment SET username_trainer = ?, category = ?  WHERE id_course = ? `;
-const edit_category = ` UPDATE IGNORE  category SET  category = ?  WHERE id_course = ? `;
 const select_trainer_category = `SELECT username_trainer, category FROM category_assignment WHERE  username_trainer = ? AND category = ?`;
 const passwordAndRole = `SELECT password ,role FROM accounts WHERE username = ?  `;
 const selectUser = "SELECT * FROM accounts WHERE username = ?";
