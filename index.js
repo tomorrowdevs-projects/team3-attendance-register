@@ -19,13 +19,13 @@ const fillDb = require("./controller/toFillDb.js");
 const managementMyApp = require("./routing/managementMyApp.js");
 const routing = express.Router();
 const session = require("express-session");
+const  MemoryStore = session.MemoryStore;
 app.use(cookieParser('Murubutu'))
 app.use(
   cors({
     origin: "*",
   })
 );
-
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCH4uv4qKiy1ZKkaTT9qyoJAauf8Mdd9mA",
@@ -43,6 +43,7 @@ const firebaseConfig = {
 //session is like cookie
 app.use(
   session({
+    name: "secretname" ,
     secret: "secret",
     resave: true,
     saveUninitialized: true,
@@ -59,10 +60,12 @@ db().then(async (connection) => {
   fillDb(connection);
 });
 //-----------------------------------------------------------------------------------------------------
-
-
-
 app.use("/api/v1", logIn);
+
+app.all('*', controller.onlySession);
+
+
+
 app.use("/api/v1", logout);
 //first check if you are an administrator,
 //then if the credential format is respected,

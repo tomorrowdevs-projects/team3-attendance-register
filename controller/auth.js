@@ -141,3 +141,9 @@ exports.sevenDays = (date) =>{
 
   }
 }
+exports.onlySession =(req, res, next) => {
+	if (req.session === "undefined") next();
+  else {
+    return res.json({ status: 401 }).end();
+}
+}
