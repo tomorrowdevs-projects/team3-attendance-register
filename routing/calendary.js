@@ -96,7 +96,7 @@ router.get("/calendary/list_monthly_hours/:username", async (req, res) => {
       await connection
         .query(queries.select_monthly_hours_mounth, [username])
         .then(async ([rows]) => {
-          console.log(rows);
+
           if (rows) res.json({ status: 201, success: true }).end();
           else {
             res.json({ status: 400 }).end();
@@ -150,7 +150,7 @@ router.get("/calendary/list_monthly_hours/:username", async (req, res) => {
           mounth,
         ])
         .then(async ([rows]) => {
-          console.log(rows);
+
           if (rows) {
             let tot_hours = 0;
             for (let number of rows) {

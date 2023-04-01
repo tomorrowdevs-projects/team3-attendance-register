@@ -11,7 +11,7 @@ router.put("/:username", async (req, res) => {
   try {
     const username = req.params.username;
 
-    const { newUsername, name, surname, email, category, old_category } =
+    const { newUsername, name, surname, email, category, old_category, role } =
       req.body;
     await connection().then(async (connection) => {
       await connection.query(queries.use);
@@ -25,9 +25,9 @@ router.put("/:username", async (req, res) => {
           username,
         ])
         .then(async ([rows]) => {
-          if (rows.affectedRows === 0) res.json({ status: 404 }).end();
+          if (rows.affectedRows === 0) res.json({ status: 404333 }).end();
 
-          if (req.session.role === "trainer") {
+          if (req.body.role === "trainer") {
             category.forEach(async (element) => {
               await connection
                 .query(queries.select_id_course_from_category_assignment, [
@@ -64,23 +64,29 @@ router.put("/:username", async (req, res) => {
             });
           }
 
-          if (req.session.role === "athlete") {
+          if (req.body.role === "athlete") {
             category.forEach(async (el) => {
               await connection
                 .query(queries.select_all_from_category_assignment, [el])
                 .then(async ([rows]) => {
                   if (rows.length > 0) {
-                    console.log("rowDB", rows);
                     //category not yet assigned to any trainer
                     rows.forEach(async (row) => {
                       if (row.username_trainer) {
-                        let username_trainer = row.username_trainer;
-                        let id = row.id_course;
+                        await connection
+                          .query(queries.select_athlete_from_category, [row.username_trainer, el, newUsername])
+                          .then(async ([rows]) => {
+                            if (rows.length === 0) {
+                              let username_trainer = row.username_trainer;
+                              let id = row.id_course;
 
-                        await connection.query(
-                          queries.insert_new_athleteToCategory,
-                          [username_trainer, el, id, newUsername]
-                        );
+                              await connection.query(
+                                queries.insert_new_athleteToCategory,
+                                [username_trainer, el, id, newUsername]
+                              );
+                            }
+                          });
+
                       }
                     });
                   }

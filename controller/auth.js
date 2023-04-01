@@ -78,7 +78,7 @@ exports.checkParametersRegister = (req, res, next) => {
     req.body.usurname = capFirstLetter(surname);
     req.body.email = email.toLowerCase();
     req.body.newUsername = capFirstLetter(newUsername);
-    console.log(req.body.newUsername)
+
     if (
       /^[A-Za-z0-9]*$/.test(username) &&
       /^[a-zA-Z\s]*$/.test(name) &&
@@ -132,7 +132,6 @@ function capFirstLetter(str) {
 exports.sevenDays = (date) =>{
   const seven_days_forward = new Date(Date.now()- 7 * 24 * 60 * 60 * 1000);
  
-  console.log(seven_days_forward.getTime(), date.getTime())
   if(date.getTime() < seven_days_forward.getTime()){
     res.json({ status: 400 }).end();
 

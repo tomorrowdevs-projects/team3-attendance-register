@@ -36,14 +36,21 @@ router.post("/", async (req, res) => {
                     /* if (rows.length === 0) {
                       //res.json({ status: 403 }).end();
                     } else { */
-                    if (rows.length > 0) {
-                      let username_trainer = rows[0].username_trainer;
-                      let id = rows[0].id_course;
 
-                      await connection.query(
-                        queries.insert_new_athleteToCategory,
-                        [username_trainer, el, id, username]
-                      );
+                    if (rows.length > 0) {
+                      rows.forEach(async elem => {
+                       
+                        if (elem.username_trainer !== null) {
+
+                          let username_trainer = elem.username_trainer;
+                          let id = elem.id_course;
+
+                          await connection.query(
+                            queries.insert_new_athleteToCategory,
+                            [elem.username_trainer, el, id, username]
+                          );
+                        }
+                      })
                     }
                   });
               } else {
@@ -57,13 +64,13 @@ router.post("/", async (req, res) => {
         });
     })
     res.json({ status: 201 }).end();
-          
+
   } catch (error) {
     console.log(error);
     res.json({ status: 404 }).end();
   }
 });
-
+/* 
 router.patch("/", async (req, res) => {
   try {
     const { username, name, surname, email, role, password, category } =
@@ -95,7 +102,7 @@ router.patch("/", async (req, res) => {
                         username,
                         element,
                       ])
-                      .then(([rows]) => {});
+                      .then(([rows]) => { });
                   }
                 });
             });
@@ -107,6 +114,6 @@ router.patch("/", async (req, res) => {
     console.log(error);
     res.json({ status: 404 }).end();
   }
-});
+}); */
 
 module.exports = router;

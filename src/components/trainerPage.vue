@@ -82,7 +82,6 @@ const addNewEvent = (event) => {
 const sendEvent = () => {
     newEvent.value = false;
     reset.value = true;
-    console.log(dataEvent)
 }
 
 </script>

@@ -34,7 +34,7 @@ router.post("/category", async (req, res) => {
 //first look for the category in the -category_assignment-
 //then we check if the athlete is not already enrolled in the category
 // and then insert the athlete in category
-router.post("/category/insert/:username", async (req, res) => {
+/* router.post("/category/insert/:username", async (req, res) => {
   try {
     const username_athlete = req.params.username;
     const category = req.body.name_category;
@@ -92,7 +92,7 @@ router.post("/category/insert/:username", async (req, res) => {
     console.log(error);
     res.json({ status: 401 }).end();
   }
-});
+}); */
 
 //category
 router.get("/categoryAll/list", async (req, res) => {
@@ -133,8 +133,6 @@ router.get("/categoryMyList/:username", async (req, res) => {
         .query(queries.select_my_category, [username])
         .then(async ([rows]) => {
           if (rows.length > 0) {
-            console.log(rows);
-
             res.json({ status: 201, data: rows }).end();
           } else {
             res.json({ status: 400 }).end();
@@ -149,7 +147,7 @@ router.get("/categoryMyList/:username", async (req, res) => {
 
 //list of all the athletes enrolled in a category
 
-router.get("/category/list", async (req, res) => {
+/* router.get("/category/list", async (req, res) => {
   try {
     const category = req.body.name_category;
     await connection().then(async (connection) => {
@@ -171,7 +169,7 @@ router.get("/category/list", async (req, res) => {
     console.log(error);
     res.json({ status: 401, data: null }).end();
   }
-});
+}); */
 
 //attendance_absences
 router.patch(
@@ -213,7 +211,7 @@ router.patch(
 );
 
 //change trainer's name
-router.patch(
+/* router.patch(
   "/category/change_name_trainer/:username_trainer",
   async (req, res) => {
     try {
@@ -236,7 +234,7 @@ router.patch(
       res.json({ status: 401 }).end();
     }
   }
-);
+); */
 //delete
 router.delete("/category/del_category/:category", async (req, res) => {
   try {

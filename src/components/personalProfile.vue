@@ -18,7 +18,6 @@ const getData = ref(false);
 const emit = defineEmits(['profile-logout', 'update-profile']);
 
 const logout = () => {
-  console.log('test logout')
   axios
     .get('http://localhost:2000/api/v1/logout')
     .then((response) => {
@@ -29,7 +28,6 @@ const logout = () => {
 }
 
 const formUpdate = (data) => {
-  console.log('Data', data)
   data.newUsername = props.userInfo.username
   getData.value = false
   /* axios

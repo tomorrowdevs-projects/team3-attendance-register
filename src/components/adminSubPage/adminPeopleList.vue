@@ -51,6 +51,7 @@ let errorMessage = '';
 const error = ref(false);
 let oldUsername = '';
 let old_category = '';
+let userRole = '';
 
 //write username from name and surname and capitalize first letter
 watchEffect(() => {
@@ -75,8 +76,9 @@ const deleteItem = (element) => {
         .delete(`http://localhost:2000/api/v1/managementMyApp/edit/del/${element.username}`)
         .then((response) => {
             if (response.data.status === 201) {
-                filteredList[0].value.forEach((el, index) => {
-                    if (el.username === element.username) filteredList[0].value.splice(index, 1)
+
+                filteredList.value[0].forEach((el, index) => {
+                    if (el.username === element.username) filteredList.value[0].splice(index, 1)
                 });
                 emit('event');
                 const modal = document.querySelector('#modal' + element.username);
@@ -107,6 +109,7 @@ const editItem = (element) => {
     catEditUser.value.length = 0;
     catEditUser.value.push(...element.category);
     old_category = element.category;
+    userRole = element.role;
 }
 
 const cancel = (element) => {
@@ -126,11 +129,19 @@ const saveChange = (event) => {
     const data = Object.fromEntries(formData.entries())
     data.category = [...catEditUser.value];
     data.old_category = old_category;
-    console.log('datanewuser',data)
+    data.role = userRole;
+
     axios
         .put(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data })
         .then((response) => {
-            if (response.data.status === 201) { emit('event'); edit.value = false; formError.value = ''; inputDisabled.value = true; console.log('catedituser',catEditUser);}
+            if (response.data.status === 201) { 
+                emit('event'); 
+                edit.value = false; 
+                formError.value = ''; 
+                inputDisabled.value = true;
+                error.value = false;
+
+            }
             else {
                 errorMessage = `Unexpected error (${response.data.status}), user not edited, try again!`;
                 error.value = true;
@@ -160,7 +171,7 @@ const fetchNewUser = (event) => {
     data.password = data.username + '1000';
     data.confirmPassword = data.password;
     data.role = props.user.selected
-    console.log('newuser', data)
+
     axios
         .post(`http://localhost:2000/api/v1/managementMyApp`, { ...data })
         .then((response) => {
