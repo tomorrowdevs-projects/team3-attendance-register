@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.get('/logout', (req, res)=> { 
   // destroy session data
-  res.clearCookie()
+  req.session = null;
   res.status(200).end();
  });
 

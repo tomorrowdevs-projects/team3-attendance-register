@@ -8,7 +8,6 @@ const controller = require("../controller/auth.js");
 //edit accounts
 
 router.put("/:username", async (req, res) => {
-  console.log(req.cookies);
   try {
     const username = req.params.username;
 
@@ -28,7 +27,7 @@ router.put("/:username", async (req, res) => {
         .then(async ([rows]) => {
           if (rows.affectedRows === 0) res.json({ status: 404 }).end();
 
-          if (req.cookies.role === "trainer") {
+          if (req.session.role === "trainer") {
             category.forEach(async (element) => {
               await connection
                 .query(queries.select_id_course_from_category_assignment, [
@@ -65,7 +64,7 @@ router.put("/:username", async (req, res) => {
             });
           }
 
-          if (req.cookies.role === "athlete") {
+          if (req.session.role === "athlete") {
             category.forEach(async (el) => {
               await connection
                 .query(queries.select_all_from_category_assignment, [el])
