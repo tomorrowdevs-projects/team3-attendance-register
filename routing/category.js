@@ -107,7 +107,7 @@ router.get("/categoryAll/list", async (req, res) => {
             res
               .json({
                 status: 201,
-                data: rows
+                data: rows,
               })
               .end();
           } else {
@@ -121,16 +121,15 @@ router.get("/categoryAll/list", async (req, res) => {
   }
 });
 
-//trainer see all its categories
+//trainer see all its categories in category_assignment
 router.get("/categoryMyList/:username", async (req, res) => {
   const username = req.params.username;
-
   try {
     await connection().then(async (connection) => {
       await connection.query(queries.use);
       await connection
 
-        .query(queries.select_my_category, [username])
+        .query(queries.select_my_category_assignment, [username])
         .then(async ([rows]) => {
           if (rows.length > 0) {
             res.json({ status: 201, data: rows }).end();
@@ -244,7 +243,6 @@ router.delete("/category/del_category/:category", async (req, res) => {
       await connection.query(queries.delete_category, [category]);
       res.json({ status: 201 }).end();
     });
-
   } catch (error) {
     console.log(error);
     res.json({ status: 401 }).end();
@@ -261,7 +259,6 @@ router.get("/categories_of_trainers", async (req, res) => {
         .query(queries.categories_of_trainers)
         .then(async ([rows]) => {
           if (rows.length > 0) {
-
             const result = Object.values(
               rows.reduce((acc, el) => {
                 if (!acc[el.username]) {
@@ -301,7 +298,6 @@ router.get("/categories_of_athlete", async (req, res) => {
         .query(queries.categories_of_athlese)
         .then(async ([rows]) => {
           if (rows.length > 0) {
-
             const result = Object.values(
               rows.reduce((acc, el) => {
                 if (!acc[el.username]) {
@@ -319,6 +315,48 @@ router.get("/categories_of_athlete", async (req, res) => {
             );
 
             res.json({ status: 201, data: result }).end();
+          } else {
+            res.json({ status: 400 }).end();
+          }
+        });
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ status: 401 }).end();
+  }
+});
+
+//category_and_accounts_join
+router.get("/category_and_accounts/:username", async (req, res) => {
+  const username = req.params.username;
+
+  try {
+    await connection().then(async (connection) => {
+      await connection.query(queries.use);
+      await connection
+
+        .query(queries.select_athlete_from_category_with_usernam_trainer, [
+          username,
+        ])
+        .then(async ([rows]) => {
+          if (rows.length > 0) {
+            rows.forEach(async (el, index) => {
+              let username_athlete = el.username_athlete;
+              await connection
+                .query(queries.date_ath, [username_athlete])
+                .then(async ([rows2]) => {
+                  rows[index].name = rows2[0].name;
+                  rows[index].surname = rows2[0].surname;
+                  if (rows.length - 1 === index)
+                    res
+                      .json({
+                        status: 201,
+                        data: rows,
+                      })
+                      .end();
+                  console.log("rows", rows);
+                });
+            });
           } else {
             res.json({ status: 400 }).end();
           }

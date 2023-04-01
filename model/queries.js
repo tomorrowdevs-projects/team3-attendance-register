@@ -79,7 +79,7 @@ const select_username_athlete_from_attendance_absences = `SELECT username_athlet
 
 const select_category = `SELECT * FROM category WHERE category
  = ?`;
-const select_my_category = `SELECT category FROM category WHERE username = ?`;
+const select_my_category_assignment = `SELECT category, id_course FROM category_assignment WHERE username_trainer = ?`;
 
 const delete_category_athlete = `DELETE FROM category  WHERE  category = ? AND username_athlete = ?`;
 const createAccounts = `CREATE TABLE  if not exists accounts( 
@@ -121,6 +121,10 @@ const categories_of_athlese = `  SELECT username, name, surname, email, category
 const delete_category_ID = `DELETE FROM category  WHERE  id_course = ?`;
 const delete_category_assignment_ID = `DELETE FROM category_assignment  WHERE  id_course = ?`;
 
+const select_athlete_from_category_with_usernam_trainer = `SELECT * FROM category WHERE username_trainer = ?  `;
+const date_ath = `SELECT name, surname FROM accounts WHERE username = ?`
+
+
 module.exports = {
   selectLogin,
   alter,
@@ -148,7 +152,7 @@ module.exports = {
   select_category,
   category_assignment,
   select_list_from_category,
-  select_my_category,
+  select_my_category_assignment,
   select_category_from_category_assignment,
   select_athlete_category,
   select_username_athlete_from_attendance_absences,
@@ -169,4 +173,7 @@ module.exports = {
   select_all_from_category_assignment,
   delete_category_ID,
   delete_category_assignment_ID,
+  select_athlete_from_category_with_usernam_trainer,
+  date_ath
+
 };

@@ -62,7 +62,7 @@ db().then(async (connection) => {
 //-----------------------------------------------------------------------------------------------------
 app.use("/api/v1", logIn);
 
-app.all('*', controller.onlySession);
+// app.all('*', controller.onlySession);
 
 
 
