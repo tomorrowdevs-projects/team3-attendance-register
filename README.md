@@ -8,12 +8,16 @@
   The trainer can enter the number of hours/minutes of training, with increments of 30 minutes. He can make changes to the dates every 7 days. The app allows the           trainer to generate a PDF file with the attendance list.
   
 # Technologies used
-> MySql *.*
-> Node.js *.*
-> Javascript *.*
-> Vue *.*
+* > MySql 
+* > Node.js 
+* > Javascript 
+* > Vue 
+* 1.
+* 2.
+* 3.
 
-# 
+# Launch
+
   
 **Client Request**
 
