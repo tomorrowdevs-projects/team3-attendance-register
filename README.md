@@ -20,6 +20,8 @@ Then, NPM is the recommended installation method when building applications with
 Eventually you need to install the dependencies with this shell command: "npm install".
 Now, the program is ready to run, by typing "npm start".
 
+# Usage
+
   
 **Client Request**
 
