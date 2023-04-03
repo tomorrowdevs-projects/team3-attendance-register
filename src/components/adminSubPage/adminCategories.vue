@@ -20,16 +20,16 @@ const emits = defineEmits(['cat-changed']);
 const delClicked = ref(false);
 const delString = ref('');
 const catName = ref('');
-const catNewUser = ref([]);
+const catNewUser = ref('');
 const error = ref(false);
 const reset = ref(false);
 let errorMessage = '';
 const errorAddNew = ref(false);
 
 const getSelected = (item) => {
-    catNewUser.value.length = 0;
-    catNewUser.value.push(...item);
-    if (catNewUser.value.length > 0) error.value = false
+    console.log(item,'item')
+    catNewUser.value = item;
+    if (catNewUser.value !== '') error.value = false
 }
 
 const deleteBut = () => {
@@ -38,8 +38,8 @@ const deleteBut = () => {
         delString.value = '';
         error.value = false;
         reset.value = true;
-        if (catNewUser.value.length > 0) {
-
+        if (catNewUser.value !== '') {
+            console.log(catNewUser.value)
         axios
             .delete(`http://localhost:2000/api/v1//category/del_category/${catNewUser.value}`)
             .then((response) => {
@@ -84,7 +84,7 @@ const addNew = () => {
                 data-bs-target="#modalAddNew"></Button>
         </div>
 
-        <CheckableList :list="category" :enableCheck="delClicked" :error="error" :reset="reset"
+        <CheckableList :list="category" :enableCheck="delClicked" :error="error" :reset="reset" :type="'radio'"
             @output-data="getSelected"></CheckableList>
     </div>
 

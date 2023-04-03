@@ -5,6 +5,7 @@ async function getData () {
     const athlete = [];
     const categories = [];
     const categoryA = [];
+    const withoutTrainer = [];
 
     await axios
         .get('http://localhost:2000/api/v1/categoryAll/list')
@@ -23,14 +24,37 @@ async function getData () {
     await axios
         .get('http://localhost:2000/api/v1/categories_of_athlete')
         .then((response) => athlete.push(...response.data.data));
+    
+    await axios
+        .get('http://localhost:2000/api/v1/select')
+        .then((response) => {
+            const allAthlete = response.data.code.filter(el => el.role === 'athlete');
+            const athleteCourseUsername = athlete.map(el => el.username)
+
+            withoutTrainer.push(...allAthlete.filter(athl => !athleteCourseUsername.includes(athl.username) ));
+        });
 
     return {
         status: trainer.length === 0 || athlete.length === 0 || categories.length === 0,
         trainers: trainer,
         athletes: athlete,
         categories: categories,
-        categoryAthlete: categoryA
+        categoryAthlete: categoryA,
+        withoutTrainer: withoutTrainer
     }
 }
 
-export default { getData }
+async function getTrainerData (trainerUsername) {
+    const data = [];
+
+    await axios
+        .get(`http://localhost:2000/api/v1/category_and_accounts/${trainerUsername}`)
+        .then((response) => data.push(...response.data.data));
+
+    return {
+        status: data.length === 0,
+        data: data,
+    }
+}
+
+export default { getData, getTrainerData }

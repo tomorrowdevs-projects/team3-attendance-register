@@ -92,15 +92,16 @@ router.put("/:username", async (req, res) => {
                   }
                 });
             });
-
-            old_category.forEach(async (element) => {
-              if (!category.includes(element)) {
-                await connection.query(queries.delete_category_athlete, [
-                  element,
-                  newUsername,
-                ]);
-              }
-            });
+            if (old_category) {
+              old_category.forEach(async (element) => {
+                if (!category.includes(element)) {
+                  await connection.query(queries.delete_category_athlete, [
+                    element,
+                    newUsername,
+                  ]);
+                }
+              });
+            }
           }
         });
 

@@ -4,15 +4,15 @@ import AdminPage from './components/adminPage.vue';
 import LoginModule from './components/loginModule.vue';
 import TrainerPage from './components/trainerPage.vue';
 
-const showLogin = ref(false);
-const userRole = ref('admin');
-const userInfo = ref({name: 'luigi'});
+const showLogin = ref(true);
+const userRole = ref('');
+const userInfo = ref([]);
 
 const handleLoginSuccess = (event) => {
-  /* if (event.role === 'admin') userRole.value = 'admin'
+  if (event.role === 'admin') userRole.value = 'admin'
   else if (event.role === 'trainer') userRole.value = 'trainer'
   userInfo.value = event;
-  showLogin.value = false */
+  showLogin.value = false
 
 }
 

@@ -358,7 +358,7 @@ router.get("/category_and_accounts/:username", async (req, res) => {
                 });
             });
           } else {
-            res.json({ status: 400 }).end();
+            res.json({ status: 4007 }).end();
           }
         });
     });

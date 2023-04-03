@@ -18,9 +18,6 @@ const emit = defineEmits(['logout']);
 
 const selected = ref('');
 const showBack = ref(false);
-/* const trainers = ref([]);
-const athletes = ref([]);
-const categories = ref([]); */
 const data = ref([]);
 
 function get() {

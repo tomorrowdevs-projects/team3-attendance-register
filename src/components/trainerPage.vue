@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, watch } from 'vue';
 import athleteJson from '../../athlete.json';
 import getData from '../JS/getData.js';
 import personalProfile from './personalProfile.vue';
@@ -18,13 +18,28 @@ const props = defineProps({
 
 const emit = defineEmits(['logout']);
 
-const trainerProfile = {
-    username: 'CarloFreedom',
-    category: ['yoga', 'pilates', 'spinning', 'bocce']
-}
+const dataDB = ref([]);
+const trainerCategory = ref([]);
+let athletes = ref([]);
+const selectedCategory = ref(trainerCategory.value[0]);
 
-const selectedCategory = ref(trainerProfile.category[0]);
-const athletes = computed(() => [...athleteJson.filter(el => el.category.some(cat => cat === selectedCategory.value))].sort(compare));
+getData.getTrainerData(props.userInfo.username).then((res) => {
+    dataDB.value = res.data;
+    trainerCategory.value = [...new Set(res.data.reduce((acc, el) => { acc.push(el.category); return acc; }, []))];
+    athletes.value = res.data.filter(el => el.category === trainerCategory.value[0]).sort(compare);
+
+    if (res.status) selected.value = 'dbError'
+})
+
+watch(selectedCategory, (newValue, oldValue) => {
+    console.log(trainerCategory.value, newValue)
+    athletes.value = dataDB.value.filter(el => el.category === newValue).sort(compare)
+},
+    {
+        deep: true,
+    }
+);
+
 const selected = ref('');
 const showBack = ref(false);
 const newEvent = ref(false);
@@ -34,14 +49,13 @@ const reset = ref(false);
 
 let dataEvent = {};
 
-getData.getData().then((res) => { if (res.status) selected.value = 'dbError' })
-
 const date = new Date().toLocaleDateString('en-US', {
     weekday: "long",
     day: "numeric",
     month: "short",
     year: "numeric",
 }).replace(',', ' ');
+
 const buttonColor = ['btn-outline-primary', 'btn-outline-success', 'btn-outline-danger', 'btn-outline-secondary', 'btn-outline-info', 'btn-outline-dark', 'btn-outline-light'];
 
 let durationString = ref('');
@@ -66,22 +80,31 @@ const addNewEvent = (event) => {
         const formData = new FormData(form)
         const data = Object.fromEntries(formData.entries())
         let tmp = '';
-        [tmp, durationString.value] = data.duration.split('-');
-        data.duration = tmp;
-        data.month = new Date().toLocaleDateString('en-US', { month: 'long' });
-        data.date = Date.now();
-        data.athletes = [...selectedAthletes.value];
-        data.trainer = trainerProfile.username;
+        [tmp, durationString.value] = data.number_of_training.split('-');
+        data.number_of_training = Number(tmp);
+        data.date = new Date();
+        data.month = data.date.getMonth();
+        data.year = data.date.getFullYear();
+        console.log(athletes.value,'athle')
+        data.id_course = athletes.value[0].id_course;
+        const selectedAthletesUsername = selectedAthletes.value.map(el => el.username_athlete);
+        data.nome_ath = athletes.value.reduce((obj, athl) => {
+            const { username_athlete } = athl;
+            return { ...obj, [username_athlete]: selectedAthletesUsername.includes(username_athlete) };
+        }, {});
+        data.username_trainer = props.userInfo.username;
         const modal = document.querySelector('#modalSummary');
         const bsModal = new bootstrap.Modal(modal);
         bsModal.show();
-        dataEvent = data
+        dataEvent = {...data}
     }
 }
 
 const sendEvent = () => {
     newEvent.value = false;
     reset.value = true;
+    console.log(dataEvent)
+
 }
 
 </script>
@@ -106,7 +129,8 @@ const sendEvent = () => {
             <div v-else class="btn-group setNewEvent" role="group" aria-label="Button group with nested dropdown">
                 <button type="button" class="btn btn-warning">{{ date }}</button>
 
-                <select class="btn btn-warning dropdown-toggle" aria-label="Default select example" name="duration">
+                <select class="btn btn-warning dropdown-toggle" aria-label="Default select example"
+                    name="number_of_training">
                     <optgroup label="Duration"></optgroup>
                     <option value="1-0:30">0:30</option>
                     <option value="2-1:00">1:00</option>
@@ -123,14 +147,14 @@ const sendEvent = () => {
 
             <div class="categoryRadio">
 
-                <div v-for="(category, index) in trainerProfile.category" :key="index" class="btn-group">
+                <div v-for="(category, index) in trainerCategory" :key="index" class="btn-group">
                     <input type="radio" class="btn-check" v-model="selectedCategory" name="category" :id="category"
                         :value="category" autocomplete="off" :checked="index === 0">
                     <label :class="'btn ' + buttonColor[index]" :for="category">{{ category }}</label>
                 </div>
             </div>
 
-            <CheckableList :list="athletes" :enableCheck="newEvent" :error="error" :reset="reset"
+            <CheckableList :list="athletes" :enableCheck="newEvent" :error="error" :reset="reset" :type="'checkbox'"
                 @output-data="getSelected"></CheckableList>
 
             <!-- Modal for Summary-->
@@ -178,7 +202,7 @@ const sendEvent = () => {
 
     <DbError v-if="selected === 'dbError'"></DbError>
 
-    <personalProfile v-if="selected === 'profile'" :userInfo="userInfo" @profile-logout="emit('logout')"/>
+    <personalProfile v-if="selected === 'profile'" :userInfo="userInfo" @profile-logout="emit('logout')" />
     <Calendar v-if="selected === 'calendar'" />
 </template>
 

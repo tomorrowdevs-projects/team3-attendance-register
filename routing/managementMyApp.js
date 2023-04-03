@@ -67,7 +67,7 @@ router.post("/", async (req, res) => {
 
   } catch (error) {
     console.log(error);
-    res.json({ status: 404 }).end();
+    //res.json({ status: 404 }).end();
   }
 });
 /* 

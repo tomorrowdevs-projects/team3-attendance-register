@@ -17,26 +17,26 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['event']);
-
+console.log(props.user)
 //VARIABLE
 const search = ref('all');
 const selectedOrder = ref('hours');
 let filteredList = computed(() => {
     let filtered = [];
     let listCategory = [];
+
     if(props.user.selected === 'trainer'){
         filtered.push(...props.user.trainers.sort(compare));
         listCategory.push(...props.user.categories)
     } else {
         filtered.push(...props.user.athletes.sort(compare));
         listCategory.push(...props.user.categoryAthlete)
-    }
+    };
 
-    //let filtered = props.user.selected === 'trainer' ? [...props.user.trainers.sort(compare)] : [...props.user.athletes.sort(compare)];
-    //let listCategory = props.user.selected === 'trainer' ? [...props.user.trainers.sort(compare)] : [...props.user.athletes.sort(compare)];
+    if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value));
 
-    if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value))
-
+    if (search.value === 'without') filtered = props.user.withoutTrainer;
+    console.log(filtered)
     return [ filtered, listCategory ]
 });
 const name = ref('');
@@ -107,7 +107,7 @@ const editItem = (element) => {
     inputDisabled.value = false;
     oldUsername = element.username;
     catEditUser.value.length = 0;
-    catEditUser.value.push(...element.category);
+    if(element.category) catEditUser.value.push(...element.category);
     old_category = element.category;
     userRole = element.role;
 }
@@ -130,7 +130,7 @@ const saveChange = (event) => {
     data.category = [...catEditUser.value];
     data.old_category = old_category;
     data.role = userRole;
-
+    console.log(data)
     axios
         .put(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data })
         .then((response) => {
@@ -153,11 +153,7 @@ const printPdf = (element) => {
     console.log('pdf')
 }
 
-/* const errors = {
-  400: 'Incorrect Username and/or Password!',
-  401: 'Incorrect Username and/or Password!',
-  404: 'Generic error, try again'
-} */
+
 //Add new user
 const fetchNewUser = (event) => {
     if (catNewUser.value.length === 0) {
@@ -183,7 +179,7 @@ const fetchNewUser = (event) => {
                 resetForm()
             }
             else {
-                errorMessage = `Unexpected error (${response.data.status}), try again!`;
+                errorMessage = response.data.status === 404 ? 'The username already exists' : `Unexpected error (${response.data.status}), try again!`;
                 error.value = true;
             }
         })
@@ -204,6 +200,8 @@ const fetchNewUser = (event) => {
         <select v-model="search" @change="filtered" class="form-select search" aria-label="Default select example">
             <option value="all" selected>ALL CATEGORIES</option>
             <option v-for="category in filteredList[1]" :key="category" :value="category">{{ category }}</option>
+            <option v-if="user.selected === 'athlete'" value="without" selected>WITHOUT TRAINER</option>
+
         </select>
         <div class="order">
             <h5>Order By</h5>
@@ -277,7 +275,7 @@ const fetchNewUser = (event) => {
                                 <div class="mb-3 row">
                                     <label for="category" class="col-sm-4 col-form-label">Category</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control category" :value="trainer.category.join(' - ')"
+                                        <input type="text" class="form-control category" :value="trainer.category ? trainer.category.join(' - ') : ''"
                                             :disabled="inputDisabled">
                                     </div>
                                 </div>

@@ -18,9 +18,13 @@ const props = defineProps({
     reset: {
         type: Boolean,
         default: false
+    },
+    type: {
+        type: String
     }
 });
 
+console.log('list',props.list)
 const selected = ref([]);
 
 const emit = defineEmits(['output-data']);
@@ -29,7 +33,7 @@ const getSelected = () => {
     emit('output-data', selected.value);
 }
 
-watchEffect(() => { if(props.reset) selected.value.length = 0 });
+watchEffect(() => { if(props.reset) props.type === 'radio' ? selected.value = '' : selected.value.length = 0 });
 
 const text = (elem) => props.list[0].surname ? `${elem.surname} ${elem.name}` : elem
 
@@ -41,14 +45,16 @@ const text = (elem) => props.list[0].surname ? `${elem.surname} ${elem.name}` : 
     <div :class="[ 'athleteList', { 'red': error } ]">
         <p>List of Athletes: {{ props.list.length }}</p>
 
-        <span v-if="enableCheck" :class="{ 'red': error }">Selected: {{ selected.length }}</span>
+        <span v-if="enableCheck && props.type === 'checkbox'" :class="{ 'red': error  }">Selected: {{ selected.length }}</span>
+        <span v-if="enableCheck && props.type === 'radio'" class="red sel">Selected: {{ selected }}</span>
 
         <div class="col-12 catContainer" v-for="item in props.list" :key="item.username || item">
             <div class="form-check form-switch">
 
-                <input v-if="enableCheck" v-model="selected" class="form-check-input" type="checkbox" role="switch" :id="item.username || item.replace(/\s/g, '')" :value="item" @change="getSelected">
+                <input v-if="enableCheck && props.type === 'checkbox'" v-model="selected" class="form-check-input" type="checkbox" role="switch" :id="item.username" :value="item" @change="getSelected">
+                <input v-if="enableCheck && props.type === 'radio'" v-model="selected" class="form-check-input redCheck red" type="radio" role="switch" :id="item.username" :value="item" @change="getSelected">
 
-                <label class="form-check-label" :for="item.username || item.replace(/\s/g, '')">{{ text(item) }}</label>
+                <label class="form-check-label" :for="item.username">{{ text(item) }}</label>
 
             </div>
         </div>
@@ -78,7 +84,7 @@ const text = (elem) => props.list[0].surname ? `${elem.surname} ${elem.name}` : 
     font-size: 1.3em;
 }
 
-.form-check-input[type=checkbox] {
+.form-check-input {
     position: absolute;
     right: 1.5em;
     top: .6em;
@@ -102,10 +108,18 @@ const text = (elem) => props.list[0].surname ? `${elem.surname} ${elem.name}` : 
     font-weight: 700;
 }
 
+.redCheck:checked {
+    background-color: red;
+}
+
 .red {
     color: red !important;
     border: 1px solid red !important;
     border-radius: 1em;
+}
+
+.sel{
+    width: 11em !important;
 }
 
 @media only screen and (max-width: 768px) {
