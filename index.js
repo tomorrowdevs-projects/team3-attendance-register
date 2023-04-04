@@ -1,6 +1,5 @@
 //import { initializeApp } from "firebase/app";
 require("dotenv").config();
-
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -9,23 +8,24 @@ const logIn = require("./routing/logIn.js");
 const logout = require("./routing/logout.js");
 const category = require("./routing/category.js");
 const  cookieParser = require('cookie-parser')
-const cookies = require("cookie-parser");
 const edit = require("./routing/editAndDelete.js");
 const calendary = require('./routing/calendary.js')
-const bcrypt = require("bcryptjs");
 const controller = require("./controller/auth.js");
 const select = require('./routing/select.js')
 const fillDb = require("./controller/toFillDb.js");
 const managementMyApp = require("./routing/managementMyApp.js");
-const routing = express.Router();
-const session = require("express-session");
-const  MemoryStore = session.MemoryStore;
 app.use(cookieParser('Murubutu'))
 app.use(
   cors({
     origin: "*",
   })
 );
+
+
+
+
+
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCH4uv4qKiy1ZKkaTT9qyoJAauf8Mdd9mA",
@@ -35,22 +35,12 @@ const firebaseConfig = {
   messagingSenderId: "1051253835545",
   appId: "1:1051253835545:web:4def2a6de80d5299c2e788",
 };
-
+app.use(cookieParser());
 
 // Initialize Firebase
 //app.initializeApp(firebaseConfig);
 //-----------------------------------------------------------------------------------------------------
-//session is like cookie
-app.use(
-  session({
-    name: "secretname" ,
-    secret: "secret",
-    resave: true,
-    saveUninitialized: true,
-    cookie: {maxAge: Date.now() + (30 * 86400 * 1000),httpOnly: true }
-     
-  })
-);  
+ 
 app.use(express.json());
 
 //-----------------------------------------------------------------------------------------------------
@@ -61,12 +51,16 @@ db().then(async (connection) => {
 });
 //-----------------------------------------------------------------------------------------------------
 app.use("/api/v1", logIn);
-
-// app.all('*', controller.onlySession);
-
-
-
 app.use("/api/v1", logout);
+app.all('*', controller.authorization);
+
+
+
+
+
+
+
+
 //first check if you are an administrator,
 //then if the credential format is respected,
 //then if there are no duplicates in the DB
@@ -86,8 +80,8 @@ app.use(
 app.use(
   "/api/v1/managementMyApp",
   // controller.onlyAdmin,
-  // controller.checkParametersRegister,
-  // controller.checkusernameExist,
+  controller.checkParametersRegister,
+  controller.checkusernameExist,
   managementMyApp
 );
 

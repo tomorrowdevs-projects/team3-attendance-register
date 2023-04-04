@@ -8,16 +8,18 @@ async function toFillDb(connection) {
     await connection.query(queries.createDb);
     await connection.query(queries.use);
     await connection.query(queries.createAccounts);
-    await connection.query(queries.calendary);
 
     await connection.query(queries.createCategory);
-  
+
     await connection.query(queries.category_assignment);
+    await connection.query(queries.calendary);
+    await connection.query(queries.hours);
+
 
     let hashedPassowrd = await bcrypt.hash(process.env.PASSWORD_ADMIN, 12);
     let hashedPassowrdTrainer = await bcrypt.hash(
-      process.env.PASSWORD_TRAINER, 
-      12 
+      process.env.PASSWORD_TRAINER,
+      12
     );
     let hashedPassowrdAt00 = await bcrypt.hash(process.env.PASSWORD_AT00, 12);
     let hashedPassowrdAt01 = await bcrypt.hash(process.env.PASSWORD_AT01, 12);
@@ -96,13 +98,13 @@ async function toFillDb(connection) {
         //   "akido",
         //   1,
         //   "Lee",
-        // ]); 
-    await connection.query(queries.alter);
+        // ]);
 
+        await connection.query(queries.alter);
       });
   } catch (err) {
     console.log(err);
   }
 }
 
-module.exports = toFillDb; 
+module.exports = toFillDb;

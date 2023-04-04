@@ -3,24 +3,48 @@ const selectLogin = "SELECT * FROM accounts WHERE username = ? ";
 const use = "USE team3";
 const selectTrainerorAtlete = `SELECT * FROM accounts WHERE role = 'trainer' OR role = 'athlete' `;
 
+const hours = `CREATE TABLE if not exists hours(
+  id_course int NOT NULL,
+
+  username_trainers VARCHAR(255) NOT NULL ,  
+  mounth INT NOT  NULL ,
+  year INT NOT  NULL,
+  number_of_training INT NULL DEFAULT 0, 
+  code_registration int NOT NULL AUTO_INCREMENT unique  COMMENT "refers to id registration",
+
+  
+  FOREIGN KEY(username_trainers) REFERENCES accounts(username)
+  ON UPDATE CASCADE )`;
+
+    
+  
+const insertIntoHours = `INSERT IGNORE INTO hours (id_course, username_trainers, year, mounth, number_of_training) VALUES (?, ?, ?, ?,?) `;
+
 const calendary = `CREATE TABLE if not exists calendary(
-   username VARCHAR(255) NOT NULL ,
-   mounth VARCHAR(15) NOT NULL ,
-   year INT NOT NULL,
-   other_date DATE NOT NULL ,
+  id_course int NOT NULL,
+   username_athlete VARCHAR(255) NOT NULL ,  
+   date DATE NOT  NULL, 
+    mounth INT NOT  NULL , 
+   year INT NOT  NULL,
+   other_date DATE NOT NULL ,  
    category
-    VARCHAR(255),
+    VARCHAR(255) NOT NULL, 
    number_of_training INT NULL DEFAULT 0, 
-   FOREIGN KEY(username) REFERENCES accounts(username)
-   ON UPDATE CASCADE ON DELETE CASCADE
-
+   absences_or_presences VARCHAR(255) NOT NULL, 
+   code_registration int NOT NULL AUTO_INCREMENT unique  COMMENT "refers to course registration",
+ 
+   FOREIGN KEY(username_athlete) REFERENCES accounts(username)
+   ON UPDATE CASCADE ,
+   
+   FOREIGN KEY(id_course) REFERENCES category_assignment(id_course)
+   ON UPDATE CASCADE 
+ 
+ 
+   
   )`;
-
-const selectUnitTime =
-  "SELECT number_of_training  FROM calendary WHERE username  = ? AND year = ? AND mounth = ? ";
-const insertIntoCalendary = `INSERT IGNORE INTO calendary (username, mounth, year, other_date, category
-  , number_of_training) VALUES (?, ?, ?, ?,?, ?) `;
-
+const select_code_registration_calendary = `SELECT code_registration FROM calendary WHERE id_course = ? AND date =? `;
+const selectUnitTime = `SELECT number_of_training  FROM hours WHERE id_course  = ? AND year = ? AND mounth = ? `;
+const insertIntoCalendary = `INSERT IGNORE INTO calendary (id_course, username_athlete, date, mounth, year, other_date,category,  number_of_training, absences_or_presences) VALUES (?, ?, ?, ?,?, ?, ?, ?,?) `;
 const updatehours_minutes_of_training = ` UPDATE IGNORE  accounts SET hours_minutes_of_training_mounth = ? WHERE username = ? `;
 
 const createCategory = `CREATE TABLE if not exists category(
@@ -29,8 +53,6 @@ const createCategory = `CREATE TABLE if not exists category(
    VARCHAR(255) NOT NULL, 
    id_course int NOT NULL,
   username_athlete VARCHAR(255) NULL, 
-  date DATE NULL, 
-  attendance_absences VARCHAR(255)  NULL,
   code_registration int NOT NULL AUTO_INCREMENT unique  COMMENT "refers to course registration",
  
   FOREIGN KEY(username_athlete) REFERENCES accounts(username)   ON UPDATE CASCADE ON DELETE CASCADE,
@@ -41,8 +63,8 @@ const createCategory = `CREATE TABLE if not exists category(
 const category_assignment = `CREATE TABLE if not exists category_assignment(
   id_course int NOT NULL AUTO_INCREMENT PRIMARY KEY ,
   username_trainer VARCHAR(255)  NULL ,  
-  category 
-   VARCHAR(255) NOT NULL ,  
+  category
+  VARCHAR(255) NOT NULL, 
    
   FOREIGN KEY(username_trainer) REFERENCES accounts(username) ON UPDATE CASCADE ON DELETE CASCADE
  
@@ -122,8 +144,7 @@ const delete_category_ID = `DELETE FROM category  WHERE  id_course = ?`;
 const delete_category_assignment_ID = `DELETE FROM category_assignment  WHERE  id_course = ?`;
 
 const select_athlete_from_category_with_usernam_trainer = `SELECT * FROM category WHERE username_trainer = ?  `;
-const date_ath = `SELECT name, surname FROM accounts WHERE username = ?`
-
+const date_ath = `SELECT name, surname FROM accounts WHERE username = ?`;
 
 module.exports = {
   selectLogin,
@@ -174,6 +195,8 @@ module.exports = {
   delete_category_ID,
   delete_category_assignment_ID,
   select_athlete_from_category_with_usernam_trainer,
-  date_ath
-
+  date_ath,
+  select_code_registration_calendary,
+  hours,
+  insertIntoHours,
 };

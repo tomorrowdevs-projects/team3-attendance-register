@@ -1,9 +1,10 @@
 const queries = require("../model/queries.js");
 const connection = require("../src/connectMysql.js");
+const jwt = require("jsonwebtoken");
 
 //if the user exists in the db with params -params is a method of req-
 exports.checkUserWithParams = (req, res, next) => {
-  if (req.method == 'DELETE') return next();
+  if (req.method == "DELETE") return next();
 
   const username = req.path.substring(1);
   connection().then(async (connection) => {
@@ -16,7 +17,7 @@ exports.checkUserWithParams = (req, res, next) => {
           return res.json({ status: 4011 });
         }
       });
-  }); 
+  });
 };
 
 //if  the user or email exists in the db it cannot be stored
@@ -36,10 +37,10 @@ exports.checkusernameExist = (req, res, next) => {
         }
       });
   });
-}; 
+};
 
 exports.checkEmailForEdit = async (req, res, next) => {
-  if (req.method == 'DELETE') return next();
+  if (req.method == "DELETE") return next();
   const { email, newUsername } = req.body;
 
   connection().then(async (connection) => {
@@ -57,8 +58,7 @@ exports.checkEmailForEdit = async (req, res, next) => {
 };
 
 exports.checkParametersRegister = (req, res, next) => {
-
-  if (req.method == 'DELETE') return next();
+  if (req.method == "DELETE") return next();
   let {
     username,
     password,
@@ -68,12 +68,11 @@ exports.checkParametersRegister = (req, res, next) => {
     surname,
     email,
     role,
-    category
+    category,
   } = req.body;
 
   const roles = ["admin", "trainer", "athlete"];
   if (req.path != "/") {
-
     req.body.name = capFirstLetter(name);
     req.body.usurname = capFirstLetter(surname);
     req.body.email = email.toLowerCase();
@@ -91,7 +90,6 @@ exports.checkParametersRegister = (req, res, next) => {
       return res.json({ status: 404 });
     }
   } else {
-    
     req.body.name = capFirstLetter(name);
     req.body.surname = capFirstLetter(surname);
     req.body.username = capFirstLetter(username);
@@ -99,8 +97,7 @@ exports.checkParametersRegister = (req, res, next) => {
     req.body.role = role.toLowerCase();
     req.body.password = password;
     req.body.category = category;
-   
-    
+
     if (
       /^[A-Za-z0-9]*$/.test(username) &&
       // /^(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password) &&
@@ -126,24 +123,40 @@ exports.onlyAdmin = (req, res, next) => {
 };
 
 function capFirstLetter(str) {
-    return str.charAt(0).toUpperCase() + str.toLowerCase().slice(1)
+  return str.charAt(0).toUpperCase() + str.toLowerCase().slice(1);
 }
 
-exports.sevenDays = (date) =>{
-  const seven_days_forward = new Date(Date.now()- 7 * 24 * 60 * 60 * 1000);
- 
-  if(date.getTime() < seven_days_forward.getTime()){
+exports.sevenDays = (date) => {
+  const seven_days_forward = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+  if (date.getTime() < seven_days_forward.getTime()) {
     res.json({ status: 400 }).end();
 
-   console.log('After 7 days it is not possible to make changes!!')
-  }else{
-
-
+    console.log("After 7 days it is not possible to make changes!!");
+  } else {
   }
-}
-exports.onlySession =(req, res, next) => {
-	if (req.session === "undefined") next();
+};
+exports.onlySession = (req, res, next) => {
+  // console.log(req.session,'casa')
+
+  if (req.session.loggedin === true) next();
   else {
+    console.log("ciao");
     return res.json({ status: 401 }).end();
-}
-}
+  }
+};
+exports.authorization = (req, res, next) => {
+  const token = req.cookies.access_token;
+  if (!token) {
+    return res.sendStatus(403);
+  }
+  try {
+    const data = jwt.verify(token, process.env.JWT);
+    req.username = data.username;
+    req.userRole = data.role;
+
+    return next();
+  } catch {
+    return res.sendStatus(403);
+  }
+};
