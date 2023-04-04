@@ -57,7 +57,7 @@ get()
 
     <adminCategories v-if="selected === 'category'" :category="data.categories" @cat-changed="get" />
 
-    <Calendar v-if="selected === 'calendar'" />
+    <Calendar v-if="selected === 'calendar'" :category="data.categories" :type="'admin'"/>
 </template>
 
 <style scoped>

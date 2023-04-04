@@ -95,7 +95,7 @@ router.post("/calendary/:username", async (req, res) => {
 
 //view the monthly hours for each trainer
 
-router.get("/calendary/list:username", async (req, res) => {
+router.get("/calendary/list/:username", async (req, res) => {
   try {
     const username = req.params.username;
     await connection().then(async (connection) => {
@@ -103,7 +103,8 @@ router.get("/calendary/list:username", async (req, res) => {
       await connection
         .query(queries.select_all_from_calendary, [username])
         .then(async ([rows]) => {
-          if (rows) res.json({ status: 201 }).end();
+          rows.forEach(row => new Date(date_now) > row.other_date ? row.edit = false : row.edit = true)
+          if (rows) res.json({ status: 201, data: rows }).end();
           else {
             res.json({ status: 400 }).end();
           }

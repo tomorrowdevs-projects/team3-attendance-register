@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue';
-import athleteJson from '../../athlete.json';
+import axios from 'axios';
 import getData from '../JS/getData.js';
 import personalProfile from './personalProfile.vue';
 import Calendar from './calendar.vue';
@@ -32,7 +32,6 @@ getData.getTrainerData(props.userInfo.username).then((res) => {
 })
 
 watch(selectedCategory, (newValue, oldValue) => {
-    console.log(trainerCategory.value, newValue)
     athletes.value = dataDB.value.filter(el => el.category === newValue).sort(compare)
 },
     {
@@ -82,9 +81,7 @@ const addNewEvent = (event) => {
         let tmp = '';
         [tmp, durationString.value] = data.number_of_training.split('-');
         data.number_of_training = Number(tmp);
-        data.date = new Date();
-        data.month = data.date.getMonth();
-        data.year = data.date.getFullYear();
+
         console.log(athletes.value,'athle')
         data.id_course = athletes.value[0].id_course;
         const selectedAthletesUsername = selectedAthletes.value.map(el => el.username_athlete);
@@ -92,7 +89,7 @@ const addNewEvent = (event) => {
             const { username_athlete } = athl;
             return { ...obj, [username_athlete]: selectedAthletesUsername.includes(username_athlete) };
         }, {});
-        data.username_trainer = props.userInfo.username;
+
         const modal = document.querySelector('#modalSummary');
         const bsModal = new bootstrap.Modal(modal);
         bsModal.show();
@@ -100,10 +97,12 @@ const addNewEvent = (event) => {
     }
 }
 
-const sendEvent = () => {
+const sendEvent = async () => {
     newEvent.value = false;
     reset.value = true;
-    console.log(dataEvent)
+    await axios
+        .post(`http://localhost:2000/api/v1/calendary/${props.userInfo.username}`, dataEvent)
+        .then((response) => console.log(response.data));
 
 }
 
@@ -115,7 +114,7 @@ const sendEvent = () => {
 
     <div v-if="selected === ''" class="container col-6">
         <div class="butContainer gap-4">
-            <Button :type="{ title: 'Profile', icons: 'trainer' }"
+            <Button :type="{ title: `${props.userInfo.surname} Profile`, icons: 'trainer' }"
                 @click="[selected, showBack] = ['profile', true]"></Button>
             <Button :type="{ title: 'Calendar', icons: 'calendar' }"
                 @click="[selected, showBack] = ['calendar', true]"></Button>
@@ -203,7 +202,7 @@ const sendEvent = () => {
     <DbError v-if="selected === 'dbError'"></DbError>
 
     <personalProfile v-if="selected === 'profile'" :userInfo="userInfo" @profile-logout="emit('logout')" />
-    <Calendar v-if="selected === 'calendar'" />
+    <Calendar v-if="selected === 'calendar'" :category="trainerCategory" :type="'trainer'"/>
 </template>
 
 <style scoped>

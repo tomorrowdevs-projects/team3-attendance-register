@@ -51,6 +51,11 @@ async function getTrainerData (trainerUsername) {
         .get(`http://localhost:2000/api/v1/category_and_accounts/${trainerUsername}`)
         .then((response) => data.push(...response.data.data));
 
+    await axios
+        .get(`http://localhost:2000/api/v1/calendary/list/${trainerUsername}`)
+        .then((response) => console.log(response.data));
+        
+
     return {
         status: data.length === 0,
         data: data,

@@ -51,7 +51,7 @@ const select_code_registration_calendary = `SELECT code_registration FROM calend
 const selectUnitTime = `SELECT number_of_training  FROM hours WHERE id_course  = ? AND year = ? AND mounth = ? `;
 const insertIntoCalendary = `INSERT IGNORE INTO calendary (username_trainer, id_course, username_athlete, date, mounth, year, other_date,category,  number_of_training, absences_or_presences) VALUES (?, ?, ?, ?, ?,?, ?, ?, ?,?) `;
 const updatehours_minutes_of_training = ` UPDATE IGNORE  accounts SET hours_minutes_of_training_mounth = ? WHERE username = ? `;
-const select_all_from_calendary =` SELECT * FROM  calendary WHERE username = ?`
+const select_all_from_calendary =` SELECT * FROM  calendary WHERE username_trainer = ?`
 const createCategory = `CREATE TABLE if not exists category(
   username_trainer VARCHAR(255) NOT NULL ,
   category
