@@ -9,14 +9,12 @@ const mounth = d.getMonth()  +1
 
 const date_now = d.getFullYear()+'-'+ mounth +'-' +d.getUTCDate();
 
-const seven_days_forward = new Date(d + 7 * 24 * 60 * 60 * 1000);
+const seven_days_forward = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-let year = d.getFullYear();
 
 //entering hours worked by the trainer
 router.post("/calendary/:username", async (req, res) => {
   try {
-    // const username = req.params.username;
     //When a trainer enters the hours worked for a category, the following operations are these:
     //1) data entry in DB with reference category,
     //2)selection of all the hours done in that month by the specific teacher,
@@ -30,7 +28,7 @@ router.post("/calendary/:username", async (req, res) => {
         .query(queries.select_code_registration_calendary, [1 , date_now])
         .then(async ([rows]) => {
           if (rows.length === 0) {
-
+console.log(seven_days_forward)
             for (const username_ath in nome_ath) {
               await connection.query(queries.use);
 
@@ -104,15 +102,15 @@ router.post("/calendary/:username", async (req, res) => {
 
 //view the monthly hours for each trainer
 
-router.get("/calendary/list_monthly_hours/:username", async (req, res) => {
+router.get("/calendary/list", async (req, res) => {
   try {
     const username = req.params.username;
     await connection().then(async (connection) => {
       await connection.query(queries.use);
       await connection
-        .query(queries.select_monthly_hours_mounth, [username])
+        .query(queries.select_all_calendary)
         .then(async ([rows]) => {
-          if (rows) res.json({ status: 201, success: true }).end();
+          if (rows) res.json({ status: 201}).end();
           else {
             res.json({ status: 400 }).end();
           }
@@ -185,6 +183,7 @@ router.get("/calendary/list_monthly_hours/:username", async (req, res) => {
 
 
 
+// router.get("/calendary/", async (req, res) => {
 
 
 

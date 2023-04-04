@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
-router.get("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   if (username && password) {
     connection()
@@ -28,7 +28,6 @@ router.get("/login", async (req, res) => {
               let hashedPassowrd = bcrypt.compareSync(password, hashPasswordDb);
 
               // If the pass is ok and user exist:
-console.log('caca')
               if (hashedPassowrd) {
                 connection
                   .query(queries.selectLogin, [username])
