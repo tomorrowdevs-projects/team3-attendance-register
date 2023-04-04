@@ -28,7 +28,7 @@ router.get("/login", async (req, res) => {
               let hashedPassowrd = bcrypt.compareSync(password, hashPasswordDb);
 
               // If the pass is ok and user exist:
-
+console.log('caca')
               if (hashedPassowrd) {
                 connection
                   .query(queries.selectLogin, [username])

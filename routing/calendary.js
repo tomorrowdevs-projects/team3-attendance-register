@@ -3,9 +3,11 @@ const express = require("express");
 const connection = require("../src/connectMysql.js");
 const router = express.Router();
 
-
-
 const d = new Date();
+
+const mounth = d.getMonth()  +1 
+
+const date_now = d.getFullYear()+'-'+ mounth +'-' +d.getUTCDate();
 
 const seven_days_forward = new Date(d + 7 * 24 * 60 * 60 * 1000);
 
@@ -20,30 +22,28 @@ router.post("/calendary/:username", async (req, res) => {
     //2)selection of all the hours done in that month by the specific teacher,
     //3)the total teaching hours are recorded in the account table.
     const username_trainer = req.params.username;
-    const { id_course, number_of_training } = req.body;
-console.log(d)
+    const { id_course, number_of_training, category, nome_ath} = req.body;
     await connection().then(async (connection) => {
       await connection.query(queries.use);
       //controll-id and date-
       await connection
-        .query(queries.select_code_registration_calendary, [1 , d.getUTCDate()])
+        .query(queries.select_code_registration_calendary, [1 , date_now])
         .then(async ([rows]) => {
-          if (rows.length >= 0) {
-            r = { Adele: "true", Tino: "false" };
-console.log(rows)
-            for (const username_ath in r) {
+          if (rows.length === 0) {
+
+            for (const username_ath in nome_ath) {
               await connection.query(queries.use);
 
               await connection.query(queries.insertIntoCalendary, [
                 1,
                 username_ath,
                 d,
-                d.getMonth() + 1,
+                mounth,
                 d.getFullYear(),
                 seven_days_forward,
-                "Akido",
-                5,
-                r[username_ath],
+                category,
+                number_of_training,
+                nome_ath[username_ath],
               ]);
            
 
@@ -53,8 +53,8 @@ console.log(rows)
               1,
               username_trainer,
               d.getFullYear(),    
-              d.getMonth() + 1,
-              5,
+              mounth,
+              number_of_training,
             ]);
 
             //takes all hours of the specific month and year
@@ -65,7 +65,7 @@ console.log(rows)
               .query(queries.selectUnitTime, [
                 1,
                 d.getFullYear(),
-                d.getMonth() + 1,
+                mounth,
               ])
 
               .then(async ([rows]) => {
@@ -182,5 +182,10 @@ router.get("/calendary/list_monthly_hours/:username", async (req, res) => {
     res.json({ status: 401 }).end();
   }
 });
+
+
+
+
+
 
 module.exports = router;

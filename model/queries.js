@@ -26,11 +26,11 @@ const calendary = `CREATE TABLE if not exists calendary(
    date DATE NOT  NULL, 
     mounth INT NOT  NULL , 
    year INT NOT  NULL,
-   other_date DATE NOT NULL ,  
+   other_date DATE NOT NULL ,    
    category
     VARCHAR(255) NOT NULL, 
    number_of_training INT NULL DEFAULT 0, 
-   absences_or_presences VARCHAR(255) NOT NULL, 
+   absences_or_presences BOOLEAN NOT NULL, 
    code_registration int NOT NULL AUTO_INCREMENT unique  COMMENT "refers to course registration",
  
    FOREIGN KEY(username_athlete) REFERENCES accounts(username)

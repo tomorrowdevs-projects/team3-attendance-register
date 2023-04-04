@@ -52,7 +52,7 @@ db().then(async (connection) => {
 //-----------------------------------------------------------------------------------------------------
 app.use("/api/v1", logIn);
 app.use("/api/v1", logout);
-app.all('*', controller.authorization);
+// app.all('*', controller.authorization);
 
 
 
