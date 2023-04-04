@@ -5,12 +5,11 @@ const router = express.Router();
 
 const d = new Date();
 
-const mounth = d.getMonth()  +1 
+const mounth = d.getMonth() + 1;
 
-const date_now = d.getFullYear()+'-'+ mounth +'-' +d.getUTCDate();
+const date_now = d.getFullYear() + "-" + mounth + "-" + d.getUTCDate();
 
 const seven_days_forward = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
 
 //entering hours worked by the trainer
 router.post("/calendary/:username", async (req, res) => {
@@ -20,19 +19,20 @@ router.post("/calendary/:username", async (req, res) => {
     //2)selection of all the hours done in that month by the specific teacher,
     //3)the total teaching hours are recorded in the account table.
     const username_trainer = req.params.username;
-    const { id_course, number_of_training, category, nome_ath} = req.body;
+    const { id_course, number_of_training, category, nome_ath } = req.body;
     await connection().then(async (connection) => {
       await connection.query(queries.use);
       //controll-id and date-
       await connection
-        .query(queries.select_code_registration_calendary, [1 , date_now])
+        .query(queries.select_code_registration_calendary, [id_course, date_now])
         .then(async ([rows]) => {
           if (rows.length === 0) {
-console.log(seven_days_forward)
+            console.log(seven_days_forward);
             for (const username_ath in nome_ath) {
               await connection.query(queries.use);
 
               await connection.query(queries.insertIntoCalendary, [
+                username_trainer,
                 1,
                 username_ath,
                 d,
@@ -43,14 +43,12 @@ console.log(seven_days_forward)
                 number_of_training,
                 nome_ath[username_ath],
               ]);
-           
-
             }
 
             await connection.query(queries.insertIntoHours, [
               1,
               username_trainer,
-              d.getFullYear(),    
+              d.getFullYear(),
               mounth,
               number_of_training,
             ]);
@@ -60,18 +58,13 @@ console.log(seven_days_forward)
             req.method = this.get;
 
             await connection
-              .query(queries.selectUnitTime, [
-                1,
-                d.getFullYear(),
-                mounth,
-              ])
+              .query(queries.selectUnitTime, [id_course, d.getFullYear(), mounth])
 
               .then(async ([rows]) => {
                 let tot_hours = 0;
                 for (let number of rows) {
                   tot_hours += number.number_of_training;
                 }
-               
 
                 //updates the hours of the current month made on accounts
 
@@ -102,15 +95,15 @@ console.log(seven_days_forward)
 
 //view the monthly hours for each trainer
 
-router.get("/calendary/list", async (req, res) => {
+router.get("/calendary/list:username", async (req, res) => {
   try {
     const username = req.params.username;
     await connection().then(async (connection) => {
       await connection.query(queries.use);
       await connection
-        .query(queries.select_all_calendary)
+        .query(queries.select_all_from_calendary, [username])
         .then(async ([rows]) => {
-          if (rows) res.json({ status: 201}).end();
+          if (rows) res.json({ status: 201 }).end();
           else {
             res.json({ status: 400 }).end();
           }
@@ -122,69 +115,24 @@ router.get("/calendary/list", async (req, res) => {
   }
 });
 
-//view a **monthly report "trainer : hours/monthly"
 
-router.get("/calendary/list_monthly_hours_all", async (req, res) => {
-  try {
-    await connection().then(async (connection) => {
-      await connection.query(queries.use);
-      await connection
-        .query(queries.select_monthly_hours_mounth_all)
-        .then(async ([rows]) => {
-          if (rows) {
-            let tot_hours = 0;
-            for (let number of rows) {
-              tot_hours += number.hours_minutes_of_training_current_month;
-            }
+//edit
+router.patch("/calendary_edit", async (req, res) => {
+  await connection().then(async (connection) => {
+    await connection.query(queries.use);
+    //controll-id and date-
+    await connection
+      .query(queries.select_code_registration_calendary, [id_course, date_now])
+      .then(async ([rows]) => {
+        if (rows.length === 0) {
 
-            res.json({ status: 201, data: tot_hours }).end();
-          } else {
-            res.json({ status: 400 }).end();
-          }
-        });
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({ status: 401 }).end();
-  }
+
+
+
+
+        }
+      });
+  });
 });
-
-//view a **monthly report "trainer : hours/monthly"-specif mounth-
-router.get("/calendary/list_monthly_hours/:username", async (req, res) => {
-  try {
-    const username = req.params.username;
-    const { year, mounth } = req.body;
-    await connection().then(async (connection) => {
-      await connection.query(queries.use);
-      await connection
-        .query(queries.select_monthly_hours_for_specific_mounth, [
-          username,
-          year,
-          mounth,
-        ])
-        .then(async ([rows]) => {
-          if (rows) {
-            let tot_hours = 0;
-            for (let number of rows) {
-              tot_hours += number.number_of_training;
-            }
-
-            res.json({ status: 201, data: tot_hours }).end();
-          } else {
-            res.json({ status: 400 }).end();
-          }
-        });
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({ status: 401 }).end();
-  }
-});
-
-
-
-// router.get("/calendary/", async (req, res) => {
-
-
 
 module.exports = router;

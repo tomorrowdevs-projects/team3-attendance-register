@@ -21,6 +21,8 @@ const hours = `CREATE TABLE if not exists hours(
 const insertIntoHours = `INSERT IGNORE INTO hours (id_course, username_trainers, year, mounth, number_of_training) VALUES (?, ?, ?, ?,?) `;
 
 const calendary = `CREATE TABLE if not exists calendary(
+  username_trainer VARCHAR(255) NOT NULL ,  
+
   id_course int NOT NULL,
    username_athlete VARCHAR(255) NOT NULL ,  
    date DATE NOT  NULL, 
@@ -42,11 +44,14 @@ const calendary = `CREATE TABLE if not exists calendary(
  
    
   )`;
+
+
+const select_other_date  = `SELECT other_date FROM CALENDARY WHERE id_course = ?`
 const select_code_registration_calendary = `SELECT code_registration FROM calendary WHERE id_course = ? AND date =? `;
 const selectUnitTime = `SELECT number_of_training  FROM hours WHERE id_course  = ? AND year = ? AND mounth = ? `;
-const insertIntoCalendary = `INSERT IGNORE INTO calendary (id_course, username_athlete, date, mounth, year, other_date,category,  number_of_training, absences_or_presences) VALUES (?, ?, ?, ?,?, ?, ?, ?,?) `;
+const insertIntoCalendary = `INSERT IGNORE INTO calendary (username_trainer, id_course, username_athlete, date, mounth, year, other_date,category,  number_of_training, absences_or_presences) VALUES (?, ?, ?, ?, ?,?, ?, ?, ?,?) `;
 const updatehours_minutes_of_training = ` UPDATE IGNORE  accounts SET hours_minutes_of_training_mounth = ? WHERE username = ? `;
-const select_all_calendary =` SELECT * FROM  calendary`
+const select_all_from_calendary =` SELECT * FROM  calendary WHERE username = ?`
 const createCategory = `CREATE TABLE if not exists category(
   username_trainer VARCHAR(255) NOT NULL ,
   category
@@ -199,5 +204,7 @@ module.exports = {
   select_code_registration_calendary,
   hours,
   insertIntoHours,
-  select_all_calendary
+  select_all_from_calendary
+  
 };
+ 
