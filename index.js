@@ -18,6 +18,8 @@ app.use(cookieParser('Murubutu'))
 app.use(
   cors({
     origin: "*",
+      //  origin: 'http://localhost:2000',
+
   })
 );
 

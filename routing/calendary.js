@@ -6,7 +6,7 @@ const router = express.Router();
 const d = new Date();
 
 const mounth = d.getMonth() + 1;
-
+const data = "";
 const date_now = d.getFullYear() + "-" + mounth + "-" + d.getUTCDate();
 
 const seven_days_forward = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -19,21 +19,23 @@ router.post("/calendary/:username", async (req, res) => {
     //2)selection of all the hours done in that month by the specific teacher,
     //3)the total teaching hours are recorded in the account table.
     const username_trainer = req.params.username;
-    const { id_course, number_of_training, category, nome_ath } = req.body;
+    const { id_course, number_of_training, category, name_ath } = req.body;
     await connection().then(async (connection) => {
       await connection.query(queries.use);
       //controll-id and date-
       await connection
-        .query(queries.select_code_registration_calendary, [id_course, date_now])
+        .query(queries.select_code_registration_calendary, [
+          id_course,
+          date_now,
+        ])
         .then(async ([rows]) => {
           if (rows.length === 0) {
-            console.log(seven_days_forward);
-            for (const username_ath in nome_ath) {
+            for (const username_ath in name_ath) {
               await connection.query(queries.use);
 
               await connection.query(queries.insertIntoCalendary, [
                 username_trainer,
-                1,
+                id_course,
                 username_ath,
                 d,
                 mounth,
@@ -41,12 +43,12 @@ router.post("/calendary/:username", async (req, res) => {
                 seven_days_forward,
                 category,
                 number_of_training,
-                nome_ath[username_ath],
+                name_ath[username_ath],
               ]);
             }
 
             await connection.query(queries.insertIntoHours, [
-              1,
+              id_course,
               username_trainer,
               d.getFullYear(),
               mounth,
@@ -58,7 +60,11 @@ router.post("/calendary/:username", async (req, res) => {
             req.method = this.get;
 
             await connection
-              .query(queries.selectUnitTime, [id_course, d.getFullYear(), mounth])
+              .query(queries.selectUnitTime, [
+                id_course,
+                d.getFullYear(),
+                mounth,
+              ])
 
               .then(async ([rows]) => {
                 let tot_hours = 0;
@@ -103,7 +109,11 @@ router.get("/calendary/list/:username", async (req, res) => {
       await connection
         .query(queries.select_all_from_calendary, [username])
         .then(async ([rows]) => {
-          rows.forEach(row => new Date(date_now) > row.other_date ? row.edit = false : row.edit = true)
+          rows.forEach((row) =>
+            new Date(date_now) > row.other_date
+              ? (row.edit = false)
+              : (row.edit = true)
+          );
           if (rows) res.json({ status: 201, data: rows }).end();
           else {
             res.json({ status: 400 }).end();
@@ -116,24 +126,85 @@ router.get("/calendary/list/:username", async (req, res) => {
   }
 });
 
-
 //edit
 router.patch("/calendary_edit", async (req, res) => {
-  await connection().then(async (connection) => {
-    await connection.query(queries.use);
-    //controll-id and date-
-    await connection
-      .query(queries.select_code_registration_calendary, [id_course, date_now])
-      .then(async ([rows]) => {
-        if (rows.length === 0) {
+  await connection()
+    .then(async (connection) => {
+      const { id_course, number_of_training, name_ath } = req.body;
 
+      await connection.query(queries.use);
+      await connection
+        //find old number_of_training
+        .query(queries.select_number_of_training_old, [id_course, "2023-4-4"])
 
+        .then(async ([rows]) => {
+          const old = rows[0].number_of_training;
+          const mounth = rows[0].mounth;
+          const year = rows[0].year;
+          const username = rows[0].username_trainer;
+          for (const username_ath in name_ath) {
+            //write to calendary
 
+            await connection.query(queries.edit_calendary, [
+              old,
+              name_ath[username_ath],
+              id_course,
+              username_ath,
+            ]);
+          }
+          await connection
 
+            .query(queries.select_from_hours, [mounth, id_course, year])
+            .then(async ([rows]) => {
+              const old_mouthly = rows[0].number_of_training;
+              //fewer units of work were done
+              if (old > number_of_training) {
+                let number_of_training_new = old - number_of_training;
+                let new_monthly = old_mouthly - number_of_training_new;
 
-        }
-      });
-  });
+                //write to hours
+                await connection.query(queries.edit_hours, [
+                  new_monthly,
+                  id_course,
+                  mounth,
+                  year,
+                ]);
+                await connection.query(queries.edit_hours_accounts, [
+                  new_monthly,
+                  username,
+                ])  
+                
+
+                //if they are equal -error 407-
+              } else if (old === number_of_training) {
+                res.json({ status: 407 }).end();
+              } else {
+                old < number_of_training;
+                let number_of_training_new = number_of_training - old;
+                let new_monthly = old_mouthly - number_of_training_new;
+                //write to hours
+                await connection.query(queries.edit_hours, [
+                  new_monthly,
+                  id_course,
+                  mounth,
+                  year,
+                ]);
+                await connection.query(queries.edit_hours_accounts, [
+                  new_monthly,
+                  username,
+                ]);
+                            }
+            });
+        });
+        console.log(req.userRole)
+  })
+    .then(() => {
+      res.json({ status: 201 }).end();
+    })
+    .catch((error) => {
+      console.error(error);
+      res.json({ status: 402 }).end();
+    });
 });
 
 module.exports = router;

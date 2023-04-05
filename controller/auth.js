@@ -154,7 +154,6 @@ exports.authorization = (req, res, next) => {
     const data = jwt.verify(token, process.env.JWT);
     req.username = data.username;
     req.userRole = data.role;
-
     return next();
   } catch {
     return res.sendStatus(403);

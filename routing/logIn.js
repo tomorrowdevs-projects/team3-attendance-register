@@ -39,6 +39,7 @@ router.post("/login", async (req, res) => {
                       },
                       process.env.JWT
                     );
+                    console.log(token)
 
                     res
                       .cookie("access_token", token, {
