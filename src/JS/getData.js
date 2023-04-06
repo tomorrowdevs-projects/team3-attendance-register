@@ -46,6 +46,7 @@ async function getData () {
 
 async function getTrainerData (trainerUsername) {
     const data = [];
+    const calendar = [];
 
     await axios
         .get(`http://localhost:2000/api/v1/category_and_accounts/${trainerUsername}`)
@@ -53,12 +54,12 @@ async function getTrainerData (trainerUsername) {
 
     await axios
         .get(`http://localhost:2000/api/v1/calendary/list/${trainerUsername}`)
-        .then((response) => console.log(response.data));
+        .then((response) => calendar.push(...response.data.data));
         
-
     return {
         status: data.length === 0,
         data: data,
+        calendar: calendar
     }
 }
 

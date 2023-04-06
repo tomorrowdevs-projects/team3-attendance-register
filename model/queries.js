@@ -154,7 +154,8 @@ const delete_category_assignment_ID = `DELETE FROM category_assignment  WHERE  i
 
 const select_athlete_from_category_with_usernam_trainer = `SELECT * FROM category WHERE username_trainer = ?  `;
 const date_ath = `SELECT name, surname FROM accounts WHERE username = ?`;
-const innerjoin_account_calendary = ` SELECT  name, surname FROM accounts FULL JOIN calendary ON username = username_athlete `;
+const innerjoin_account_calendary = ` SELECT  * FROM accounts FULL JOIN calendary ON username = username_athlete`;
+
 module.exports = {
   selectLogin,
   alter,
@@ -213,5 +214,6 @@ module.exports = {
   select_number_of_training_old,
   select_from_hours,
   edit_hours,
-  edit_hours_accounts
+  edit_hours_accounts,
+  innerjoin_account_calendary,
 };

@@ -1,7 +1,6 @@
 <script setup>
 //SCRIPT
 import { ref, computed } from 'vue';
-import calendarJson from '../../calendar.json';
 
 // PROPS
 const props = defineProps({
@@ -12,14 +11,18 @@ const props = defineProps({
   type: {
     type: String,
     required: true
+  },
+  calendar: {
+    type: Array,
+    required: true
   }
 });
-
+console.log(props.calendar)
 function getColor() {
   return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")//"#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
 }
 
-const color = calendarJson.map(el => getColor());
+const color = props.calendar.map(el => getColor());
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const years = Array.from({ length: 10 }, (el, index) => 2023 + index);
 
@@ -28,10 +31,10 @@ const actualYear = new Date().getFullYear();
 const monthSelected = ref(actualMonth);
 const yearSelected = ref(actualYear);
 const categorySelected = ref(props.category[0]);
-const trainerSelected = ref(calendarJson[0].username_trainer);
+const trainerSelected = ref('all');
 
 const filtered = computed(() => {
-  const data = calendarJson.sort((a, b) => new Date(a.date) - new Date(b.date));
+  const data = props.calendar.sort((a, b) => new Date(a.date) - new Date(b.date));
   let filter = data.filter(el => {
     const date = new Date(el.date);
     return (monthSelected.value === 'all' ? true : date.getMonth() === monthSelected.value) && date.getFullYear() === yearSelected.value
@@ -40,8 +43,7 @@ const filtered = computed(() => {
   if (categorySelected.value !== 'all') filter = filter.filter(elem => elem.category === categorySelected.value)
   return filter
 })
-console.log(props.category)
-
+console.log(filtered)
 </script>
 
 
@@ -69,7 +71,7 @@ console.log(props.category)
       <select v-if="props.type === 'admin'" v-model="trainerSelected" class="form-select search"
         aria-label="Default select example">
         <option value="all"> ALL</option>
-        <option v-for="(evnt, index) in calendarJson" :key="index" :value="evnt.username_trainer">{{ evnt.username_trainer
+        <option v-for="(evnt, index) in props.calendar" :key="index" :value="evnt.username_trainer">{{ evnt.username_trainer
         }}</option>
       </select>
     </div>
@@ -83,11 +85,14 @@ console.log(props.category)
         <div class="card-header text" :style="'color:' + color[index]"> {{ item.category }}</div>
         <div class="card-body">
           <h5 class="card-title"> {{ item.username_trainer }}</h5>
+          <ul>
+            <li v-for="elem in item.name_ath" :key="elem[0]"> {{ `${elem[1]} ${elem[2]}` }}</li>
+          </ul>
           <p class="card-text">{{ item.username_athlete }}</p>
         </div>
         <div class="card-footer">
           <small class="text-body-secondary"> {{ item.date }}</small>
-          <img src="@/components/icons/edit.png" alt="edit">
+          <img v-if="item.edit" src="@/components/icons/edit.png" alt="edit">
         </div>
       </div>
     </div>

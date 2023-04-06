@@ -24,7 +24,6 @@ const props = defineProps({
     }
 });
 
-console.log('list',props.list)
 const selected = ref([]);
 
 const emit = defineEmits(['output-data']);

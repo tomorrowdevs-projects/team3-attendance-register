@@ -22,14 +22,20 @@ const dataDB = ref([]);
 const trainerCategory = ref([]);
 let athletes = ref([]);
 const selectedCategory = ref(trainerCategory.value[0]);
-
-getData.getTrainerData(props.userInfo.username).then((res) => {
+const calendarData = ref([])
+function get (username_trainer) {
+getData.getTrainerData(username_trainer).then((res) => {
     dataDB.value = res.data;
+    calendarData.value = res.calendar;
+    console.log(calendarData.value)
     trainerCategory.value = [...new Set(res.data.reduce((acc, el) => { acc.push(el.category); return acc; }, []))];
     athletes.value = res.data.filter(el => el.category === trainerCategory.value[0]).sort(compare);
 
     if (res.status) selected.value = 'dbError'
 })
+}
+
+get(props.userInfo.username);
 
 watch(selectedCategory, (newValue, oldValue) => {
     athletes.value = dataDB.value.filter(el => el.category === newValue).sort(compare)
@@ -85,7 +91,7 @@ const addNewEvent = (event) => {
         console.log(athletes.value,'athle')
         data.id_course = athletes.value[0].id_course;
         const selectedAthletesUsername = selectedAthletes.value.map(el => el.username_athlete);
-        data.nome_ath = athletes.value.reduce((obj, athl) => {
+        data.name_ath = athletes.value.reduce((obj, athl) => {
             const { username_athlete } = athl;
             return { ...obj, [username_athlete]: selectedAthletesUsername.includes(username_athlete) };
         }, {});
@@ -102,7 +108,7 @@ const sendEvent = async () => {
     reset.value = true;
     await axios
         .post(`http://localhost:2000/api/v1/calendary/${props.userInfo.username}`, dataEvent)
-        .then((response) => console.log(response.data));
+        .then((response) => get(props.userInfo.username));
 
 }
 
@@ -202,7 +208,7 @@ const sendEvent = async () => {
     <DbError v-if="selected === 'dbError'"></DbError>
 
     <personalProfile v-if="selected === 'profile'" :userInfo="userInfo" @profile-logout="emit('logout')" />
-    <Calendar v-if="selected === 'calendar'" :category="trainerCategory" :type="'trainer'"/>
+    <Calendar v-if="selected === 'calendar'" :category="trainerCategory" :type="'trainer'" :calendar="calendarData"/>
 </template>
 
 <style scoped>

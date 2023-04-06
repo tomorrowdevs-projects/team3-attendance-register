@@ -242,7 +242,7 @@ router.get("/category_and_accounts/:username", async (req, res) => {
                         data: rows,
                       })
                       .end();
-                  console.log("rows", rows);
+
                 });
             });
           } else {
