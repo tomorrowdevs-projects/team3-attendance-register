@@ -27,7 +27,7 @@ const fetchData = () => {
   // end DEMO VERSION
 
   axios
-    .post('http://localhost:2000/api/v1/login', postData)
+    .post('http://localhost:2000/api/v1/login', postData, { withCredentials: true })
     .then((response) => {
       if (response.data.status in errors) message.value = errors[response.data.status]
       else if (response.data.status === 201) emit('login-success',response.data.data[0])

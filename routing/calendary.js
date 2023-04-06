@@ -99,60 +99,42 @@ router.post("/calendary/:username", async (req, res) => {
   }
 });
 
-//function to transform data for sending calendary/list
-function transformData (rows) {
-  const result = [];
-  rows.forEach(obj => {
-    const index = result.findIndex(elem => elem.id === obj.id_course);
-    if (index === -1) {
-      result.push({
-        id: obj.id_course,
-        username_trainer: obj.username_trainer,
-        edit: new Date(date_now) > obj.other_date ? false : true,
-        date: obj.date,
-        category: obj.category,
-        number_of_training: obj.number_of_training, 
-        name_ath: { [obj.username_athlete]: [obj.absences_or_presences, obj.surname, obj.name] },
-        mounth: obj.mounth,
-        year: obj.year,
-      });
-    } else {
-      result[index].name_ath[obj.username_athlete] = [obj.absences_or_presences, obj.surname, obj.name];
-    }
-  });
-
-  return result
-};
-
 //view the monthly hours for each trainer
 
 router.get("/calendary/list/:username", async (req, res) => {
   try {
-    req.userRole = 'trainer';
     const username = req.params.username;
     await connection().then(async (connection) => {
       await connection.query(queries.use);
-      if (req.userRole !== 'admin') {
-        await connection
-          .query(queries.innerjoin_account_calendary, [username])
-          .then(async ([rows]) => {
-            const result = transformData(rows);
-            console.log(rows);
-            if (rows) res.json({ status: 201, data: result }).end();
-            else res.json({ status: 400 }).end();
+      await connection
+        .query(queries.innerjoin_account_calendary, [username])
+        .then(async ([rows]) => {
+          const filter = [];
+          const result = [];
+          if (req.userRole !== 'admin') filter.push(...rows.filter(el => el.username_trainer === username))
+          else filter.push(...rows)
+          filter.forEach(obj => {
+            const index = result.findIndex(elem => elem.id === obj.id_course);
+            if (index === -1) {
+              result.push({
+                id: obj.id_course,
+                username_trainer: obj.username_trainer,
+                edit: new Date(date_now) > obj.other_date ? false : true,
+                date: obj.date,
+                category: obj.category,
+                number_of_training: obj.number_of_training,
+                name_ath: { [obj.username_athlete]: [obj.absences_or_presences, obj.surname, obj.name] },
+                mounth: obj.mounth,
+                year: obj.year,
+              });
+            } else {
+              result[index].name_ath[obj.username_athlete] = [obj.absences_or_presences, obj.surname, obj.name];
+            }
           });
 
-      } else {
-        await connection
-          .query(queries.select_admin_calendary)
-          .then(async ([rows]) => {
-            const result = transformData(rows);
-            //console.log('admin',result[0].name_ath, rows);
-            if (rows) res.json({ status: 201, data: result }).end();
-            else res.json({ status: 400 }).end();
-          })
-      }
-            //rows.forEach(row => new Date(date_now) > row.other_date ? row.edit = false : row.edit = true)
+          if (rows) res.json({ status: 201, data: result }).end();
+          else res.json({ status: 400 }).end();
+        });
     });
   } catch (error) {
     console.log(error);

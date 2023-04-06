@@ -19,7 +19,7 @@ const emit = defineEmits(['profile-logout', 'update-profile']);
 
 const logout = () => {
   axios
-    .get('http://localhost:2000/api/v1/logout')
+    .get('http://localhost:2000/api/v1/logout', { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
     .then((response) => {
       if (response.status === 200) {
         emit('profile-logout')

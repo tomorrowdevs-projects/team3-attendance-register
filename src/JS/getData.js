@@ -8,7 +8,7 @@ async function getData () {
     const withoutTrainer = [];
 
     await axios
-        .get('http://localhost:2000/api/v1/categoryAll/list')
+        .get('http://localhost:2000/api/v1/categoryAll/list', { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => {
             categories.push(...new Set( response.data.data.reduce((acc, el) => { 
                 acc.push(el.category); 
@@ -18,15 +18,15 @@ async function getData () {
         })
         
     await axios
-        .get('http://localhost:2000/api/v1/categories_of_trainers')
+        .get('http://localhost:2000/api/v1/categories_of_trainers', { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => trainer.push(...response.data.data));
 
     await axios
-        .get('http://localhost:2000/api/v1/categories_of_athlete')
+        .get('http://localhost:2000/api/v1/categories_of_athlete', { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => athlete.push(...response.data.data));
     
     await axios
-        .get('http://localhost:2000/api/v1/select')
+        .get('http://localhost:2000/api/v1/select', { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => {
             const allAthlete = response.data.code.filter(el => el.role === 'athlete');
             const athleteCourseUsername = athlete.map(el => el.username)
@@ -49,11 +49,11 @@ async function getTrainerData (trainerUsername) {
     const calendar = [];
 
     await axios
-        .get(`http://localhost:2000/api/v1/category_and_accounts/${trainerUsername}`)
+        .get(`http://localhost:2000/api/v1/category_and_accounts/${trainerUsername}`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => data.push(...response.data.data));
 
     await axios
-        .get(`http://localhost:2000/api/v1/calendary/list/${trainerUsername}`)
+        .get(`http://localhost:2000/api/v1/calendary/list/${trainerUsername}`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => calendar.push(...response.data.data));
         
     return {

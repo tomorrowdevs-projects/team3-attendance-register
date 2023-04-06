@@ -73,7 +73,7 @@ function compare(a, b) {
 
 const deleteItem = (element) => {
     axios
-        .delete(`http://localhost:2000/api/v1/managementMyApp/edit/del/${element.username}`)
+        .delete(`http://localhost:2000/api/v1/managementMyApp/edit/del/${element.username}`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => {
             if (response.data.status === 201) {
 
@@ -132,7 +132,7 @@ const saveChange = (event) => {
     data.role = userRole;
     console.log(data)
     axios
-        .put(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data })
+        .put(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data }, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => {
             if (response.data.status === 201) { 
                 emit('event'); 
@@ -169,7 +169,7 @@ const fetchNewUser = (event) => {
     data.role = props.user.selected
 
     axios
-        .post(`http://localhost:2000/api/v1/managementMyApp`, { ...data })
+        .post(`http://localhost:2000/api/v1/managementMyApp`, { ...data }, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => {
             if (response.data.status === 201) {
                 emit('event');

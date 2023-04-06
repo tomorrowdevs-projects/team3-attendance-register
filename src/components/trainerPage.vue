@@ -107,7 +107,7 @@ const sendEvent = async () => {
     newEvent.value = false;
     reset.value = true;
     await axios
-        .post(`http://localhost:2000/api/v1/calendary/${props.userInfo.username}`, dataEvent)
+        .post(`http://localhost:2000/api/v1/calendary/${props.userInfo.username}`, dataEvent, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => get(props.userInfo.username));
 
 }

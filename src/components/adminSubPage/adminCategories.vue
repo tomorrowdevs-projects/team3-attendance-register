@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-//import trainerJson from '../../../trainer.json';
 import Button from '../ui/Button.vue';
 import CheckableList from '../ui/CheckableList.vue';
 import ErrorMessage from '../ui/ErrorMessage.vue';
@@ -41,7 +40,7 @@ const deleteBut = () => {
         if (catNewUser.value !== '') {
             console.log(catNewUser.value)
         axios
-            .delete(`http://localhost:2000/api/v1//category/del_category/${catNewUser.value}`)
+            .delete(`http://localhost:2000/api/v1//category/del_category/${catNewUser.value}`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
             .then((response) => {
             emits('cat-changed')
         })
@@ -57,7 +56,7 @@ const deleteBut = () => {
 const addNew = () => {
     if (catName.value !== '') {
         axios
-            .post('http://localhost:2000/api/v1/category', {category: catName.value})
+            .post('http://localhost:2000/api/v1/category', {category: catName.value}, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
             .then((response) => {
                 if(response.data.status === 404) { errorAddNew.value = true; errorMessage = 'This category already exists'}
                 else if(response.data.status === 400) { errorAddNew.value = true; errorMessage = 'Unexpected error, please try again'}

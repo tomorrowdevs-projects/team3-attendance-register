@@ -17,8 +17,8 @@ const managementMyApp = require("./routing/managementMyApp.js");
 app.use(cookieParser('Murubutu'))
 app.use(
   cors({
-    origin: "*",
-      //  origin: 'http://localhost:2000',
+    origin: "http://localhost:5173",
+    credentials: true
 
   })
 );
@@ -54,7 +54,7 @@ db().then(async (connection) => {
 //-----------------------------------------------------------------------------------------------------
 app.use("/api/v1", logIn);
 app.use("/api/v1", logout);
-// app.all('*', controller.authorization);
+app.all('*', controller.authorization);
 
 
 

@@ -137,11 +137,9 @@ exports.sevenDays = (date) => {
   }
 };
 exports.onlySession = (req, res, next) => {
-  // console.log(req.session,'casa')
 
   if (req.session.loggedin === true) next();
   else {
-    console.log("ciao");
     return res.json({ status: 401 }).end();
   }
 };
