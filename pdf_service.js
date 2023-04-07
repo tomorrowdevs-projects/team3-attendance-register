@@ -1,15 +1,14 @@
 const puppeteer = require('puppeteer');
-
+const fs = require('fs');
 exports.buildPdp = async (url) => {
 //https://www-bannerbear-com.translate.goog/blog/how-to-convert-html-into-pdf-with-node-js-and-puppeteer/?_x_tr_sl=en&_x_tr_tl=it&_x_tr_hl=it
 
  const browser = await puppeteer.launch();
 
  const page = await browser.newPage();
+ const html = fs.readFileSync('sample.html', 'utf-8');
+ await page.setContent(html, { waitUntil: 'domcontentloaded' });
 
- const website_url =     'https://www.bannerbear.com/blog/how-to-download-images-from-a-website-using-puppeteer/'; 
-
- await page.goto(website_url, { waitUntil: 'networkidle0' }); 
 
  await page.emulateMediaType('screen');
 
