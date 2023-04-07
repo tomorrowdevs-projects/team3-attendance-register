@@ -50,7 +50,8 @@ const fieldsForm = [
   { label: 'Role', name: 'role', type: 'text', disable: true, value: props.userInfo.role },
 ];
 
-if (props.userInfo.role === 'trainer') fieldsForm.push({ label: 'Category', name: 'category', type: 'text', disable: true, value: props.userInfo.category })
+if (props.userInfo.role === 'trainer') fieldsForm.push({ label: 'Category', name: 'category', type: 'text', disable: true, value: props.userInfo.category },
+                                                        {  label: 'Mounthly Hours', name: 'hours', type: 'text', disable: true, value: props.userInfo.hours_minutes_of_training_mounth})
 
 
 </script>

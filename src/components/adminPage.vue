@@ -59,7 +59,7 @@ console.log(data)
 
     <adminCategories v-if="selected === 'category'" :category="data.categories" @cat-changed="get" />
 
-    <Calendar v-if="selected === 'calendar'" :category="data.categories"  :type="'admin'" :calendar="data.calendar"/>
+    <Calendar v-if="selected === 'calendar'" :category="data.categories"  :type="'admin'" :calendar="data.calendar" @edit="get"/>
 </template>
 
 <style scoped>

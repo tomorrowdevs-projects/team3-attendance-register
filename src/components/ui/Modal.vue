@@ -8,14 +8,14 @@ const props = defineProps({
   data: {
     type: Object,
     required: true
+  },
+  error: {
+    type: Object
   }
 });
 
 const emit = defineEmits(['send-edit']);
 
-
-const error = ref(false);
-const errorMessage = ref('Error');
 const duration = ref(props.data.number_of_training);
 const athSelected = ref([]);
 
@@ -26,7 +26,13 @@ function editEvent () {
     athSelected.value.forEach(key => key in ath ? ath[key] = true : ath[key] = false);
     const date = new Date(props.data.date);
     console.log(date.getFullYear() +'-'+ (date.getMonth()+1) +'-'+ date.getDate())
-    emit('send-edit', { id_course: props.data.id, date: date.getFullYear() +'-'+ (date.getMonth()+1) +'-'+ date.getDate(), name_ath: ath, number_of_training: Number(duration.value) })
+    emit('send-edit', { 
+        id_course: props.data.id, 
+        date: date.getFullYear() +'-'+ (date.getMonth()+1) +'-'+ date.getDate(), 
+        name_ath: ath, 
+        number_of_training: Number(duration.value),
+        category: props.data.category
+    })
 }
 
 console.log(props.data)
@@ -40,8 +46,8 @@ console.log(props.data)
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <ErrorMessage v-show="error" :message="errorMessage"></ErrorMessage>
                     <h1 class="modal-title fs-5" id="exampleModalLabel">{{ `${props.data.username_trainer} ${props.data.category.toUpperCase()}` }}</h1>
+                    <ErrorMessage v-show="props.error.error" :message="props.error.message"></ErrorMessage>
                 </div>
                 <div class="modal-body">
 

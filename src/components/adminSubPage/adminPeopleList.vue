@@ -16,12 +16,14 @@ const emit = defineEmits(['event']);
 console.log(props.user)
 //VARIABLE
 const search = ref('all');
-const selectedOrder = ref('hours');
+const selectedOrder = ref('name');
+
 let filteredList = computed(() => {
     let filtered = [];
     let listCategory = [];
+    const freeCategory = props.user.categories.filter(element => !props.user.categoryAthlete.includes(element));
 
-    if(props.user.selected === 'trainer'){
+    if (props.user.selected === 'trainer') {
         filtered.push(...props.user.trainers.sort(compare));
         listCategory.push(...props.user.categories)
     } else {
@@ -33,8 +35,10 @@ let filteredList = computed(() => {
 
     if (search.value === 'without') filtered = props.user.withoutTrainer;
 
-    return [ filtered, listCategory ]
+
+    return [filtered, listCategory, freeCategory]
 });
+
 const name = ref('');
 const surname = ref('');
 const username = ref('');
@@ -59,15 +63,16 @@ function capitalizeFirstLetter(str) {
 }
 
 function convertToTime(num) {
-  var hours = Math.floor(num / 2);
-  var minutes = (num % 2) * 30;
-  return hours.toString() + ':' + minutes.toString().padStart(2, '0');
+    var hours = Math.floor(num / 2);
+    var minutes = (num % 2) * 30;
+    return hours.toString() + ':' + minutes.toString().padStart(2, '0');
 }
 
 //function to sort the list of trainers/athletes by name or by monthly hours
 function compare(a, b) {
-    const first = selectedOrder.value === 'hours' ? Number(a.mounthlyHoursWorked) : b.surname;
-    const second = selectedOrder.value === 'hours' ? Number(b.mounthlyHoursWorked) : a.surname;
+    console.log(a.mounthlyHoursWorked)
+    const first = selectedOrder.value === 'hours' ? Number(a.hours_minutes_of_training_mounth) : b.surname;
+    const second = selectedOrder.value === 'hours' ? Number(b.hours_minutes_of_training_mounth) : a.surname;
     if (first < second) return 1;
     if (first > second) return -1;
     return 0;
@@ -75,7 +80,7 @@ function compare(a, b) {
 
 const deleteItem = (element) => {
     axios
-        .delete(`http://localhost:2000/api/v1/managementMyApp/edit/del/${element.username}`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
+        .delete(`http://localhost:2000/api/v1/managementMyApp/edit/del/${element.username}`, { withCredentials: true, headers: { 'Access-Control-Allow-Credentials': 'true' } })
         .then((response) => {
             if (response.data.status === 201) {
 
@@ -109,7 +114,7 @@ const editItem = (element) => {
     inputDisabled.value = false;
     oldUsername = element.username;
     catEditUser.value.length = 0;
-    if(element.category) catEditUser.value.push(...element.category);
+    if (element.category) catEditUser.value.push(...element.category);
     old_category = element.category;
     userRole = element.role;
 }
@@ -133,12 +138,12 @@ const saveChange = (event) => {
     data.old_category = old_category;
     data.role = userRole;
     axios
-        .put(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data }, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
+        .put(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data }, { withCredentials: true, headers: { 'Access-Control-Allow-Credentials': 'true' } })
         .then((response) => {
-            if (response.data.status === 201) { 
-                emit('event'); 
-                edit.value = false; 
-                formError.value = ''; 
+            if (response.data.status === 201) {
+                emit('event');
+                edit.value = false;
+                formError.value = '';
                 inputDisabled.value = true;
                 error.value = false;
 
@@ -151,7 +156,24 @@ const saveChange = (event) => {
 }
 
 const printPdf = (element) => {
-    console.log('pdf')
+    const downloadFile = async () => {
+        try {
+            const response = await axios({
+                url: 'http://localhost:2000/api/v1/download/',
+                method: 'GET',
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'hours.pdf');
+            document.body.appendChild(link);
+            link.click();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    downloadFile()
 }
 
 
@@ -170,7 +192,7 @@ const fetchNewUser = (event) => {
     data.role = props.user.selected
 
     axios
-        .post(`http://localhost:2000/api/v1/managementMyApp`, { ...data }, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
+        .post(`http://localhost:2000/api/v1/managementMyApp`, { ...data }, { withCredentials: true, headers: { 'Access-Control-Allow-Credentials': 'true' } })
         .then((response) => {
             if (response.data.status === 201) {
                 emit('event');
@@ -191,10 +213,10 @@ const fetchNewUser = (event) => {
     <h2 class="title">List of {{ user.selected }}</h2>
 
     <div class="butContainer col-6">
-        <Button :type="{ color: 'warning', title: 'Add New' }" data-bs-toggle="modal"
-            data-bs-target="#modalAddNew" @click="resetForm"></Button>
+        <Button :type="{ color: 'warning', title: 'Add New' }" data-bs-toggle="modal" data-bs-target="#modalAddNew"
+            @click="resetForm"></Button>
 
-        <Button :type="{ color: 'danger', title: `All ${user.selected} PDF` }"></Button>
+        <Button v-if="user.selected === 'trainer'" :type="{ color: 'danger', title: `All ${user.selected} PDF` }" @click="printPdf"></Button>
     </div>
 
     <div class="searchContainer col-6">
@@ -204,19 +226,19 @@ const fetchNewUser = (event) => {
             <option v-if="user.selected === 'athlete'" value="without" selected>WITHOUT TRAINER</option>
 
         </select>
-        <div class="order">
+        <div v-if="user.selected === 'trainer'" class="order">
             <h5>Order By</h5>
             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                 <input type="radio" class="btn-check" v-model="selectedOrder" name="hours" id="btnradio1" value="hours"
-                    autocomplete="off" checked>
+                    autocomplete="off">
                 <label class="btn btn-outline-primary" for="btnradio1">Hours</label>
 
                 <input type="radio" class="btn-check" v-model="selectedOrder" name="name" id="btnradio2" value="name"
-                    autocomplete="off">
+                    autocomplete="off" checked>
                 <label class="btn btn-outline-primary" for="btnradio2">Name</label>
             </div>
         </div>
-        
+
     </div>
 
     <div class="container">
@@ -225,8 +247,10 @@ const fetchNewUser = (event) => {
             <div v-for="trainer in filteredList[0]" :key="trainer.username" class="accordion-item">
                 <h2 class="accordion-header" id="flush-headingOne">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        :data-bs-target="'#' + trainer.username" aria-expanded="false" :aria-controls="'#' + trainer.username">
-                        {{ `${trainer.surname} ${trainer.name}` }} <span>{{ convertToTime(trainer.hours_minutes_of_training_mounth)
+                        :data-bs-target="'#' + trainer.username" aria-expanded="false"
+                        :aria-controls="'#' + trainer.username">
+                        {{ `${trainer.surname} ${trainer.name}` }} <span v-if="props.user.selected === 'trainer'">{{
+                            convertToTime(trainer.hours_minutes_of_training_mounth)
                         }}</span>
                     </button>
                 </h2>
@@ -236,7 +260,7 @@ const fetchNewUser = (event) => {
                     <div class="accordion-body">
 
                         <ErrorMessage v-show="error" :message="errorMessage"></ErrorMessage>
-                        
+
                         <form class="needs-validation" id="editForm" @submit.prevent="saveChange">
 
                             <div class="mb-3 row">
@@ -276,11 +300,12 @@ const fetchNewUser = (event) => {
                                 <div class="mb-3 row">
                                     <label for="category" class="col-sm-4 col-form-label">Courses</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control category" :value="trainer.category ? trainer.category.join(' - ') : ''"
+                                        <input type="text" class="form-control category"
+                                            :value="trainer.category ? trainer.category.join(' - ') : ''"
                                             :disabled="inputDisabled">
                                     </div>
                                 </div>
-                                <div class="mb-3 row">
+                                <div class="mb-3 row" v-if="props.user.selected === 'trainer'">
                                     <label for="mounthlyHours" class="col-sm-4 col-form-label">Mounthly Hours</label>
                                     <div class="col-sm-8">
                                         <p class="mounthlyHours" style="user-select: none; margin: 6px;">{{
@@ -315,9 +340,9 @@ const fetchNewUser = (event) => {
                             <!--  -->
                             <div v-else :id="'saveIcon' + trainer.username" class="buttonContainer">
                                 <img src="@/components/icons/trash.png" alt="delete" data-bs-toggle="modal"
-                                    :data-bs-target="'#modal' + trainer.username" @click="error= false">
+                                    :data-bs-target="'#modal' + trainer.username" @click="error = false">
                                 <img src="@/components/icons/edit.png" alt="edit" @click="editItem(trainer)">
-                                <img src="@/components/icons/pdf.png" alt="pdf" @click="printPdf(trainer)">
+                                
                             </div>
                         </form>
 
@@ -332,7 +357,8 @@ const fetchNewUser = (event) => {
                                     </div>
                                     <div class="modal-footer">
                                         <Button :type="{ title: 'Close' }" data-bs-dismiss="modal"></Button>
-                                        <Button :type="{ color: 'danger', title: 'Delete' }" @click="deleteItem(trainer)"></Button>
+                                        <Button :type="{ color: 'danger', title: 'Delete' }"
+                                            @click="deleteItem(trainer)"></Button>
                                     </div>
                                 </div>
                             </div>
@@ -384,8 +410,7 @@ const fetchNewUser = (event) => {
                         <div class="mb-3 row">
                             <label for="catefories" class="col-sm-3 col-form-label">Courses</label>
                             <div class="col-sm-9">
-                                <div v-for="category in filteredList[1]" :key="category"
-                                    class="form-check form-switch">
+                                <div v-for="category in filteredList[2]" :key="category" class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" v-model="catNewUser" role="switch"
                                         :id="category.replace(/\s/g, '')" :value="category">
                                     <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category
@@ -459,7 +484,7 @@ const fetchNewUser = (event) => {
 
 .buttonContainer {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 .save {

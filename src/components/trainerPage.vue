@@ -16,8 +16,8 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['logout']);
-
+const emit = defineEmits(['logout', 'edit']);
+console.log(props.userInfo)
 const dataDB = ref([]);
 const trainerCategory = ref([]);
 let athletes = ref([]);
@@ -108,7 +108,10 @@ const sendEvent = async () => {
     reset.value = true;
     await axios
         .post(`http://localhost:2000/api/v1/calendary/${props.userInfo.username}`, dataEvent, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
-        .then((response) => get(props.userInfo.username));
+        .then((response) => {
+            selectedCategory.value = trainerCategory.value[0];
+            get(props.userInfo.username)
+        });
 
 }
 
@@ -147,6 +150,7 @@ const sendEvent = async () => {
                     <option value="8-4:00">4:00</option>
                 </select>
 
+                <button type="button" class="btn btn-danger save" @click="newEvent = false; reset = true">Cancel</button>
                 <button type="submit" class="btn btn-success save">Save</button>
             </div>
 
@@ -208,7 +212,7 @@ const sendEvent = async () => {
     <DbError v-if="selected === 'dbError'"></DbError>
 
     <personalProfile v-if="selected === 'profile'" :userInfo="userInfo" @profile-logout="emit('logout')" />
-    <Calendar v-if="selected === 'calendar'" :category="trainerCategory" :type="'trainer'" :calendar="calendarData"/>
+    <Calendar v-if="selected === 'calendar'" :category="trainerCategory" :type="'trainer'" :calendar="calendarData" @edit="get(props.userInfo.username)"/>
 </template>
 
 <style scoped>

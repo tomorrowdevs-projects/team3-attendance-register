@@ -19,9 +19,12 @@ const props = defineProps({
     required: true
   }
 });
+
+const emit = defineEmits(['edit']);
+
 console.log(props.calendar)
 function getColor() {
-  return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")//"#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
+  return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0");
 }
 
 function convertToTime(num) {
@@ -41,6 +44,8 @@ const yearSelected = ref(actualYear);
 const categorySelected = ref(props.category[0]);
 const trainerSelected = ref('all');
 const trainerList = [ ...new Set(props.calendar.map(el => el.username_trainer)) ]
+const error = ref(false);
+const errorMessage = 'Unexpected error, try again';
 
 const filtered = computed(() => {
   const data = props.calendar.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -55,10 +60,20 @@ const filtered = computed(() => {
 })
 
 function sendEdit (data) {
-  console.log('ciao',data)
+  const dataSplitted = data.date.split('-');
   axios
     .patch(`http://localhost:2000/api/v1/calendary_edit/`, data , { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
-    .then((response) => console.log(response));
+    .then((response) => { 
+      if(response.data.status === 201) {
+        emit('edit');
+        const modal = document.querySelector('#modalEditEvent' + dataSplitted[1] + dataSplitted[2] + data.category);
+        const bsModal = bootstrap.Modal.getInstance(modal);
+        bsModal.hide();
+      } else {
+        error.value = true;
+      }
+      console.log(response)
+    });
 }
 
 </script>
@@ -119,7 +134,7 @@ function sendEdit (data) {
           }}</small>
           <img v-if="item.edit" src="@/components/icons/edit.png" alt="edit" data-bs-toggle="modal"
             :data-bs-target="'#modalEditEvent'+ item.mounth + new Date(item.date).getDate() + item.category">
-          <Modal v-if="item.edit" :data="item" @send-edit="sendEdit"></Modal>
+          <Modal v-if="item.edit" :data="item" :error="{ error: error, message: errorMessage }" @send-edit="sendEdit"></Modal>
         </div>
       </div>
     </div>
