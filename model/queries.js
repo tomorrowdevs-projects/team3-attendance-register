@@ -141,6 +141,7 @@ const selectForEdit = `SELECT username , email FROM accounts WHERE username = ? 
 const select_monthly_hours_mounth = ` SELECT hours_minutes_of_training_mounth FROM accounts WHERE  username = ?`;
 const select_monthly_hours_mounth_all = ` SELECT hours_minutes_of_training_mounth FROM accounts `;
 const select_monthly_hours_for_specific_mounth = ` SELECT number_of_training FROM calendary WHERE  username = ? AND year = ? AND mounth = ? `;
+const select_hours_trainer = ` SELECT number_of_training FROM hours WHERE  username_trainers = ? `;
 
 const check_data_category = ` SELECT date FROM category WHERE  code_registration = ? `;
 
@@ -216,4 +217,5 @@ module.exports = {
   edit_hours,
   edit_hours_accounts,
   innerjoin_account_calendary,
+  select_hours_trainer
 };

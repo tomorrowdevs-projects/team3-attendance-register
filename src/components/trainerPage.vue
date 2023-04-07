@@ -21,7 +21,7 @@ const emit = defineEmits(['logout']);
 const dataDB = ref([]);
 const trainerCategory = ref([]);
 let athletes = ref([]);
-const selectedCategory = ref(trainerCategory.value[0]);
+const selectedCategory = ref('');
 const calendarData = ref([])
 function get (username_trainer) {
 getData.getTrainerData(username_trainer).then((res) => {

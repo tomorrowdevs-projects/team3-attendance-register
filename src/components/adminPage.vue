@@ -26,6 +26,8 @@ function get() {
 }
 
 get()
+
+console.log(data)
 </script>
 
 <template>
@@ -57,7 +59,7 @@ get()
 
     <adminCategories v-if="selected === 'category'" :category="data.categories" @cat-changed="get" />
 
-    <Calendar v-if="selected === 'calendar'" :category="data.categories" :type="'admin'"/>
+    <Calendar v-if="selected === 'calendar'" :category="data.categories"  :type="'admin'" :calendar="data.calendar"/>
 </template>
 
 <style scoped>

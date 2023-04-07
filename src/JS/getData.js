@@ -6,6 +6,7 @@ async function getData () {
     const categories = [];
     const categoryA = [];
     const withoutTrainer = [];
+    const calendar = [];
 
     await axios
         .get('http://localhost:2000/api/v1/categoryAll/list', { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
@@ -34,13 +35,18 @@ async function getData () {
             withoutTrainer.push(...allAthlete.filter(athl => !athleteCourseUsername.includes(athl.username) ));
         });
 
+    await axios
+        .get(`http://localhost:2000/api/v1/calendary/list/Admin`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
+        .then((response) => calendar.push(...response.data.data));
+
     return {
-        status: trainer.length === 0 || athlete.length === 0 || categories.length === 0,
+        status: trainer.length === 0 || athlete.length === 0 || categories.length === 0 || calendar.length === 0,
         trainers: trainer,
         athletes: athlete,
         categories: categories,
         categoryAthlete: categoryA,
-        withoutTrainer: withoutTrainer
+        withoutTrainer: withoutTrainer,
+        calendar: calendar
     }
 }
 

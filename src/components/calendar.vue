@@ -1,6 +1,8 @@
 <script setup>
 //SCRIPT
 import { ref, computed } from 'vue';
+import Modal from './ui/Modal.vue';
+import axios from 'axios';
 
 // PROPS
 const props = defineProps({
@@ -38,6 +40,7 @@ const monthSelected = ref(actualMonth);
 const yearSelected = ref(actualYear);
 const categorySelected = ref(props.category[0]);
 const trainerSelected = ref('all');
+const trainerList = [ ...new Set(props.calendar.map(el => el.username_trainer)) ]
 
 const filtered = computed(() => {
   const data = props.calendar.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -46,10 +49,18 @@ const filtered = computed(() => {
     return (monthSelected.value === 'all' ? true : date.getMonth() === monthSelected.value) && date.getFullYear() === yearSelected.value
   });
 
-  if (categorySelected.value !== 'all') filter = filter.filter(elem => elem.category === categorySelected.value)
+  if (categorySelected.value !== 'all') filter = filter.filter(elem => elem.category === categorySelected.value);
+  if (trainerSelected.value !== 'all') filter = filter.filter(elem => elem.username_trainer === trainerSelected.value);
   return filter
 })
-console.log(filtered)
+
+function sendEdit (data) {
+  console.log('ciao',data)
+  axios
+    .patch(`http://localhost:2000/api/v1/calendary_edit/`, data , { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
+    .then((response) => console.log(response));
+}
+
 </script>
 
 
@@ -59,7 +70,7 @@ console.log(filtered)
     <p class="title">Search</p>
     <div class="dateContainer searchBox">
       <select v-model="monthSelected" class="form-select search" aria-label="Default select example">
-        <option value="all"> ALL</option>
+        <option value="all"> ALL MONTH</option>
         <option v-for="(month, index) in months" :key="index" :value="index">{{ month }}</option>
       </select>
 
@@ -70,15 +81,15 @@ console.log(filtered)
 
     <div class="trainerSport searchBox">
       <select v-model="categorySelected" class="form-select search" aria-label="Default select example">
-        <option v-if="props.type === 'admin' || props.category.length > 1" value="all"> ALL</option>
+        <option v-if="props.type === 'admin' || props.category.length > 1" value="all"> ALL COURSES</option>
         <option v-for="(cat, index) in props.category" :key="index" :value="cat">{{ cat }}</option>
       </select>
 
       <select v-if="props.type === 'admin'" v-model="trainerSelected" class="form-select search"
         aria-label="Default select example">
-        <option value="all"> ALL</option>
-        <option v-for="(evnt, index) in props.calendar" :key="index" :value="evnt.username_trainer">{{
-          evnt.username_trainer
+        <option value="all">ALL TRAINERS</option>
+        <option v-for="(evnt, index) in trainerList" :key="index" :value="evnt">{{
+          evnt
         }}</option>
       </select>
     </div>
@@ -94,7 +105,7 @@ console.log(filtered)
           <h5 v-if="props.type === 'admin'" class="card-title"> {{ item.username_trainer }}</h5>
           <h4 class="card-title"> Duration: h {{ convertToTime(item.number_of_training) }}</h4>
           <ul>
-            <li v-for="elem in item.name_ath" :key="elem[0]"> {{ `${elem[1]} ${elem[2]}` }}</li>
+            <li v-for="elem in item.name_ath" v-show="elem[0]"> {{ `${elem[0]} ${elem[1]} ${elem[2]}` }}</li>
           </ul>
           <p class="card-text">{{ item.username_athlete }}</p>
         </div>
@@ -106,7 +117,9 @@ console.log(filtered)
             year: "numeric",
           }).replace(',', ' ')
           }}</small>
-          <img v-if="item.edit" src="@/components/icons/edit.png" alt="edit">
+          <img v-if="item.edit" src="@/components/icons/edit.png" alt="edit" data-bs-toggle="modal"
+            :data-bs-target="'#modalEditEvent'+ item.mounth + new Date(item.date).getDate() + item.category">
+          <Modal v-if="item.edit" :data="item" @send-edit="sendEdit"></Modal>
         </div>
       </div>
     </div>

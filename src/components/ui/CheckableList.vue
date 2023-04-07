@@ -42,7 +42,7 @@ const text = (elem) => props.list[0].surname ? `${elem.surname} ${elem.name}` : 
 <template>
     <!-- TEMPLATE -->
     <div :class="[ 'athleteList', { 'red': error } ]">
-        <p>List of {{ `${props.type === 'checkbox' ? 'Athletes' : 'Categories'} : ${props.list.length}` }}</p>
+        <p>List of {{ `${props.type === 'checkbox' ? 'Athletes' : 'Courses'} : ${props.list.length}` }}</p>
 
         <span v-if="enableCheck && props.type === 'checkbox'" :class="{ 'red': error  }">Selected: {{ selected.length }}</span>
         <span v-if="enableCheck && props.type === 'radio'" class="red sel">Selected: {{ selected }}</span>

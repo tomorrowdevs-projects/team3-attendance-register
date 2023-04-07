@@ -110,7 +110,6 @@ router.get("/calendary/list/:username", async (req, res) => {
         .query(queries.innerjoin_account_calendary, [username])
         .then(async ([rows]) => {
           const filter = [];
-          //const result = [];
 
           if (req.userRole !== 'admin') filter.push(...rows.filter(el => el.username_trainer === username))
           else filter.push(...rows)
@@ -151,14 +150,15 @@ router.get("/calendary/list/:username", async (req, res) => {
 router.patch("/calendary_edit", async (req, res) => {
   await connection()
     .then(async (connection) => {
-      const { id_course, number_of_training, name_ath } = req.body;
+      const { id_course, number_of_training, name_ath, date } = req.body;
 
       await connection.query(queries.use);
       await connection
         //find old number_of_training
-        .query(queries.select_number_of_training_old, [id_course, "2023-4-4"])
+        .query(queries.select_number_of_training_old, [id_course, date])
 
         .then(async ([rows]) => {
+          
           const old = rows[0].number_of_training;
           const mounth = rows[0].mounth;
           const year = rows[0].year;
@@ -167,21 +167,25 @@ router.patch("/calendary_edit", async (req, res) => {
             //write to calendary
 
             await connection.query(queries.edit_calendary, [
-              old,
+              number_of_training,
               name_ath[username_ath],
               id_course,
               username_ath,
             ]);
+           
           }
+          
           await connection
 
             .query(queries.select_from_hours, [mounth, id_course, year])
             .then(async ([rows]) => {
               const old_mouthly = rows[0].number_of_training;
+
               //fewer units of work were done
               if (old > number_of_training) {
                 let number_of_training_new = old - number_of_training;
                 let new_monthly = old_mouthly - number_of_training_new;
+                console.log('newmon', new_monthly, number_of_training_new)
 
                 //write to hours
                 await connection.query(queries.edit_hours, [
@@ -197,12 +201,13 @@ router.patch("/calendary_edit", async (req, res) => {
 
 
                 //if they are equal -error 407-
-              } else if (old === number_of_training) {
-                res.json({ status: 407 }).end();
-              } else {
-                old < number_of_training;
+            /*   } else if (old === number_of_training) {
+                res.json({ status: 407 }).end(); */
+              } else if (old < number_of_training){
+                
                 let number_of_training_new = number_of_training - old;
-                let new_monthly = old_mouthly - number_of_training_new;
+                let new_monthly = old_mouthly + number_of_training_new;
+
                 //write to hours
                 await connection.query(queries.edit_hours, [
                   new_monthly,
@@ -210,11 +215,20 @@ router.patch("/calendary_edit", async (req, res) => {
                   mounth,
                   year,
                 ]);
-                await connection.query(queries.edit_hours_accounts, [
-                  new_monthly,
-                  username,
-                ]);
+
+                
+                
               }
+              await connection.query(queries.select_hours_trainer, [ username ])
+                .then(async ([rows]) => { 
+
+                  let totHours = 0;
+                  rows.forEach(el => totHours += el.number_of_training);
+                  await connection.query(queries.edit_hours_accounts, [
+                    totHours,
+                    username,
+                  ]);
+                });
             });
         });
 

@@ -75,7 +75,7 @@ const addNew = () => {
 </script>
 
 <template>
-    <h1>Categories</h1>
+    <h1>COURSES</h1>
     <div class="container col-6">
         <div class="butContainer">
             <Button :type="{ color: 'danger', title: `Delete ${delString}` }" @click="deleteBut"></Button>
@@ -93,11 +93,11 @@ const addNew = () => {
             <div class="modal-content">
                 <div class="modal-header">
                     <ErrorMessage v-show="errorAddNew" :message="errorMessage"></ErrorMessage>
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add new Category</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add new Course</h1>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3 row">
-                        <label for="name" class="col-sm-4 col-form-label">Name of Category</label>
+                        <label for="name" class="col-sm-4 col-form-label">Name of course</label>
                         <div class="col-sm-8">
                             <input v-model="catName" name="name" type="text" class="form-control name">
                         </div>

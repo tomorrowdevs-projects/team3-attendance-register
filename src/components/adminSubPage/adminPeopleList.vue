@@ -58,6 +58,12 @@ function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.toLowerCase().slice(1)
 }
 
+function convertToTime(num) {
+  var hours = Math.floor(num / 2);
+  var minutes = (num % 2) * 30;
+  return hours.toString() + ':' + minutes.toString().padStart(2, '0');
+}
+
 //function to sort the list of trainers/athletes by name or by monthly hours
 function compare(a, b) {
     const first = selectedOrder.value === 'hours' ? Number(a.mounthlyHoursWorked) : b.surname;
@@ -174,7 +180,7 @@ const fetchNewUser = (event) => {
                 resetForm()
             }
             else {
-                errorMessage = response.data.status === 404 ? 'The username already exists' : `Unexpected error (${response.data.status}), try again!`;
+                errorMessage = response.data.status === 404 ? 'The username oe email already exists' : `Unexpected error (${response.data.status}), try again!`;
                 error.value = true;
             }
         })
@@ -193,7 +199,7 @@ const fetchNewUser = (event) => {
 
     <div class="searchContainer col-6">
         <select v-model="search" @change="filtered" class="form-select search" aria-label="Default select example">
-            <option value="all" selected>ALL CATEGORIES</option>
+            <option value="all" selected>ALL COURSES</option>
             <option v-for="category in filteredList[1]" :key="category" :value="category">{{ category }}</option>
             <option v-if="user.selected === 'athlete'" value="without" selected>WITHOUT TRAINER</option>
 
@@ -220,7 +226,7 @@ const fetchNewUser = (event) => {
                 <h2 class="accordion-header" id="flush-headingOne">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         :data-bs-target="'#' + trainer.username" aria-expanded="false" :aria-controls="'#' + trainer.username">
-                        {{ `${trainer.surname} ${trainer.name}` }} <span>{{ trainer.hours_minutes_of_training_mounth
+                        {{ `${trainer.surname} ${trainer.name}` }} <span>{{ convertToTime(trainer.hours_minutes_of_training_mounth)
                         }}</span>
                     </button>
                 </h2>
@@ -268,7 +274,7 @@ const fetchNewUser = (event) => {
                             <!-- Default - if we are not in edit mode -->
                             <div v-if="!edit" class="editCat">
                                 <div class="mb-3 row">
-                                    <label for="category" class="col-sm-4 col-form-label">Category</label>
+                                    <label for="category" class="col-sm-4 col-form-label">Courses</label>
                                     <div class="col-sm-8">
                                         <input type="text" class="form-control category" :value="trainer.category ? trainer.category.join(' - ') : ''"
                                             :disabled="inputDisabled">
@@ -278,7 +284,7 @@ const fetchNewUser = (event) => {
                                     <label for="mounthlyHours" class="col-sm-4 col-form-label">Mounthly Hours</label>
                                     <div class="col-sm-8">
                                         <p class="mounthlyHours" style="user-select: none; margin: 6px;">{{
-                                            trainer.hours_minutes_of_training_mounth }}</p>
+                                            convertToTime(trainer.hours_minutes_of_training_mounth) }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -287,7 +293,7 @@ const fetchNewUser = (event) => {
                             <div v-else class="cateContainer">
                                 <p v-show="formError" id="formError">{{ formError }}</p>
                                 <div class="mb-3 row">
-                                    <label for="catefories" class="col-sm-4 col-form-label">Categories</label>
+                                    <label for="catefories" class="col-sm-4 col-form-label">Courses</label>
                                     <div class="col-sm-8">
                                         <div v-for="category in filteredList[1]" :key="category"
                                             class="form-check form-switch">
@@ -376,7 +382,7 @@ const fetchNewUser = (event) => {
                         </div>
                         <p v-if="formError" id="formError">{{ formError }}</p>
                         <div class="mb-3 row">
-                            <label for="catefories" class="col-sm-3 col-form-label">Categories</label>
+                            <label for="catefories" class="col-sm-3 col-form-label">Courses</label>
                             <div class="col-sm-9">
                                 <div v-for="category in filteredList[1]" :key="category"
                                     class="form-check form-switch">
