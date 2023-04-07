@@ -22,6 +22,12 @@ function getColor() {
   return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")//"#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
 }
 
+function convertToTime(num) {
+  var hours = Math.floor(num / 2);
+  var minutes = (num % 2) * 30;
+  return hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+}
+
 const color = props.calendar.map(el => getColor());
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const years = Array.from({ length: 10 }, (el, index) => 2023 + index);
@@ -71,7 +77,8 @@ console.log(filtered)
       <select v-if="props.type === 'admin'" v-model="trainerSelected" class="form-select search"
         aria-label="Default select example">
         <option value="all"> ALL</option>
-        <option v-for="(evnt, index) in props.calendar" :key="index" :value="evnt.username_trainer">{{ evnt.username_trainer
+        <option v-for="(evnt, index) in props.calendar" :key="index" :value="evnt.username_trainer">{{
+          evnt.username_trainer
         }}</option>
       </select>
     </div>
@@ -82,16 +89,23 @@ console.log(filtered)
 
     <div v-for="(item, index) in filtered" :key="index" class="col">
       <div class="card h-100" :style="'border-color:' + color[index]">
-        <div class="card-header text" :style="'color:' + color[index]"> {{ item.category }}</div>
+        <div class="card-header" :style="'color:' + color[index]"> {{ item.category }}</div>
         <div class="card-body">
-          <h5 class="card-title"> {{ item.username_trainer }}</h5>
+          <h5 v-if="props.type === 'admin'" class="card-title"> {{ item.username_trainer }}</h5>
+          <h4 class="card-title"> Duration: h {{ convertToTime(item.number_of_training) }}</h4>
           <ul>
             <li v-for="elem in item.name_ath" :key="elem[0]"> {{ `${elem[1]} ${elem[2]}` }}</li>
           </ul>
           <p class="card-text">{{ item.username_athlete }}</p>
         </div>
         <div class="card-footer">
-          <small class="text-body-secondary"> {{ item.date }}</small>
+          <small class="text-body-secondary"> {{ new Date(item.date).toLocaleDateString('en-US', {
+            weekday: "long",
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          }).replace(',', ' ')
+          }}</small>
           <img v-if="item.edit" src="@/components/icons/edit.png" alt="edit">
         </div>
       </div>
@@ -108,6 +122,10 @@ console.log(filtered)
   text-align: center;
   text-shadow: 1px 1px 2px rgb(0, 0, 0);
   font-size: 1.5em;
+}
+
+.card-header span{
+  float: right;
 }
 
 .card-footer {
@@ -129,7 +147,7 @@ console.log(filtered)
   cursor: pointer;
 }
 
-.title{
+.title {
   text-align: center;
   font-size: 2em;
 }
@@ -149,7 +167,8 @@ console.log(filtered)
   margin-top: .5em;
   box-shadow: 0 0 12px black;
   border-radius: 1em;
-  background-color: #4eb0b2;;
+  background-color: #4eb0b2;
+  ;
 }
 
 .form-select {

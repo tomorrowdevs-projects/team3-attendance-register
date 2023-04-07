@@ -4,10 +4,6 @@ import { ref, watchEffect, computed } from 'vue';
 import Button from '../ui/Button.vue';
 import ErrorMessage from '../ui/ErrorMessage.vue';
 
-//JSON for test
-//import trainerJson from '../../../trainer.json'
-/* import athleteJson from '../../../athlete.json' */
-
 // PROPS
 const props = defineProps({
     user: {
@@ -36,7 +32,7 @@ let filteredList = computed(() => {
     if (search.value !== 'all') filtered = filtered.filter(el => el.category.some(cat => cat === search.value));
 
     if (search.value === 'without') filtered = props.user.withoutTrainer;
-    console.log(filtered)
+
     return [ filtered, listCategory ]
 });
 const name = ref('');
@@ -130,7 +126,6 @@ const saveChange = (event) => {
     data.category = [...catEditUser.value];
     data.old_category = old_category;
     data.role = userRole;
-    console.log(data)
     axios
         .put(`http://localhost:2000/api/v1/managementMyApp/edit/${oldUsername}`, { ...data }, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => {

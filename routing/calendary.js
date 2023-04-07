@@ -110,13 +110,15 @@ router.get("/calendary/list/:username", async (req, res) => {
         .query(queries.innerjoin_account_calendary, [username])
         .then(async ([rows]) => {
           const filter = [];
-          const result = [];
+          //const result = [];
+
           if (req.userRole !== 'admin') filter.push(...rows.filter(el => el.username_trainer === username))
           else filter.push(...rows)
-          filter.forEach(obj => {
-            const index = result.findIndex(elem => elem.id === obj.id_course);
-            if (index === -1) {
-              result.push({
+
+          const result = filter.reduce((acc, obj) => {
+            const key = `${obj.id_course}_${obj.date}`;
+            if (!acc[key]) {
+              acc[key] = {
                 id: obj.id_course,
                 username_trainer: obj.username_trainer,
                 edit: new Date(date_now) > obj.other_date ? false : true,
@@ -126,13 +128,16 @@ router.get("/calendary/list/:username", async (req, res) => {
                 name_ath: { [obj.username_athlete]: [obj.absences_or_presences, obj.surname, obj.name] },
                 mounth: obj.mounth,
                 year: obj.year,
-              });
-            } else {
-              result[index].name_ath[obj.username_athlete] = [obj.absences_or_presences, obj.surname, obj.name];
+              };
             }
-          });
+            console.log()
+            acc[key].name_ath[obj.username_athlete] = [obj.absences_or_presences, obj.surname, obj.name];
+            return acc;
+          }, {});
+          
+          const groupedArr = Object.values(result);
 
-          if (rows) res.json({ status: 201, data: result }).end();
+          if (rows) res.json({ status: 201, data: groupedArr }).end();
           else res.json({ status: 400 }).end();
         });
     });
