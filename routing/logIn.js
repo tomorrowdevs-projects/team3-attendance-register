@@ -1,10 +1,11 @@
 require("dotenv").config();
 
 const queries = require("../model/queries.js");
-const express = require("express");
 const connection = require("../src/connectMysql.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const pdfDocument = require('../pdf_service.js')
+const express = require("express");
 
 const router = express.Router();
 
@@ -39,7 +40,11 @@ router.post("/login", async (req, res) => {
                       },
                       process.env.JWT
                     );
+                    const url = ' http://localhost:2000'+ req.originalUrl
+                    
 
+
+                    pdfDocument.buildPdp(url)
                     res
                       .cookie("access_token", token, {
                         httpOnly: true,

@@ -52,6 +52,12 @@ db().then(async (connection) => {
   fillDb(connection);
 });
 //-----------------------------------------------------------------------------------------------------
+app.get('/download', function(req, res){
+  const file = `${__dirname}/file/hours.pdf`;
+  res.download(file)
+});
+
+
 app.use("/api/v1", logIn);
 app.use("/api/v1", logout);
 app.all('*', controller.authorization);
@@ -90,6 +96,8 @@ app.use(
 app.use("/api/v1", select)
 app.use("/api/v1", calendary)
 app.use("/api/v1", category)
+
+
 
 
 //-----------------------------------------------------------------------------------------------------
