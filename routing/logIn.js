@@ -39,10 +39,7 @@ router.post("/login", async (req, res) => {
                       },
                       process.env.JWT
                     );
-                    
 
-
-                    pdfDocument.buildPdp(url)
                     res
                       .cookie("access_token", token, {
                         httpOnly: true,

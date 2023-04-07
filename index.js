@@ -14,6 +14,7 @@ const controller = require("./controller/auth.js");
 const select = require("./routing/select.js");
 const fillDb = require("./controller/toFillDb.js");
 const managementMyApp = require("./routing/managementMyApp.js");
+const download = require('./routing/download.js')
 app.use(cookieParser("Murubutu"));
 app.use(
   cors({
@@ -46,14 +47,9 @@ db().then(async (connection) => {
   fillDb(connection);
 });
 //-----------------------------------------------------------------------------------------------------
-const pdfDocument = require("./pdf_service.js");
 
-app.get("/api/v1/download", function async(req, res) {
-  pdfDocument.buildPdp().then(() => {
-    const file = `${__dirname}/file/hours.pdf`;
-    res.download(file);
-  });
-});
+
+app.use("/api/v1", download);
 
 app.use("/api/v1", logIn);
 app.use("/api/v1", logout);
