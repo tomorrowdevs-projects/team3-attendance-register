@@ -7,26 +7,20 @@ const db = require("./src/connectMysql.js");
 const logIn = require("./routing/logIn.js");
 const logout = require("./routing/logout.js");
 const category = require("./routing/category.js");
-const  cookieParser = require('cookie-parser')
+const cookieParser = require("cookie-parser");
 const edit = require("./routing/editAndDelete.js");
-const calendary = require('./routing/calendary.js')
+const calendary = require("./routing/calendary.js");
 const controller = require("./controller/auth.js");
-const select = require('./routing/select.js')
+const select = require("./routing/select.js");
 const fillDb = require("./controller/toFillDb.js");
 const managementMyApp = require("./routing/managementMyApp.js");
-app.use(cookieParser('Murubutu'))
+app.use(cookieParser("Murubutu"));
 app.use(
   cors({
     origin: "http://localhost:5173",
-    credentials: true
-
+    credentials: true,
   })
 );
-
-
-
-
-
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -42,7 +36,7 @@ app.use(cookieParser());
 // Initialize Firebase
 //app.initializeApp(firebaseConfig);
 //-----------------------------------------------------------------------------------------------------
- 
+
 app.use(express.json());
 
 //-----------------------------------------------------------------------------------------------------
@@ -52,22 +46,18 @@ db().then(async (connection) => {
   fillDb(connection);
 });
 //-----------------------------------------------------------------------------------------------------
-app.get('/download', function(req, res){
-  const file = `${__dirname}/file/hours.pdf`;
-  res.download(file)
-});
+const pdfDocument = require("./pdf_service.js");
 
+app.get("/api/v1/download", function async(req, res) {
+  pdfDocument.buildPdp().then(() => {
+    const file = `${__dirname}/file/hours.pdf`;
+    res.download(file);
+  });
+});
 
 app.use("/api/v1", logIn);
 app.use("/api/v1", logout);
-app.all('*', controller.authorization);
-
-
-
-
-
-
-
+app.all("*", controller.authorization);
 
 //first check if you are an administrator,
 //then if the credential format is respected,
@@ -75,13 +65,13 @@ app.all('*', controller.authorization);
 //then edit file
 app.use(
   "/api/v1/managementMyApp/edit",
-  // controller.onlyAdmin, 
+  // controller.onlyAdmin,
   controller.checkUserWithParams,
   controller.checkEmailForEdit,
   controller.checkParametersRegister,
   edit
 );
- 
+
 //first check if you are an administrator,
 //then if the credential format is respected,
 //then if there are no duplicates in the DB
@@ -93,12 +83,9 @@ app.use(
   managementMyApp
 );
 
-app.use("/api/v1", select)
-app.use("/api/v1", calendary)
-app.use("/api/v1", category)
-
-
-
+app.use("/api/v1", select);
+app.use("/api/v1", calendary);
+app.use("/api/v1", category);
 
 //-----------------------------------------------------------------------------------------------------
 

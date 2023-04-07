@@ -7,7 +7,7 @@ exports.buildPdp = async (url) => {
 
  const page = await browser.newPage();
 
- const website_url =    url// 'https://www.bannerbear.com/blog/how-to-download-images-from-a-website-using-puppeteer/'; 
+ const website_url =     'https://www.bannerbear.com/blog/how-to-download-images-from-a-website-using-puppeteer/'; 
 
  await page.goto(website_url, { waitUntil: 'networkidle0' }); 
 
