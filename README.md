@@ -21,15 +21,16 @@ Eventually you need to install the dependencies with this shell command: "npm in
 Now, the program is ready to run, by typing "npm start".
 
 # Visuals
-### Screenshot
-![Image text](/img/amministratore.jpg)
-
-![imagename](/img/amministratore.jpg)
+### Screenshot Login 
+![Image text](/img/Schermata-login.jpg)
 
 Online example:
 https://team3project-19334.web.app/
 
 # Usage
+## Add captions to the application screenshots
+![Image text](/img/amministratore.jpg)
+
 
   
 **Client Request**
