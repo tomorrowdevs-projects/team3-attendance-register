@@ -34,6 +34,4 @@ https://team3project-19334.web.app/
 
 
   
-**Client Request**
-
-https://github.com/tomorrowdevs-projects/asd-attendance-register
+**Da completare**
