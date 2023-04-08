@@ -22,8 +22,9 @@ Now, the program is ready to run, by typing "npm start".
 
 # Visuals
 ### Screenshot
-![Image text](/img/Schermata login.jpg)
-![imagename](img/Schermata login.jpg)
+![Image text](/img/amministratore.jpg)
+
+![imagename](/img/amministratore.jpg)
 
 Online example:
 https://team3project-19334.web.app/
