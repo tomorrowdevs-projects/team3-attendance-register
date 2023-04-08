@@ -3,32 +3,69 @@ const express = require("express");
 const router = express.Router();
 const connection = require("../src/connectMysql.js");
 const bcrypt = require("bcryptjs");
+const { ErrorCodes } = require("vue");
 
-router.post("/managementMyApp", async (req, res) => {
-  console.log(req.body);
-
-  const { username, password, passwordConfirm, name_surname, email, role } =
-    req.body;
-  await connection()
-    .then(async (connection) => {
+router.post("/", async (req, res) => {
+  try {
+    const { username, name, surname, email, role, password, category } =
+      req.body;
+    await connection().then(async (connection) => {
       await connection.query(queries.use);
 
       //create cryptoPassowrd
       let hashedPassowrd = await bcrypt.hash(password, 12);
-      console.log(hashedPassowrd);
       //add user inside Db
-      await connection.query(queries.createUser, [
-        username,
-        hashedPassowrd,
-        name_surname,
-        email,
-        role,
-      ]);
-      res.status(201).end();
+      await connection
+        .query(queries.createUser, [
+          username,
+          hashedPassowrd,
+          name,
+          surname,
+          email,
+          role,
+        ])
+        .then(async ([rows]) => {
+          if (rows.affectedRows === 0) res.json({ status: 404 }).end();
+          else {
+            category.forEach(async (el) => {
+              if (role === "athlete") {
+                await connection
+                  .query(queries.select_all_from_category_assignment, [el])
+                  .then(async ([rows]) => {
+                    //athlete already registered in that category
+                 
+
+                    if (rows.length > 0) {
+                      rows.forEach(async elem => {
+                       
+                        if (elem.username_trainer !== null) {
+
+                          let username_trainer = elem.username_trainer;
+                          let id = elem.id_course;
+
+                          await connection.query(
+                            queries.insert_new_athleteToCategory,
+                            [elem.username_trainer, el, id, username]
+                          );
+                        }
+                      })
+                    }
+                  });
+              } else {
+                await connection.query(queries.insertInto_category_assignment, [
+                  username,
+                  el,
+                ]);
+              }
+            });
+          }
+        });
     })
-    .catch((error) => {
-      throw error;
-    });
+    res.json({ status: 201 }).end();
+
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 

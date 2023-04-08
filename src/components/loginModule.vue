@@ -1,8 +1,10 @@
 <script setup>
 import axios from 'axios';
-import { ref } from 'vue'
+import { ref } from 'vue';
+import Button from './ui/Button.vue';
+import ChangePassword from './ui/ChangePassword.vue';
 
-const emit = defineEmits(['login-success'])
+const emit = defineEmits(['login-success']);
 const postData = {
   username: '',
   password: '',
@@ -18,22 +20,19 @@ let message = ref('');
 
 const fetchData = () => {
 
- /*  // for DEMO VERSION
-  if (postData.username === 'admin' || postData.username === 'trainer')
+  // for DEMO VERSION
+  /* if (postData.username === 'admin' || postData.username === 'trainer')
       emit('login-success', { role: postData.username, username: postData.username })
-  else message.value = errors[400]
+  else message.value = errors[400] */
   // end DEMO VERSION
- */
+
   axios
-    .post('http://localhost:2000/api/v1/login', postData)
+    .post('http://localhost:2000/api/v1/login', postData, { withCredentials: true })
     .then((response) => {
-      console.log(response.data);
       if (response.data.status in errors) message.value = errors[response.data.status]
-      else if (response.data.status === 201) emit('login-success', { role: response.data.role, username: postData.username })
-    }) 
-
+      else if (response.data.status === 201) emit('login-success',response.data.data[0])
+  }) 
 }
-
 </script>
 
 <template>
@@ -51,12 +50,17 @@ const fetchData = () => {
           pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$" v-model="postData.password" required>
         <div id="emailHelp" class="form-text">At least 8 characters, one uppercase, one lowercase and a number</div>
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <Button :type="{color: 'primary', type: 'submit', title: 'Submit'}"></Button>
     </form>
+    <hr>
+    <p>Forgot your password? <a href="#" data-bs-toggle="modal"
+      data-bs-target="#modalChangePassword">Click here</a></p>
   </section>
 
+  <ChangePassword :forgotPassword="true"></ChangePassword>
+
   <!-- For DEMO VERSION -->
-  <p class="demo">( DEMO VERSION => Type ' admin ' or ' trainer ' in Username and a password that meets the minimum requirements )</p>
+  <!-- <p class="demo">( DEMO VERSION => Type ' admin ' or ' trainer ' in Username and a password that meets the minimum requirements )</p> -->
   <!-- end DEMO VERSION -->
 </template>
 
@@ -69,19 +73,13 @@ section {
   text-align: center;
   background-color: #dde4ea;
 }
-
-button {
-  box-shadow: 0 0 10px gray;
-  transition: all 0.3s;
+section p{
+  margin-bottom: 0;
 }
 
 input {
   text-align: center;
   margin-bottom: .7em;
-}
-
-button:hover {
-  transform: scale(1.1);
 }
 
 div:first-child {
@@ -90,15 +88,15 @@ div:first-child {
 }
 
 /* for DEMO VERSION */
-/* 
+
 .demo {
   margin-top: 2em;
-  color: red;
+  color:  red;
   font-weight: 700;
-} */
+}
 /* end DEMO VERSION */
 
-@media (max-width: 577px) {
+@media (max-width: 768px) {
   section {
     max-width: 90%;
   }

@@ -1,0 +1,50 @@
+[
+    {
+        "username_trainer": "Pippo",
+        "category": "judo",
+        "id_course": "23",
+        "username_athlete": "JenniferCiao",
+        "date" : "2023-10-15",
+        "attendance_absences": true
+    },
+    {
+        "username_trainer": "Pluto",
+        "category": "judo",
+        "id_course": "15",
+        "username_athlete": "JenniferCiao",
+        "date" : "2023-04-15",
+        "attendance_absences": true
+    },
+    {
+        "username_trainer": "Paperino",
+        "category": "judo",
+        "id_course": "2",
+        "username_athlete": "JenniferCiao",
+        "date" : "2023-08-15",
+        "attendance_absences": true
+    },
+    {
+        "username_trainer": "Minnie",
+        "category": "judo",
+        "id_course": "3",
+        "username_athlete": "JenniferCiao",
+        "date" : "2023-10-17",
+        "attendance_absences": true
+    },
+    {
+        "username_trainer": "Pippo",
+        "category": "judo",
+        "id_course": "231",
+        "username_athlete": "JenniferCiao",
+        "date" : "2023-10-11",
+        "attendance_absences": true
+    },
+    {
+        "username_trainer": "Pippo",
+        "category": "judo",
+        "id_course": "20",
+        "username_athlete": "LudovicaDDD",
+        "date" : "2023-01-19",
+        "attendance_absences": true
+    }
+]
