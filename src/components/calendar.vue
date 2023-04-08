@@ -73,7 +73,7 @@ function sendEdit (data) {
       }
     });
 }
-
+console.log(filtered)
 </script>
 
 

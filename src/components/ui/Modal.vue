@@ -25,7 +25,6 @@ function editEvent () {
     const ath = Object.keys(props.data.name_ath).reduce((obj, key) => { obj[key] = false; return obj }, {});
     athSelected.value.forEach(key => key in ath ? ath[key] = true : ath[key] = false);
     const date = new Date(props.data.date);
-    console.log(date.getFullYear() +'-'+ (date.getMonth()+1) +'-'+ date.getDate())
     emit('send-edit', { 
         id_course: props.data.id, 
         date: date.getFullYear() +'-'+ (date.getMonth()+1) +'-'+ date.getDate(), 
@@ -35,7 +34,6 @@ function editEvent () {
     })
 }
 
-console.log(props.data)
 </script>
 
 

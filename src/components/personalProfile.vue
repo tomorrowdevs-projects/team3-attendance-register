@@ -5,6 +5,7 @@ import ChangePassword from "./ui/ChangePassword.vue";
 import Button from "./ui/Button.vue";
 import DynamicForm from './ui/DynamicForm.vue';
 
+//PROPS
 const props = defineProps({
   userInfo: {
     type: Object,
@@ -12,11 +13,15 @@ const props = defineProps({
   },
 });
 
-const editing = ref(true);
-const getData = ref(false);
-
+//EMIT
 const emit = defineEmits(['profile-logout', 'update-profile']);
 
+//VARIABLES
+const editing = ref(true);
+const getData = ref(false);
+const formDisable = ref(false);
+
+//
 const logout = () => {
   axios
     .get('http://localhost:2000/api/v1/logout', { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
@@ -40,7 +45,6 @@ const formUpdate = (data) => {
     }) */
 }
 
-const formDisable = ref(false)
 
 const fieldsForm = [
   { label: 'User name', name: 'username', type: 'text', value: props.userInfo.username, disable: true },

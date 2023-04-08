@@ -41,7 +41,7 @@ const sendPassword = (data) => {
     props.forgotPassword ? error.value = false : error.value = checkInput(data);
 
     getData.value = false;
-    console.log('send',data);
+
 }
 
 </script>

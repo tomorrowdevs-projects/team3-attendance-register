@@ -153,6 +153,7 @@ const select_athlete_from_category_with_usernam_trainer = `SELECT * FROM categor
 const date_ath = `SELECT name, surname FROM accounts WHERE username = ?`;
 const innerjoin_account_calendary = ` SELECT  * FROM accounts FULL JOIN calendary ON username = username_athlete`;
 const innerjoin_account_hours = ` SELECT name, surname, hours_minutes_of_training_mounth, mounth, year, number_of_training, id_course FROM accounts FULL JOIN hours ON username = username_trainers`;
+const insert_to_hours = ` INSERT IGNORE INTO hours (id_course, username_trainers, mounth, year, number_of_training) VALUES ( ?, ?, ?, ?, ? )`
 
 module.exports = {
   selectLogin,
@@ -215,5 +216,6 @@ module.exports = {
   edit_hours_accounts,
   innerjoin_account_calendary,
   select_hours_trainer,
-  innerjoin_account_hours
+  innerjoin_account_hours,
+  insert_to_hours,
 };

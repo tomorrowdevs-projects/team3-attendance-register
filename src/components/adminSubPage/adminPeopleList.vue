@@ -55,7 +55,7 @@ let userRole = '';
 
 //write username from name and surname and capitalize first letter
 watchEffect(() => {
-    username.value = `${capitalizeFirstLetter(name.value)}${capitalizeFirstLetter(surname.value)}`;
+    username.value = `${capitalizeFirstLetter(name.value.trim())}${capitalizeFirstLetter(surname.value.trim())}`;
 })
 
 function capitalizeFirstLetter(str) {
@@ -374,7 +374,7 @@ const fetchNewUser = (event) => {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <ErrorMessage v-show="error" :message="errorMessage"></ErrorMessage>
+                    <ErrorMessage v-show="error || props.user.selected === 'trainer' ? filteredList[2].length === 0 : true" :message="errorMessage || props.user.selected === 'trainer' && filteredList[2].length === 0 ? 'There are no courses available, please add a course first' : ''"></ErrorMessage>
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Add new {{ user.selected }}</h1>
                 </div>
                 <div class="modal-body">
@@ -409,7 +409,7 @@ const fetchNewUser = (event) => {
                         <div class="mb-3 row">
                             <label for="catefories" class="col-sm-3 col-form-label">Courses</label>
                             <div class="col-sm-9">
-                                <div v-for="category in filteredList[2]" :key="category" class="form-check form-switch">
+                                <div v-for="category in props.user.selected === 'trainer' ? filteredList[2] : filteredList[1]" :key="category" class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" v-model="catNewUser" role="switch"
                                         :id="category.replace(/\s/g, '')" :value="category">
                                     <label class="form-check-label" :for="category.replace(/\s/g, '')">{{ category
@@ -419,7 +419,7 @@ const fetchNewUser = (event) => {
                         </div>
                         <div class="modal-footer">
                             <Button :type="{ color: 'danger', title: 'Cancel' }" data-bs-dismiss="modal"></Button>
-                            <Button :type="{ color: 'success', title: 'Save', type: 'submit' }"></Button>
+                            <Button :type="{ color: 'success', title: 'Save', type: 'submit' }" v-if="props.user.selected === 'trainer' && filteredList[2].length === 0 ? false : true"></Button>
                         </div>
                     </form>
                 </div>

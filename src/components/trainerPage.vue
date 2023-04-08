@@ -7,6 +7,7 @@ import Calendar from './calendar.vue';
 import Button from './ui/Button.vue';
 import DbError from './ui/DbError.vue';
 import CheckableList from './ui/CheckableList.vue';
+import ErrorMessage from './ui/ErrorMessage.vue';
 
 //PROPS
 const props = defineProps({
@@ -30,6 +31,8 @@ const showBack = ref(false);
 const newEvent = ref(false);
 const selectedAthletes = ref([]);
 const error = ref(false);
+const errorSend = ref(false);
+const errorMessage = ref('');
 const reset = ref(false);
 let dataEvent = {};
 let durationString = ref('');
@@ -49,7 +52,7 @@ function get (username_trainer) {
         calendarData.value = res.calendar;
         trainerCategory.value = [...new Set(res.data.reduce((acc, el) => { acc.push(el.category); return acc; }, []))];
         athletes.value = res.data.filter(el => el.category === trainerCategory.value[0]).sort(compare);
-
+        selectedCategory.value = trainerCategory.value[0];
         if (res.status) selected.value = 'dbError'
     })
 };
@@ -58,7 +61,9 @@ get(props.userInfo.username);
 
 //Updates the athletes when the selected category changes
 watch(selectedCategory, (newValue, oldValue) => {
-    athletes.value = dataDB.value.filter(el => el.category === newValue).sort(compare)
+    athletes.value = dataDB.value.filter(el => el.category === newValue).sort(compare);
+    reset.value = true;
+    setTimeout(() => reset.value = false, 300)
 },
     {
         deep: true,
@@ -83,6 +88,8 @@ const getSelected = (item) => {
 const addNewEvent = (event) => {
     if (selectedAthletes.value.length === 0) { error.value = true; return }
     else {
+        errorSend.value = false;
+        errorMessage.value = '';
         error.value = false;
         const form = event.target
         const formData = new FormData(form)
@@ -112,8 +119,21 @@ const sendEvent = async () => {
     await axios
         .post(`http://localhost:2000/api/v1/calendary/${props.userInfo.username}`, dataEvent, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => {
-            selectedCategory.value = trainerCategory.value[0];
-            get(props.userInfo.username)
+            if(response.data.status === 201){
+                selectedCategory.value = trainerCategory.value[0];
+                errorSend.value = false;
+                errorMessage.value = '';
+                get(props.userInfo.username);
+                const modal = document.querySelector('#modalSummary');
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                bsModal.hide();
+            } else if (response.data.status === 406) {
+                errorSend.value = true;
+                errorMessage.value = 'You cannot add an event of the same course on the same day';
+            } else {
+                errorSend.value = true;
+                errorMessage.value = 'You cannot add an event of the same course on the same day';
+            }
     });
 };
 
@@ -173,6 +193,7 @@ const sendEvent = async () => {
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
+                            <ErrorMessage v-show="errorSend" :message="errorMessage"></ErrorMessage>
                             <h1 class="modal-title fs-1" id="exampleModalLabel">{{ selectedCategory }}</h1>
                         </div>
                         <div class="modal-body">
@@ -201,8 +222,7 @@ const sendEvent = async () => {
 
                             <div class="modal-footer">
                                 <Button :type="{ color: 'danger', title: 'Cancel' }" data-bs-dismiss="modal"></Button>
-                                <Button :type="{ color: 'success', title: 'Confirm', type: 'button' }"
-                                    data-bs-dismiss="modal" @click="sendEvent"></Button>
+                                <Button :type="{ color: 'success', title: 'Confirm', type: 'button' }" @click="sendEvent"></Button>
                             </div>
                         </div>
                     </div>

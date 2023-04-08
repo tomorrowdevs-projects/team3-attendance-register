@@ -46,7 +46,7 @@ async function getData () {
         .then((response) => calendar.push(...response.data.data));
 
     return {
-        status: trainer.length === 0 || athlete.length === 0 || categories.length === 0 || calendar.length === 0,
+        status: trainer.length === 0 || athlete.length === 0 || categories.length === 0,
         trainers: trainer,
         athletes: athlete,
         categories: categories,

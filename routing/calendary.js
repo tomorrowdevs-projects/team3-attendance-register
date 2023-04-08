@@ -50,14 +50,26 @@ router.post("/calendary/:username", async (req, res) => {
             //takes all hours of the specific month and year
 
             req.method = this.get;
-
+            
             await connection
               .query(queries.selectUnitTime, [
                 id_course,
                 d.getFullYear(),
                 mounth,
               ])
-              .then(async ([rows]) => {   
+              .then(async ([rows]) => {
+
+                if(rows.length === 0) {
+                  await connection
+                  .query(queries.insert_to_hours, [
+                    id_course,
+                    username_trainer,
+                    mounth,
+                    d.getFullYear(),
+                    number_of_training
+                  ])
+                }  else { 
+                
                 const tot_hours = rows[0].number_of_training + number_of_training;
                 
                 //updates the hours of the current month made on accounts
@@ -70,7 +82,7 @@ router.post("/calendary/:username", async (req, res) => {
                   d.getFullYear(),
                   mounth,
                 ]);
-    
+              }
               });
 
               await connection
@@ -80,23 +92,24 @@ router.post("/calendary/:username", async (req, res) => {
                 mounth,
               ])
               .then(async ([rows]) => {
-                console.log(rows)
-                let tot_hours = 0;
-                for (let number of rows) {
-                  tot_hours += number.number_of_training;
-                }  
-                await connection
-                .query(queries.updatehours_minutes_of_training, [
-                  tot_hours,
-                  username_trainer,
-                ])
-                .then(async ([rows]) => {
-                  if (rows.affectedRows === 1)
-                    res.json({ status: 201, success: true }).end();
-                  else {
-                    res.json({ status: 400 }).end();
-                  }
-                });
+             
+                  let tot_hours = 0;
+                  for (let number of rows) {
+                    tot_hours += number.number_of_training;
+                  }  
+                  await connection
+                  .query(queries.updatehours_minutes_of_training, [
+                    tot_hours,
+                    username_trainer,
+                  ])
+                  .then(async ([rows]) => {
+                    if (rows.affectedRows === 1)
+                      res.json({ status: 201 }).end();
+                    else {
+                      res.json({ status: 400 }).end();
+                    }
+                  });
+                
               })
           } else {
             res.json({ status: 406 }).end();
@@ -126,6 +139,7 @@ router.get("/calendary/list/:username", async (req, res) => {
 
           const result = filter.reduce((acc, obj) => {
             const key = `${obj.id_course}_${obj.date}`;
+
             if (!acc[key]) {
               acc[key] = {
                 id: obj.id_course,
@@ -195,7 +209,6 @@ router.patch("/calendary_edit", async (req, res) => {
               if (old > number_of_training) {
                 let number_of_training_new = old - number_of_training;
                 let new_monthly = old_mouthly - number_of_training_new;
-                console.log('newmon', new_monthly, number_of_training_new)
 
                 //write to hours
                 await connection.query(queries.edit_hours, [
@@ -208,7 +221,6 @@ router.patch("/calendary_edit", async (req, res) => {
                   new_monthly,
                   username,
                 ])
-
 
                 //if they are equal -error 407-
             /*   } else if (old === number_of_training) {
@@ -225,11 +237,9 @@ router.patch("/calendary_edit", async (req, res) => {
                   mounth,
                   year,
                 ]);
-
-                
                 
               }
-              await connection.query(queries.select_hours_trainer, [ username ])
+              await connection.query(queries.select_hours_trainer, [ username , d.getFullYear(), mounth])
                 .then(async ([rows]) => { 
 
                   let totHours = 0;
