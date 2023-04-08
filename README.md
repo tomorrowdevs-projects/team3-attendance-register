@@ -16,9 +16,10 @@
 # Launch
 How to run the project.
 The program needs Node.js. If you don't already have it, go to https://nodejs.org/en/download/current/ and install it. Node.js is cross-platform and can be installed on MS Windows, Linux and MacOS.
-Then, NPM is the recommended installation method when building applications with Vue. Open the shell and type: npm install vue@^2.
-Eventually you need to install the dependencies with this shell command: "npm install".
-Now, the program is ready to run, by typing "npm start".
+NPM is the recommended installation method when building applications with Vue. 
+After starting the server, open the shell and type: "npm start".
+Eventually open another shell and type this command: "npm run dev".
+Now, the program is ready to run. 
 
 # Visuals
 ### Screenshot Login 
