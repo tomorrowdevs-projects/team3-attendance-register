@@ -13,7 +13,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['event']);
-console.log(props.user)
+
 //VARIABLE
 const search = ref('all');
 const selectedOrder = ref('name');
@@ -70,7 +70,6 @@ function convertToTime(num) {
 
 //function to sort the list of trainers/athletes by name or by monthly hours
 function compare(a, b) {
-    console.log(a.mounthlyHoursWorked)
     const first = selectedOrder.value === 'hours' ? Number(a.hours_minutes_of_training_mounth) : b.surname;
     const second = selectedOrder.value === 'hours' ? Number(b.hours_minutes_of_training_mounth) : a.surname;
     if (first < second) return 1;

@@ -16,43 +16,24 @@ const props = defineProps({
     }
 });
 
+//EMIT
 const emit = defineEmits(['logout', 'edit']);
-console.log(props.userInfo)
+
+//VARIABLES
 const dataDB = ref([]);
 const trainerCategory = ref([]);
 let athletes = ref([]);
 const selectedCategory = ref('');
-const calendarData = ref([])
-function get (username_trainer) {
-getData.getTrainerData(username_trainer).then((res) => {
-    dataDB.value = res.data;
-    calendarData.value = res.calendar;
-    console.log(calendarData.value)
-    trainerCategory.value = [...new Set(res.data.reduce((acc, el) => { acc.push(el.category); return acc; }, []))];
-    athletes.value = res.data.filter(el => el.category === trainerCategory.value[0]).sort(compare);
-
-    if (res.status) selected.value = 'dbError'
-})
-}
-
-get(props.userInfo.username);
-
-watch(selectedCategory, (newValue, oldValue) => {
-    athletes.value = dataDB.value.filter(el => el.category === newValue).sort(compare)
-},
-    {
-        deep: true,
-    }
-);
-
+const calendarData = ref([]);
 const selected = ref('');
 const showBack = ref(false);
 const newEvent = ref(false);
 const selectedAthletes = ref([]);
 const error = ref(false);
 const reset = ref(false);
-
 let dataEvent = {};
+let durationString = ref('');
+const buttonColor = ['btn-outline-primary', 'btn-outline-success', 'btn-outline-danger', 'btn-outline-secondary', 'btn-outline-info', 'btn-outline-dark', 'btn-outline-light'];
 
 const date = new Date().toLocaleDateString('en-US', {
     weekday: "long",
@@ -61,22 +42,44 @@ const date = new Date().toLocaleDateString('en-US', {
     year: "numeric",
 }).replace(',', ' ');
 
-const buttonColor = ['btn-outline-primary', 'btn-outline-success', 'btn-outline-danger', 'btn-outline-secondary', 'btn-outline-info', 'btn-outline-dark', 'btn-outline-light'];
+//Call the function from getData.js to get the data, it is called when there are any changes to update the data
+function get (username_trainer) {
+    getData.getTrainerData(username_trainer).then((res) => {
+        dataDB.value = res.data;
+        calendarData.value = res.calendar;
+        trainerCategory.value = [...new Set(res.data.reduce((acc, el) => { acc.push(el.category); return acc; }, []))];
+        athletes.value = res.data.filter(el => el.category === trainerCategory.value[0]).sort(compare);
 
-let durationString = ref('');
+        if (res.status) selected.value = 'dbError'
+    })
+};
 
+get(props.userInfo.username);
+
+//Updates the athletes when the selected category changes
+watch(selectedCategory, (newValue, oldValue) => {
+    athletes.value = dataDB.value.filter(el => el.category === newValue).sort(compare)
+},
+    {
+        deep: true,
+    }
+);
+
+//Function which is called as a callback for the athletes' sorts
 function compare(a, b) {
     if (a.surname < b.surname) return -1;
     if (a.surname > b.surname) return 1;
     return 0;
-}
+};
 
+//Emit of ChackableList, takes the list of chosen athletes or signals the error in case no one was chosen when entering an event
 const getSelected = (item) => {
     selectedAthletes.value.length = 0;
     selectedAthletes.value.push(...item);
     if (selectedAthletes.value.length > 0) error.value = false
-}
+};
 
+//Form submit function that will pass data to sendEvent upon confirmation of the summary given by the modal
 const addNewEvent = (event) => {
     if (selectedAthletes.value.length === 0) { error.value = true; return }
     else {
@@ -88,7 +91,6 @@ const addNewEvent = (event) => {
         [tmp, durationString.value] = data.number_of_training.split('-');
         data.number_of_training = Number(tmp);
 
-        console.log(athletes.value,'athle')
         data.id_course = athletes.value[0].id_course;
         const selectedAthletesUsername = selectedAthletes.value.map(el => el.username_athlete);
         data.name_ath = athletes.value.reduce((obj, athl) => {
@@ -103,6 +105,7 @@ const addNewEvent = (event) => {
     }
 }
 
+//Upon clicking to confirm the summary in the modal, the event is sent to the db and the data is updated
 const sendEvent = async () => {
     newEvent.value = false;
     reset.value = true;
@@ -111,9 +114,8 @@ const sendEvent = async () => {
         .then((response) => {
             selectedCategory.value = trainerCategory.value[0];
             get(props.userInfo.username)
-        });
-
-}
+    });
+};
 
 </script>
 

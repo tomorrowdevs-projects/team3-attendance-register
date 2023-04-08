@@ -16,7 +16,7 @@ const hours = `CREATE TABLE if not exists hours(
   FOREIGN KEY(username_trainers) REFERENCES accounts(username)
   ON UPDATE CASCADE )`;
 
-const insertIntoHours = `INSERT IGNORE INTO hours (id_course, username_trainers, year, mounth, number_of_training) VALUES (?, ?, ?, ?,?) `;
+const updateIntoHours = `UPDATE IGNORE hours SET number_of_training = ? WHERE id_course = ? AND username_trainers = ? AND year = ? AND mounth = ? `;
 
 const calendary = `CREATE TABLE if not exists calendary(
   username_trainer VARCHAR(255) NOT NULL ,  
@@ -137,7 +137,7 @@ const selectForEdit = `SELECT username , email FROM accounts WHERE username = ? 
 const select_monthly_hours_mounth = ` SELECT hours_minutes_of_training_mounth FROM accounts WHERE  username = ?`;
 const select_monthly_hours_mounth_all = ` SELECT hours_minutes_of_training_mounth FROM accounts `;
 const select_monthly_hours_for_specific_mounth = ` SELECT number_of_training FROM calendary WHERE  username = ? AND year = ? AND mounth = ? `;
-const select_hours_trainer = ` SELECT number_of_training FROM hours WHERE  username_trainers = ? `;
+const select_hours_trainer = ` SELECT number_of_training FROM hours WHERE  username_trainers = ? AND year = ? AND mounth = ? `;
 
 const check_data_category = ` SELECT date FROM category WHERE  code_registration = ? `;
 
@@ -152,7 +152,6 @@ const delete_category_assignment_ID = `DELETE FROM category_assignment  WHERE  i
 const select_athlete_from_category_with_usernam_trainer = `SELECT * FROM category WHERE username_trainer = ?  `;
 const date_ath = `SELECT name, surname FROM accounts WHERE username = ?`;
 const innerjoin_account_calendary = ` SELECT  * FROM accounts FULL JOIN calendary ON username = username_athlete`;
-//const innerjoin_account_hours = ` SELECT name, surname, hours_minutes_of_training_mounth, mounth, year, number_of_training, category FROM accounts JOIN hours ON username = username_trainers JOIN category_assignment ON username_trainers = username_trainer`;
 const innerjoin_account_hours = ` SELECT name, surname, hours_minutes_of_training_mounth, mounth, year, number_of_training, id_course FROM accounts FULL JOIN hours ON username = username_trainers`;
 
 module.exports = {
@@ -207,7 +206,7 @@ module.exports = {
   date_ath,
   select_code_registration_calendary,
   hours,
-  insertIntoHours,
+  updateIntoHours,
   select_all_from_calendary,
   edit_calendary,
   select_number_of_training_old,

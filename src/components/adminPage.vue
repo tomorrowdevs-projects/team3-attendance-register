@@ -27,7 +27,6 @@ function get() {
 
 get()
 
-console.log(data)
 </script>
 
 <template>

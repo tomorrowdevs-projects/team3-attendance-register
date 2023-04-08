@@ -4,18 +4,20 @@ import AdminPage from './components/adminPage.vue';
 import LoginModule from './components/loginModule.vue';
 import TrainerPage from './components/trainerPage.vue';
 
+//VARIABLES
 const showLogin = ref(true);
 const userRole = ref('');
 const userInfo = ref([]);
 
+//Emit of LoginModule, when the login is successful it enters the admin or trainer page depending on the user
 const handleLoginSuccess = (event) => {
   if (event.role === 'admin') userRole.value = 'admin'
   else if (event.role === 'trainer') userRole.value = 'trainer'
   userInfo.value = event;
   showLogin.value = false
-
 }
 
+//Emit of Admin of Trainer page, when the user logs out he is redirected to the login page
 const logout = () => {
   userRole.value = 'none';
   showLogin.value = true;

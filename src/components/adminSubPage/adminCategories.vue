@@ -26,7 +26,6 @@ let errorMessage = '';
 const errorAddNew = ref(false);
 
 const getSelected = (item) => {
-    console.log(item,'item')
     catNewUser.value = item;
     if (catNewUser.value !== '') error.value = false
 }
@@ -38,7 +37,7 @@ const deleteBut = () => {
         error.value = false;
         reset.value = true;
         if (catNewUser.value !== '') {
-            console.log(catNewUser.value)
+
         axios
             .delete(`http://localhost:2000/api/v1//category/del_category/${catNewUser.value}`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
             .then((response) => {

@@ -47,14 +47,6 @@ router.post("/calendary/:username", async (req, res) => {
               ]);
             }
 
-            await connection.query(queries.insertIntoHours, [
-              id_course,
-              username_trainer,
-              d.getFullYear(),
-              mounth,
-              number_of_training,
-            ]);
-
             //takes all hours of the specific month and year
 
             req.method = this.get;
@@ -65,29 +57,47 @@ router.post("/calendary/:username", async (req, res) => {
                 d.getFullYear(),
                 mounth,
               ])
-
-              .then(async ([rows]) => {
-                let tot_hours = 0;
-                for (let number of rows) {
-                  tot_hours += number.number_of_training;
-                }
-
+              .then(async ([rows]) => {   
+                const tot_hours = rows[0].number_of_training + number_of_training;
+                
                 //updates the hours of the current month made on accounts
 
                 req.method = this.patch;
-                await connection
-                  .query(queries.updatehours_minutes_of_training, [
-                    tot_hours,
-                    username_trainer,
-                  ])
-                  .then(async ([rows]) => {
-                    if (rows.affectedRows === 1)
-                      res.json({ status: 201, success: true }).end();
-                    else {
-                      res.json({ status: 400 }).end();
-                    }
-                  });
+                await connection.query(queries.updateIntoHours, [
+                  tot_hours,
+                  id_course,
+                  username_trainer,
+                  d.getFullYear(),
+                  mounth,
+                ]);
+    
               });
+
+              await connection
+              .query(queries.select_hours_trainer, [
+                username_trainer,
+                d.getFullYear(),
+                mounth,
+              ])
+              .then(async ([rows]) => {
+                console.log(rows)
+                let tot_hours = 0;
+                for (let number of rows) {
+                  tot_hours += number.number_of_training;
+                }  
+                await connection
+                .query(queries.updatehours_minutes_of_training, [
+                  tot_hours,
+                  username_trainer,
+                ])
+                .then(async ([rows]) => {
+                  if (rows.affectedRows === 1)
+                    res.json({ status: 201, success: true }).end();
+                  else {
+                    res.json({ status: 400 }).end();
+                  }
+                });
+              })
           } else {
             res.json({ status: 406 }).end();
           } //Already present in db
