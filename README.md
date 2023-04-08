@@ -21,7 +21,9 @@ Eventually you need to install the dependencies with this shell command: "npm in
 Now, the program is ready to run, by typing "npm start".
 
 # Visuals
-![imagename](https://github.com/tomorrowdevs-projects/team3-attendance-register/img/Schermata login.jpg)
+### Screenshot
+![Image text](/img/Schermata login.jpg)
+![imagename](img/Schermata login.jpg)
 
 Online example:
 https://team3project-19334.web.app/
