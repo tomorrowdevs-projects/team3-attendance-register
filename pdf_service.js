@@ -40,7 +40,7 @@ const table = `<table>
   <tr>
     <th>Trainers</th>
     <th>Total hours</th>
-    <th>Month</th>
+    <th>Date</th>
   </tr>
 </thead>
 <tbody>

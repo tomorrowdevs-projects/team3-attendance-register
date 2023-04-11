@@ -34,6 +34,7 @@ const error = ref(false);
 const errorSend = ref(false);
 const errorMessage = ref('');
 const reset = ref(false);
+const userData = ref({});
 let dataEvent = {};
 let durationString = ref('');
 const buttonColor = ['btn-outline-primary', 'btn-outline-success', 'btn-outline-danger', 'btn-outline-secondary', 'btn-outline-info', 'btn-outline-dark', 'btn-outline-light'];
@@ -48,6 +49,7 @@ const date = new Date().toLocaleDateString('en-US', {
 //Call the function from getData.js to get the data, it is called when there are any changes to update the data
 function get (username_trainer) {
     getData.getTrainerData(username_trainer).then((res) => {
+        userData.value = res.user[0][0];
         dataDB.value = res.data;
         calendarData.value = res.calendar;
         trainerCategory.value = [...new Set(res.data.reduce((acc, el) => { acc.push(el.category); return acc; }, []))];
@@ -233,7 +235,7 @@ const sendEvent = async () => {
 
     <DbError v-if="selected === 'dbError'"></DbError>
 
-    <personalProfile v-if="selected === 'profile'" :userInfo="userInfo" @profile-logout="emit('logout')" />
+    <personalProfile v-if="selected === 'profile'" :userInfo="userData" @profile-logout="emit('logout')" />
     <Calendar v-if="selected === 'calendar'" :category="trainerCategory" :type="'trainer'" :calendar="calendarData" @edit="get(props.userInfo.username)"/>
 </template>
 

@@ -60,6 +60,7 @@ async function getData () {
 async function getTrainerData (trainerUsername) {
     const data = [];
     const calendar = [];
+    const userData = [];
 
     //Get all athletes assigned to the categories of the logged in trainer
     await axios
@@ -70,11 +71,16 @@ async function getTrainerData (trainerUsername) {
     await axios
         .get(`http://localhost:2000/api/v1/calendary/list/${trainerUsername}`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
         .then((response) => calendar.push(...response.data.data));
+
+    await axios
+        .get(`http://localhost:2000/api/v1/select`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
+        .then((response) => userData.push(response.data.code.filter(el => el.username === trainerUsername)));
         
     return {
-        status: data.length === 0,
+        status: data.length === 0 || userData.length === 0,
         data: data,
-        calendar: calendar
+        calendar: calendar,
+        user: userData
     }
 }
 

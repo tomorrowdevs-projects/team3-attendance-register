@@ -39,7 +39,6 @@ router.post("/login", async (req, res) => {
                       },
                       process.env.JWT
                     );
-
                     res
                       .cookie("access_token", token, {
                         httpOnly: true,
