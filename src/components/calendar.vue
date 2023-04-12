@@ -189,7 +189,7 @@ function sendEdit (data) {
   margin-top: .5em;
   box-shadow: 0 0 12px black;
   border-radius: 1em;
-  background-color: #4eb0b2;
+  background-color: #e0e0c7;
   ;
 }
 
@@ -202,6 +202,11 @@ function sendEdit (data) {
   .searchContainer {
     width: 92%;
     flex-wrap: wrap;
+  }
+
+  .form-select {
+    text-align: left;
+    font-size: .9em;
   }
 
   .col,

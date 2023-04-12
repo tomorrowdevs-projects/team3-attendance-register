@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps } from 'vue';
 import adminProfile from "@/components/icons/adminProfile.png";
 import trainer from "@/components/icons/trainer.png";
 import athlete from "@/components/icons/athlete.png";

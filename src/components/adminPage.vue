@@ -46,7 +46,7 @@ get()
 
         <Button :type="{ icons: 'athlete', title: 'Athletes' }" @click="[selected, showBack] = ['athlete', true]"></Button>
 
-        <Button :type="{ icons: 'category', title: 'Categories' }"
+        <Button :type="{ icons: 'category', title: 'Courses' }"
             @click="[selected, showBack] = ['category', true]"></Button>
 
         <Button :type="{ icons: 'calendar', title: 'Calendar' }"
