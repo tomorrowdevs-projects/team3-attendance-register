@@ -21,26 +21,24 @@ const props = defineProps({
   }
 });
 
+//EMIT
 const emit = defineEmits(['edit']);
 
-function getColor() {
-  return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0");
-}
-
+//VARIABLES
 const color = props.calendar.map(el => getColor());
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const years = Array.from({ length: 10 }, (el, index) => 2023 + index);
-
 const actualMonth = new Date().getMonth();
 const actualYear = new Date().getFullYear();
 const monthSelected = ref(actualMonth);
 const yearSelected = ref(actualYear);
-const categorySelected = ref(props.category[0]);
+const categorySelected = ref(props.type === 'admin' ? 'all' : props.category[0]);
 const trainerSelected = ref('all');
 const trainerList = [ ...new Set(props.calendar.map(el => el.username_trainer)) ]
 const error = ref(false);
 const errorMessage = 'Unexpected error, try again';
 
+//COMPUTED
 const filtered = computed(() => {
   const data = props.calendar.sort((a, b) => new Date(a.date) - new Date(b.date));
   let filter = data.filter(el => {
@@ -53,6 +51,12 @@ const filtered = computed(() => {
   return filter
 })
 
+//generates a random color
+function getColor() {
+  return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0");
+}
+
+//send data for event edit
 function sendEdit (data) {
   const dataSplitted = data.date.split('-');
   axios
@@ -68,7 +72,6 @@ function sendEdit (data) {
       }
     });
 }
-console.log(filtered)
 </script>
 
 
@@ -96,9 +99,7 @@ console.log(filtered)
       <select v-if="props.type === 'admin'" v-model="trainerSelected" class="form-select search"
         aria-label="Default select example">
         <option value="all">ALL TRAINERS</option>
-        <option v-for="(evnt, index) in trainerList" :key="index" :value="evnt">{{
-          evnt
-        }}</option>
+        <option v-for="(evnt, index) in trainerList" :key="index" :value="evnt">{{ evnt }}</option>
       </select>
     </div>
 

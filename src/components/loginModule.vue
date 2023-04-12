@@ -4,28 +4,23 @@ import { ref } from 'vue';
 import Button from './ui/Button.vue';
 import ChangePassword from './ui/ChangePassword.vue';
 
+//EMIT
 const emit = defineEmits(['login-success']);
+
+//VARIABLES
 const postData = {
   username: '',
   password: '',
 };
-
 const errors = {
   400: 'Incorrect Username and/or Password!',
   401: 'Incorrect Username and/or Password!',
   404: 'Generic error, try again'
-}
-
+};
 let message = ref('');
 
+//send the login data
 const fetchData = () => {
-
-  // for DEMO VERSION
-  /* if (postData.username === 'admin' || postData.username === 'trainer')
-      emit('login-success', { role: postData.username, username: postData.username })
-  else message.value = errors[400] */
-  // end DEMO VERSION
-
   axios
     .post('http://localhost:2000/api/v1/login', postData, { withCredentials: true })
     .then((response) => {
@@ -59,9 +54,6 @@ const fetchData = () => {
 
   <ChangePassword :forgotPassword="true"></ChangePassword>
 
-  <!-- For DEMO VERSION -->
-  <!-- <p class="demo">( DEMO VERSION => Type ' admin ' or ' trainer ' in Username and a password that meets the minimum requirements )</p> -->
-  <!-- end DEMO VERSION -->
 </template>
 
 <style scoped>

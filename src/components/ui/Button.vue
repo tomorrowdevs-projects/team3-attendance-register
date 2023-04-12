@@ -5,7 +5,8 @@ import trainer from "@/components/icons/trainer.png";
 import athlete from "@/components/icons/athlete.png";
 import category from "@/components/icons/category.png";
 import calendar from "@/components/icons/calendar.png";
-//SCRIPT
+
+//PROPS
 const props = defineProps({
     type: {
         type: Object,

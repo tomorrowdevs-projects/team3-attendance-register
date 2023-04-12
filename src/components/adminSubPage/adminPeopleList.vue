@@ -13,12 +13,27 @@ const props = defineProps({
     }
 });
 
+//EMIT
 const emit = defineEmits(['event']);
 
 //VARIABLE
 const search = ref('all');
 const selectedOrder = ref('name');
+const name = ref('');
+const surname = ref('');
+const username = ref('');
+const edit = ref(false);
+const formError = ref('');
+const inputDisabled = ref(true);
+const catEditUser = ref([]);
+const catNewUser = ref([]);
+let errorMessage = '';
+const error = ref(false);
+let oldUsername = '';
+let old_category = '';
+let userRole = '';
 
+//COMPUTED
 let filteredList = computed(() => {
     let filtered = [];
     let listCategory = [];
@@ -40,20 +55,6 @@ let filteredList = computed(() => {
     return [filtered, listCategory, freeCategory]
 });
 
-const name = ref('');
-const surname = ref('');
-const username = ref('');
-const edit = ref(false);
-const formError = ref('');
-const inputDisabled = ref(true);
-const catEditUser = ref([]);
-const catNewUser = ref([]);
-let errorMessage = '';
-const error = ref(false);
-let oldUsername = '';
-let old_category = '';
-let userRole = '';
-
 //write username from name and surname and capitalize first letter
 watchEffect(() => {
     username.value = `${utils.capitalizeFirstLetter(name.value.trim())}${utils.capitalizeFirstLetter(surname.value.trim())}`;
@@ -68,6 +69,7 @@ function compare(a, b) {
     return 0;
 };
 
+//delete an athlete or trainer
 const deleteItem = (element) => {
     axios
         .delete(`http://localhost:2000/api/v1/managementMyApp/edit/del/${element.username}`, { withCredentials: true, headers: { 'Access-Control-Allow-Credentials': 'true' } })
@@ -89,6 +91,7 @@ const deleteItem = (element) => {
         })
 }
 
+//resets the form and variables for adding a new user
 const resetForm = () => {
     const form = document.querySelector('#addNewForm');
     form.reset();
@@ -99,6 +102,7 @@ const resetForm = () => {
     error.value = false;
 }
 
+//enable the edit of a profile by clicking on the image
 const editItem = (element) => {
     edit.value = true;
     inputDisabled.value = false;
@@ -109,6 +113,7 @@ const editItem = (element) => {
     userRole = element.role;
 }
 
+//undo the profile form edit by resetting it
 const cancel = (element) => {
     edit.value = false;
     formError.value = '';
@@ -116,6 +121,7 @@ const cancel = (element) => {
     inputDisabled.value = true;
 }
 
+//save changes for editing a profile
 const saveChange = (event) => {
     if (catEditUser.value.length === 0) {
         formError.value = 'Select at least one category.'
@@ -145,6 +151,7 @@ const saveChange = (event) => {
         })
 }
 
+//print the pdf of the current month
 const printPdf = (element) => {
     const downloadFile = async () => {
         try {
@@ -165,7 +172,6 @@ const printPdf = (element) => {
     };
     downloadFile()
 }
-
 
 //Add new user
 const fetchNewUser = (event) => {
@@ -192,10 +198,10 @@ const fetchNewUser = (event) => {
                 resetForm()
             }
             else {
-                errorMessage = response.data.status === 404 ? 'The username oe email already exists' : `Unexpected error (${response.data.status}), try again!`;
+                errorMessage = response.data.status === 402 ? 'The username oe email already exists' : `Unexpected error (${response.data.status}), try again!`;
                 error.value = true;
-            }
-        })
+        }
+    })
 }
 </script>
 
@@ -365,7 +371,7 @@ const fetchNewUser = (event) => {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <ErrorMessage v-show="error || props.user.selected === 'trainer' ? filteredList[2].length === 0 : true" :message="errorMessage || props.user.selected === 'trainer' && filteredList[2].length === 0 ? 'There are no courses available, please add a course first' : ''"></ErrorMessage>
+                    <ErrorMessage v-show="props.user.selected === 'trainer' ? filteredList[2].length === 0 : error" :message="props.user.selected === 'trainer' && filteredList[2].length === 0 ? 'There are no courses available, please add a course first' : errorMessage"></ErrorMessage>
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Add new {{ user.selected }}</h1>
                 </div>
                 <div class="modal-body">

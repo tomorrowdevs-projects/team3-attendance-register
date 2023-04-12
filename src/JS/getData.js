@@ -4,81 +4,86 @@ const baseUrl = 'http://localhost:2000/api/v1/';
 
 //Get all the data of interest to the admin from the db
 async function getData () {
-    const trainer = [];
-    const athlete = [];
-    const categories = [];
-    const categoryA = [];
-    const withoutTrainer = [];
-    const calendar = [];
 
     //Get All category
-    await axios
+    const categories = axios
         .get(`${baseUrl}categoryAll/list`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
-        .then((response) => {
-            categories.push(...new Set( response.data.data.reduce((acc, el) => { 
-                acc.push(el.category); 
-                return acc;
-            }, [])));
-            categoryA.push(...new Set(response.data.data.filter(el => el.username_trainer).map(elem => elem.category)))
-        })
     
     //Get all categories related to trainers
-    await axios
+    const trainers = axios
         .get(`${baseUrl}categories_of_trainers`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
-        .then((response) => trainer.push(...response.data.data));
 
     //Get all categories related to athletes
-    await axios
+    const athletes = axios
         .get(`${baseUrl}categories_of_athlete`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
-        .then((response) => athlete.push(...response.data.data));
     
     //Get all athletes who have no associated category
-    await axios
+    const withoutTrainer = axios
         .get(`${baseUrl}select`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
-        .then((response) => {
-            const allAthlete = response.data.code.filter(el => el.role === 'athlete');
-            const athleteCourseUsername = athlete.map(el => el.username)
-
-            withoutTrainer.push(...allAthlete.filter(athl => !athleteCourseUsername.includes(athl.username) ));
-        });
 
     //Get all calendar events list
-    await axios
+    const calendar = axios
         .get(`${baseUrl}calendary/list/Admin`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
-        .then((response) => calendar.push(...response.data.data));
+    
+    return Promise.all([categories, trainers, athletes, withoutTrainer, calendar]).then(result => {
+        const categories = [...new Set( result[0].data.data.reduce((acc, el) => { 
+            acc.push(el.category); 
+            return acc;
+        }, []))];
 
-    return {
-        status: trainer.length === 0 || athlete.length === 0 || categories.length === 0,
-        trainers: trainer,
-        athletes: athlete,
-        categories: categories,
-        categoryAthlete: categoryA,
-        withoutTrainer: withoutTrainer,
-        calendar: calendar
-    }
-}
+        const categoryA = [...new Set(result[0].data.data.filter(el => el.username_trainer).map(elem => elem.category))];
+
+        const trainers = result[1].data.data;
+
+        const athletes = result[2].data.data;
+
+        const allAthlete = result[3].data.code.filter(el => el.role === 'athlete');
+        const athleteCourseUsername = athletes.map(el => el.username)
+        const withoutTrainer = allAthlete.filter(athl => !athleteCourseUsername.includes(athl.username) );
+
+        const calendar = result[4].data.data
+
+        return {
+            status: trainers.length === 0 || athletes.length === 0 || categories.length === 0,
+            trainers: trainers,
+            athletes: athletes,
+            categories: categories,
+            categoryAthlete: categoryA,
+            withoutTrainer: withoutTrainer,
+            calendar: calendar
+        }
+    })
+};
 
 
 //Get all the data of interest to the single trainer from the db
 async function getTrainerData (trainerUsername) {
-    const data = [];
-    const calendar = [];
 
     //Get all athletes assigned to the categories of the logged in trainer
-    await axios
+    const data = axios
         .get(`${baseUrl}category_and_accounts/${trainerUsername}`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
-        .then((response) => data.push(...response.data.data));
 
     //Get all calendar events list
-    await axios
+    const calendar = axios
         .get(`${baseUrl}calendary/list/${trainerUsername}`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
-        .then((response) => calendar.push(...response.data.data));
-        
-    return {
-        status: data.length === 0,
-        data: data,
-        calendar: calendar
-    }
+    
+    //Get data for personal profile
+    const userData = axios
+        .get(`http://localhost:2000/api/v1/select`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
+
+    return Promise.all([data, calendar, userData]).then(result => {
+        const data = result[0].data.data;
+        const calendar = result[1].data.data;
+        const userData = result[2].data.code.filter(el => el.username === trainerUsername);
+
+        return {
+            status: data.length === 0 || userData.length === 0,
+            data: data,
+            calendar: calendar,
+            user: userData
+        }
+    })
+    
 }
 
 export default { getData, getTrainerData }

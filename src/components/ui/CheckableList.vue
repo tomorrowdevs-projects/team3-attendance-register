@@ -2,6 +2,7 @@
 //SCRIPT
 import { ref, watchEffect } from 'vue';
 
+//PROPS
 const props = defineProps({
     list: {
         type: Array,
@@ -24,14 +25,18 @@ const props = defineProps({
     }
 });
 
-const selected = ref([]);
-
+//EMIT
 const emit = defineEmits(['output-data']);
 
+//VARIABLES
+const selected = ref([]);
+
+//send the emit with the selected data
 const getSelected = () => {
     emit('output-data', selected.value);
 }
 
+//when props reset changes to true it resets the selected fields
 watchEffect(() => { if(props.reset) props.type === 'radio' ? selected.value = '' : selected.value.length = 0 });
 
 const text = (elem) => props.list[0].surname ? `${elem.surname} ${elem.name}` : elem

@@ -1,7 +1,7 @@
 <script setup>
 import { watchEffect } from 'vue';
 
-    //SCRIPT
+//PROPS
 const props = defineProps({
     custom:{
         type:Array,
@@ -20,15 +20,17 @@ const props = defineProps({
     }
 });
 
+//EMIT
 const emit = defineEmits(['form-data']);
 
-
+//send the emit with the form data
 const editProfile = () =>{
     const formData = new FormData(document.getElementById(`form${props.name}`))
     const data = Object.fromEntries(formData.entries())
     emit('form-data', data)
 }
 
+//when props submitData is true it submits the form data
 watchEffect( () => { if(props.submitData) editProfile() } )
 
 

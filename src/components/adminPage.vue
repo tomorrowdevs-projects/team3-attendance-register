@@ -8,21 +8,25 @@ import Calendar from './calendar.vue';
 import Button from './ui/Button.vue';
 import DbError from './ui/DbError.vue';
 
+//PROPS
 const props = defineProps({
     userInfo: {
         type: Object,
         required: true
     }
 });
+
+//EMIT
 const emit = defineEmits(['logout']);
 
+//VARIABLES
 const selected = ref('');
 const showBack = ref(false);
 const data = ref([]);
 
+//get all data from db
 function get() {
     getData.getData().then((res) => { data.value = res; if (res.status) selected.value = 'dbError' })
-    
 }
 
 get()

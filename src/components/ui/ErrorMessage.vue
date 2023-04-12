@@ -1,5 +1,5 @@
 <script setup>
-    //SCRIPT
+
 // PROPS
 const props = defineProps({
     message: {

@@ -1,6 +1,8 @@
 const puppeteer = require('puppeteer');
 const connection = require('./src/connectMysql')
 const queries = require("./model/queries.js");
+
+
 //https://www-bannerbear-com.translate.goog/blog/how-to-convert-html-into-pdf-with-node-js-and-puppeteer/?_x_tr_sl=en&_x_tr_tl=it&_x_tr_hl=it
 
 function convertToTime(num) {
@@ -22,7 +24,7 @@ exports.buildPdp = async (url) => {
   })
 
  const browser = await puppeteer.launch();
-console.log('rowsDB',rowsDB);
+
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 const uniqueArray = [];
@@ -40,7 +42,7 @@ const table = `<table>
   <tr>
     <th>Trainers</th>
     <th>Total hours</th>
-    <th>Month</th>
+    <th>Data</th>
   </tr>
 </thead>
 <tbody>

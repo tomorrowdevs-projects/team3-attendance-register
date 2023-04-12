@@ -153,11 +153,10 @@ router.get("/calendary/list/:username", async (req, res) => {
                 year: obj.year,
               };
             }
-            console.log()
+            
             acc[key].name_ath[obj.username_athlete] = [obj.absences_or_presences, obj.surname, obj.name];
             return acc;
           }, {});
-          
           const groupedArr = Object.values(result);
 
           if (rows) res.json({ status: 201, data: groupedArr }).end();

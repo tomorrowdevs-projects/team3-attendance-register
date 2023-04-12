@@ -14,8 +14,10 @@ const props = defineProps({
     }
 });
 
+//EMIT
 const emits = defineEmits(['cat-changed']);
 
+//VARIABLES
 const delClicked = ref(false);
 const delString = ref('');
 const catName = ref('');
@@ -25,11 +27,13 @@ const reset = ref(false);
 let errorMessage = '';
 const errorAddNew = ref(false);
 
+//get data from checkableList component
 const getSelected = (item) => {
     catNewUser.value = item;
     if (catNewUser.value !== '') error.value = false
 }
 
+//delete a category
 const deleteBut = () => {
     if (delString.value === 'Now') {
         delClicked.value = false;
@@ -52,6 +56,7 @@ const deleteBut = () => {
     }
 }
 
+//add new category
 const addNew = () => {
     if (catName.value !== '') {
         axios

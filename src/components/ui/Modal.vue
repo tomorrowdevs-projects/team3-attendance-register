@@ -1,8 +1,9 @@
 <script setup>
-    //SCRIPT
-    import { ref } from 'vue';
-    import Button from './Button.vue';
-    import ErrorMessage from './ErrorMessage.vue';
+//SCRIPT
+import { ref } from 'vue';
+import Button from './Button.vue';
+import ErrorMessage from './ErrorMessage.vue';
+
 // PROPS
 const props = defineProps({
   data: {
@@ -14,13 +15,17 @@ const props = defineProps({
   }
 });
 
+//EMIT
 const emit = defineEmits(['send-edit']);
 
+//VARIABLES
 const duration = ref(props.data.number_of_training);
 const athSelected = ref([]);
 
+//check the checkboxes of the athletes who were present at the event
 for (const username in props.data.name_ath) { if (props.data.name_ath[username][0]) athSelected.value.push(username) }
 
+//send the emit with the data modified by the user
 function editEvent () {
     const ath = Object.keys(props.data.name_ath).reduce((obj, key) => { obj[key] = false; return obj }, {});
     athSelected.value.forEach(key => key in ath ? ath[key] = true : ath[key] = false);
