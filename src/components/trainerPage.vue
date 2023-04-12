@@ -8,6 +8,7 @@ import Button from './ui/Button.vue';
 import DbError from './ui/DbError.vue';
 import CheckableList from './ui/CheckableList.vue';
 import ErrorMessage from './ui/ErrorMessage.vue';
+import utils from '../JS/utils';
 
 //PROPS
 const props = defineProps({
@@ -51,7 +52,7 @@ function get (username_trainer) {
         dataDB.value = res.data;
         calendarData.value = res.calendar;
         trainerCategory.value = [...new Set(res.data.reduce((acc, el) => { acc.push(el.category); return acc; }, []))];
-        athletes.value = res.data.filter(el => el.category === trainerCategory.value[0]).sort(compare);
+        athletes.value = res.data.filter(el => el.category === trainerCategory.value[0]).sort(utils.compare);
         selectedCategory.value = trainerCategory.value[0];
         if (res.status) selected.value = 'dbError'
     })
@@ -61,7 +62,7 @@ get(props.userInfo.username);
 
 //Updates the athletes when the selected category changes
 watch(selectedCategory, (newValue, oldValue) => {
-    athletes.value = dataDB.value.filter(el => el.category === newValue).sort(compare);
+    athletes.value = dataDB.value.filter(el => el.category === newValue).sort(utils.compare);
     reset.value = true;
     setTimeout(() => reset.value = false, 300)
 },
@@ -69,13 +70,6 @@ watch(selectedCategory, (newValue, oldValue) => {
         deep: true,
     }
 );
-
-//Function which is called as a callback for the athletes' sorts
-function compare(a, b) {
-    if (a.surname < b.surname) return -1;
-    if (a.surname > b.surname) return 1;
-    return 0;
-};
 
 //Emit of ChackableList, takes the list of chosen athletes or signals the error in case no one was chosen when entering an event
 const getSelected = (item) => {

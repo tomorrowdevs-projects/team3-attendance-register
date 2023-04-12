@@ -3,6 +3,7 @@
 import { ref, computed } from 'vue';
 import Modal from './ui/Modal.vue';
 import axios from 'axios';
+import utils from '../JS/utils';
 
 // PROPS
 const props = defineProps({
@@ -24,12 +25,6 @@ const emit = defineEmits(['edit']);
 
 function getColor() {
   return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0");
-}
-
-function convertToTime(num) {
-  var hours = Math.floor(num / 2);
-  var minutes = (num % 2) * 30;
-  return hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
 }
 
 const color = props.calendar.map(el => getColor());
@@ -116,7 +111,7 @@ console.log(filtered)
         <div class="card-header" :style="'color:' + color[index]"> {{ item.category }}</div>
         <div class="card-body">
           <h5 v-if="props.type === 'admin'" class="card-title"> {{ item.username_trainer }}</h5>
-          <h4 class="card-title"> Duration: h {{ convertToTime(item.number_of_training) }}</h4>
+          <h4 class="card-title"> Duration: h {{ utils.convertToTime(item.number_of_training) }}</h4>
           <ul>
             <li v-for="elem in item.name_ath" v-show="elem[0]"> {{ `${elem[0]} ${elem[1]} ${elem[2]}` }}</li>
           </ul>

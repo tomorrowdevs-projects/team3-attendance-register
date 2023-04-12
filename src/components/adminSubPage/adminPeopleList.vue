@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ref, watchEffect, computed } from 'vue';
 import Button from '../ui/Button.vue';
 import ErrorMessage from '../ui/ErrorMessage.vue';
+import utils from '../../JS/utils';
 
 // PROPS
 const props = defineProps({
@@ -55,18 +56,8 @@ let userRole = '';
 
 //write username from name and surname and capitalize first letter
 watchEffect(() => {
-    username.value = `${capitalizeFirstLetter(name.value.trim())}${capitalizeFirstLetter(surname.value.trim())}`;
+    username.value = `${utils.capitalizeFirstLetter(name.value.trim())}${utils.capitalizeFirstLetter(surname.value.trim())}`;
 })
-
-function capitalizeFirstLetter(str) {
-    return str.charAt(0).toUpperCase() + str.toLowerCase().slice(1)
-}
-
-function convertToTime(num) {
-    var hours = Math.floor(num / 2);
-    var minutes = (num % 2) * 30;
-    return hours.toString() + ':' + minutes.toString().padStart(2, '0');
-}
 
 //function to sort the list of trainers/athletes by name or by monthly hours
 function compare(a, b) {
@@ -75,7 +66,7 @@ function compare(a, b) {
     if (first < second) return 1;
     if (first > second) return -1;
     return 0;
-}
+};
 
 const deleteItem = (element) => {
     axios
@@ -249,7 +240,7 @@ const fetchNewUser = (event) => {
                         :data-bs-target="'#' + trainer.username" aria-expanded="false"
                         :aria-controls="'#' + trainer.username">
                         {{ `${trainer.surname} ${trainer.name}` }} <span v-if="props.user.selected === 'trainer'">{{
-                            convertToTime(trainer.hours_minutes_of_training_mounth)
+                            utils.convertToTime(trainer.hours_minutes_of_training_mounth)
                         }}</span>
                     </button>
                 </h2>
@@ -308,7 +299,7 @@ const fetchNewUser = (event) => {
                                     <label for="mounthlyHours" class="col-sm-4 col-form-label">Mounthly Hours</label>
                                     <div class="col-sm-8">
                                         <p class="mounthlyHours" style="user-select: none; margin: 6px;">{{
-                                            convertToTime(trainer.hours_minutes_of_training_mounth) }}</p>
+                                            utils.convertToTime(trainer.hours_minutes_of_training_mounth) }}</p>
                                     </div>
                                 </div>
                             </div>
