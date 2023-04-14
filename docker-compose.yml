@@ -10,18 +10,18 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./db-data:/var/lib/mysql
+      - db-data:/var/lib/mysql
 
-  # phpmyadmin:
-  #   image: phpmyadmin/phpmyadmin
-  #   restart: always
-  #   environment:
-  #     PMA_HOST: db
-  #     MYSQL_ROOT_PASSWORD: my-secret-pw
-  #   ports:
-  #     - "8080:80"
-  #   depends_on:
-  #     - db
+  phpmyadmin:
+     image: phpmyadmin/phpmyadmin
+     restart: always
+     environment:
+       PMA_HOST: db
+       MYSQL_ROOT_PASSWORD: my-secret-pw
+     ports:
+       - "8090:80"
+     depends_on:
+       - db
 
   node:
     build: 
@@ -44,3 +44,6 @@ services:
       - "8080:80"
     environment:
       NODE_ENV: development
+
+volumes:
+  db-data: 
