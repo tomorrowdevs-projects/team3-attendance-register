@@ -21,7 +21,6 @@ router.post("/login", async (req, res) => {
             //if there is no password, therefore user inside DB
             if (rows.length === 0) res.json({ status: 400 }).end();
             else {
-              //NOTE : to fi when we'll solve the problem with unique inside queries
               hashPasswordDb = rows[0].password;
 
               //compare cryptoPassowrd

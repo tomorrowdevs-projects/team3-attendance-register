@@ -5,6 +5,7 @@ const app = express();
 const cors = require("cors");
 const db = require("./src/connectMysql.js");
 const logIn = require("./routing/logIn.js");
+const changePassword = require('./routing/changePassword.js')
 const logout = require("./routing/logout.js");
 const category = require("./routing/category.js");
 const cookieParser = require("cookie-parser");
@@ -49,31 +50,26 @@ db().then(async (connection) => {
 //-----------------------------------------------------------------------------------------------------
 
 
+
 app.use("/api/v1", download);
 
 app.use("/api/v1", logIn);
 app.use("/api/v1", logout);
 app.all("*", controller.authorization);
+app.use("/api/v1", controller.changePassword, changePassword);
 
-//first check if you are an administrator,
-//then if the credential format is respected,
-//then if there are no duplicates in the DB
-//then edit file
+
 app.use(
   "/api/v1/managementMyApp/edit",
-  // controller.onlyAdmin,
   controller.checkUserWithParams,
   controller.checkEmailForEdit,
   controller.checkParametersRegister,
   edit
 );
 
-//first check if you are an administrator,
-//then if the credential format is respected,
-//then if there are no duplicates in the DB
+
 app.use(
   "/api/v1/managementMyApp",
-  // controller.onlyAdmin,
   controller.checkParametersRegister,
   controller.checkusernameExist,
   managementMyApp
