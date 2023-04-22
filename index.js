@@ -18,7 +18,7 @@ const download = require('./routing/download.js')
 app.use(cookieParser("Murubutu"));
 app.use(
   cors({
-    origin: "http://localhost:8080",
+    origin: ["http://localhost:8080", "http://localhost:5173"],
     credentials: true,
   })
 );
