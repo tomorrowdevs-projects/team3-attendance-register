@@ -20,7 +20,9 @@
 * > MySql 
 * > Node.js 
 * > Javascript 
-* > Vue 
+* > Vue
+* > Docker
+* > Jest
 ---
 
 ## Launch
