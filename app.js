@@ -4,6 +4,7 @@ const app = express();
 const cors = require("cors");
 const db = require("./src/connectMysql.js");
 const logIn = require("./routing/logIn.js");
+const changePassword = require('./routing/changePassword.js')
 const logout = require("./routing/logout.js");
 const category = require("./routing/category.js");
 const cookieParser = require("cookie-parser");
@@ -14,13 +15,23 @@ const select = require("./routing/select.js");
 const fillDb = require("./controller/toFillDb.js");
 const managementMyApp = require("./routing/managementMyApp.js");
 const download = require('./routing/download.js')
+var bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
 app.use(cookieParser("Murubutu"));
 app.use(
   cors({
-    origin: ["http://localhost:8080", "http://localhost:5173"],
+    origin: "http://localhost:8080",
     credentials: true,
   })
 );
+
+
+
+
+//test
+app.get("/", (req, res) => res.sendStatus(203));
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -37,8 +48,7 @@ app.use(cookieParser());
 //app.initializeApp(firebaseConfig);
 //-----------------------------------------------------------------------------------------------------
 
-app.use(express.json());
-
+ 
 //-----------------------------------------------------------------------------------------------------
 //create tables in the db if these are not there
 db().then(async (connection) => {
@@ -48,31 +58,26 @@ db().then(async (connection) => {
 //-----------------------------------------------------------------------------------------------------
 
 
+
 app.use("/api/v1", download);
 
 app.use("/api/v1", logIn);
 app.use("/api/v1", logout);
 app.all("*", controller.authorization);
+app.use("/api/v1", controller.changePassword, changePassword);
 
-//first check if you are an administrator,
-//then if the credential format is respected,
-//then if there are no duplicates in the DB
-//then edit file
+
 app.use(
   "/api/v1/managementMyApp/edit",
-  // controller.onlyAdmin,
   controller.checkUserWithParams,
   controller.checkEmailForEdit,
   controller.checkParametersRegister,
   edit
 );
 
-//first check if you are an administrator,
-//then if the credential format is respected,
-//then if there are no duplicates in the DB
+
 app.use(
   "/api/v1/managementMyApp",
-  // controller.onlyAdmin,
   controller.checkParametersRegister,
   controller.checkusernameExist,
   managementMyApp
@@ -82,15 +87,8 @@ app.use("/api/v1", select);
 app.use("/api/v1", calendary);
 app.use("/api/v1", category);
 
-//-----------------------------------------------------------------------------------------------------
-
-const app = require('./app')
-const port = process.env.PORT;
-
-app.listen(port, (err) => {
-  if (err) console.log("ERROR", err);
-  console.log(`App running on port ${port}`);
-  
-});
 
 
+ 
+
+module.exports = app;

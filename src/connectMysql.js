@@ -1,7 +1,7 @@
 require("dotenv").config();
 const mysql = require("mysql2/promise");
 
-async function db() {
+ async function db() {
   return await mysql.createConnection({
     host: process.env.LOCALHOST,
     user: process.env.ROOT,
@@ -9,5 +9,7 @@ async function db() {
     port: process.env.PORT_DB,
   });
 }
+
+
 
 module.exports = db;

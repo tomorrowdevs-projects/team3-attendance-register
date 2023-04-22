@@ -1,5 +1,7 @@
 const createDb = `CREATE DATABASE IF NOT EXISTS team3`;
 const selectLogin = "SELECT * FROM accounts WHERE username = ? ";
+const updatePassword =
+  "UPDATE  IGNORE  accounts  SET password = ? WHERE username = ?";
 const use = "USE team3";
 const selectTrainerorAtlete = `SELECT * FROM accounts WHERE role = 'trainer' OR role = 'athlete' `;
 
@@ -60,8 +62,8 @@ const createCategory = `CREATE TABLE if not exists category(
   FOREIGN KEY(username_trainer) REFERENCES accounts(username) ON UPDATE CASCADE ON DELETE CASCADE
 ) `;
 
-const select_number_of_training_old =` SELECT  number_of_training, mounth, year, username_trainer FROM calendary WHERE  id_course = ? AND 
-date = ? `
+const select_number_of_training_old = ` SELECT  number_of_training, mounth, year, username_trainer FROM calendary WHERE  id_course = ? AND 
+date = ? `;
 const category_assignment = `CREATE TABLE if not exists category_assignment(
   id_course int NOT NULL AUTO_INCREMENT PRIMARY KEY ,
   username_trainer VARCHAR(255)  NULL ,  
@@ -100,7 +102,7 @@ const attendance_absences = ` UPDATE IGNORE  category  SET attendance_absences =
 const delete_category = `DELETE FROM category_assignment  WHERE  category = ?`;
 const select_username_athlete_from_attendance_absences = `SELECT username_athlete, code_registration FROM category WHERE category
  = ?  `;
-const select_from_hours = `SELECT  number_of_training FROM hours WHERE  mounth = ? AND id_course = ? AND year = ?`
+const select_from_hours = `SELECT  number_of_training FROM hours WHERE  mounth = ? AND id_course = ? AND year = ?`;
 const select_category = `SELECT * FROM category WHERE category
  = ?`;
 const select_my_category_assignment = `SELECT category, id_course FROM category_assignment WHERE username_trainer = ?`;
@@ -124,7 +126,7 @@ const select_trainer_from_category = `SELECT username_trainer FROM category_assi
 const select_id_course_from_category_assignment = `SELECT id_course, category FROM category_assignment WHERE  username_trainer = ? AND category = ?`;
 const edit_category_assignment = ` UPDATE IGNORE  category_assignment SET username_trainer = ?, category = ?  WHERE id_course = ? `;
 const edit_hours = ` UPDATE IGNORE  hours SET number_of_training = ? WHERE id_course = ? AND mounth = ? AND year = ?`;
-const edit_hours_accounts = ` UPDATE IGNORE  accounts SET hours_minutes_of_training_mounth = ? WHERE username = ? `
+const edit_hours_accounts = ` UPDATE IGNORE  accounts SET hours_minutes_of_training_mounth = ? WHERE username = ? `;
 
 const select_trainer_category = `SELECT username_trainer, category FROM category_assignment WHERE  username_trainer = ? AND category = ?`;
 const passwordAndRole = `SELECT password ,role FROM accounts WHERE username = ?  `;
@@ -153,7 +155,7 @@ const select_athlete_from_category_with_usernam_trainer = `SELECT * FROM categor
 const date_ath = `SELECT name, surname FROM accounts WHERE username = ?`;
 const innerjoin_account_calendary = ` SELECT  * FROM accounts FULL JOIN calendary ON username = username_athlete`;
 const innerjoin_account_hours = ` SELECT name, surname, hours_minutes_of_training_mounth, mounth, year, number_of_training, id_course FROM accounts FULL JOIN hours ON username = username_trainers`;
-const insert_to_hours = ` INSERT IGNORE INTO hours (id_course, username_trainers, mounth, year, number_of_training) VALUES ( ?, ?, ?, ?, ? )`
+const insert_to_hours = ` INSERT IGNORE INTO hours (id_course, username_trainers, mounth, year, number_of_training) VALUES ( ?, ?, ?, ?, ? )`;
 
 module.exports = {
   selectLogin,
@@ -218,4 +220,5 @@ module.exports = {
   select_hours_trainer,
   innerjoin_account_hours,
   insert_to_hours,
+  updatePassword,
 };

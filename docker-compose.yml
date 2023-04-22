@@ -1,11 +1,11 @@
-version: '3'
+version: '3.9'
 
 services:
   db:
     image: mysql:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: my-secret-pw
+      MYSQL_ROOT_PASSWORD: "${PASSWORD}"
       MYSQL_DATABASE: team3
     ports:
       - "3306:3306"
@@ -17,7 +17,7 @@ services:
      restart: always
      environment:
        PMA_HOST: db
-       MYSQL_ROOT_PASSWORD: my-secret-pw
+       MYSQL_ROOT_PASSWORD: "${PASSWORD}"
      ports:
        - "8090:80"
      depends_on:
@@ -42,6 +42,8 @@ services:
       - .:/app
     ports:
       - "8080:80"
+    depends_on:
+      - db
     environment:
       NODE_ENV: development
 

@@ -36,7 +36,7 @@ exports.checkusernameExist = (req, res, next) => {
           next();
         }
       });
-  });
+  }); 
 };
 
 exports.checkEmailForEdit = async (req, res, next) => {
@@ -115,10 +115,16 @@ exports.checkParametersRegister = (req, res, next) => {
   }
 };
 
-exports.onlyAdmin = (req, res, next) => {
-  if (req.session.role === "admin") next();
-  else {
-    return res.json({ status: 401 });
+exports.changePassword = (req, res, next) => {
+  try {
+     let {newPassword, confirmPassword} = req.body
+    if (
+      // /^(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(newPassword) &&
+      newPassword === confirmPassword
+    )
+      return next();
+  } catch {
+    return res.sendStatus(403);
   }
 };
 
@@ -137,7 +143,6 @@ exports.sevenDays = (date) => {
   }
 };
 exports.onlySession = (req, res, next) => {
-
   if (req.session.loggedin === true) next();
   else {
     return res.json({ status: 401 }).end();
