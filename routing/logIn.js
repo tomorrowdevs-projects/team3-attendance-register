@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const queries = require("../model/queries.js");
 const connection = require("../src/connectMysql.js");
 const bcrypt = require("bcryptjs");
@@ -8,7 +7,7 @@ const express = require("express");
 
 const router = express.Router();
 
-router.post("/login", async (req, res) => {
+const login = router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   if (username && password) {
     connection()
@@ -59,4 +58,4 @@ router.post("/login", async (req, res) => {
   }
 });
 
-module.exports = router;
+(module.exports = router), login;

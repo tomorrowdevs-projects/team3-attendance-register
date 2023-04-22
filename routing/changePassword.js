@@ -14,7 +14,6 @@ const router = express.Router();
 router.put("/changePassword", async (req, res) => {
   const { password, newPassword, confirmPassword } = req.body;
     let hashedPassowrd = await bcrypt.hash(newPassword, 12);
-    console.log(hashedPassowrd)
     connection()
       .then(async (connection) => {
         await connection.query(queries.use);
