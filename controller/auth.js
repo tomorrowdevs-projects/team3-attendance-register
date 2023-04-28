@@ -106,7 +106,7 @@ exports.checkParametersRegister = (req, res, next) => {
     }
   } else {
     const isBodyValid = /^[A-Za-z0-9]*$/.test(username)
-      // && /^(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password)
+      && /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password)
       && password === confirmPassword
       && /^[a-zA-Z\s]*$/.test(name)
       && /^[a-zA-Z\s]*$/.test(surname)
@@ -136,10 +136,12 @@ exports.changePassword = (req, res, next) => {
   try {
     let { newPassword, confirmPassword } = req.body;
     if (
-      // /^(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(newPassword) &&
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(newPassword) &&
       newPassword === confirmPassword
     )
       return next();
+
+      else res.json({ status: 400 }).end()
   } catch {
     return res.sendStatus(403);
   }

@@ -1,6 +1,7 @@
 <script setup>
 //SCRIPT
 import { ref } from 'vue';
+import axios from 'axios';
 import ErrorMessage from './ErrorMessage.vue';
 import Button from './Button.vue';
 import DynamicForm from './DynamicForm.vue';
@@ -18,8 +19,8 @@ const error = ref(false);
 const getData = ref(false);
 const title = ref('change password');
 const fieldsForm = [
-  { label: 'Old Password', name: 'oldPassword', type: 'password'},
-  { label: 'Password', name: 'password', type: 'password'},
+  { label: 'Old Password', name: 'password', type: 'password'},
+  { label: 'Password', name: 'newPassword', type: 'password'},
   { label: 'Confirm Password', name: 'confirmPassword', type: 'password'}
 ];
 
@@ -44,6 +45,10 @@ const sendPassword = (data) => {
     props.forgotPassword ? error.value = false : error.value = checkInput(data);
     getData.value = false;
     //fetch data to db
+
+    axios
+        .put(`http://localhost:2000/api/v1/changePassword`, data,{ withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
+        .then(response => console.log(response.data))
 }
 
 </script>

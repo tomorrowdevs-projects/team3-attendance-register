@@ -3,6 +3,7 @@ const mysql = require("mysql2/promise");
 process.env.NODE_ENV === "production" 
 
 
+process.env.NODE_ENV = "production";
 
 async function db() {
   try {
