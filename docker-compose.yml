@@ -33,6 +33,8 @@ services:
       - "2000:2000"
     depends_on:
       - db
+    environment:
+      NODE_ENV: dev  
 
   vue:
     build:

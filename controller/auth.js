@@ -1,6 +1,8 @@
 const queries = require("../model/queries.js");
 const connection = require("../src/connectMysql.js");
-const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken"); 
+
+
 
 //if the user exists in the db with params -params is a method of req-
 exports.checkUserWithParams = (req, res, next) => {
@@ -36,7 +38,7 @@ exports.checkusernameExist = (req, res, next) => {
           next();
         }
       });
-  }); 
+  });
 };
 
 exports.checkEmailForEdit = async (req, res, next) => {
@@ -57,9 +59,21 @@ exports.checkEmailForEdit = async (req, res, next) => {
   });
 };
 
+
 exports.checkParametersRegister = (req, res, next) => {
-  if (req.method == "DELETE") return next();
-  let {
+  const REQUIRED_FIELDS = ['username', 'password', 'confirmPassword',  'name', 'surname', 'email', 'role', 'category'];
+
+  const { method, path, body } = req;
+
+  if (method === 'DELETE') {
+    return next();
+  }
+
+  if (Object.keys(body).length === 0 || REQUIRED_FIELDS.some(field => !body[field])) {
+    return res.status(406).json({ status: 406 });
+  }
+ 
+  const {
     username,
     password,
     confirmPassword,
@@ -72,52 +86,55 @@ exports.checkParametersRegister = (req, res, next) => {
   } = req.body;
 
   const roles = ["admin", "trainer", "athlete"];
-  if (req.path != "/") {
-    req.body.name = capFirstLetter(name);
-    req.body.usurname = capFirstLetter(surname);
-    req.body.email = email.toLowerCase();
-    req.body.newUsername = capFirstLetter(newUsername);
 
-    if (
-      /^[A-Za-z0-9]*$/.test(username) &&
-      /^[a-zA-Z\s]*$/.test(name) &&
-      /^[a-zA-Z\s]*$/.test(surname) &&
-      /^[a-zA-Z\s]*$/.test(newUsername) &&
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
-    ) {
-      next();
+  if (path !== "/") {
+    const isBodyValid = /^[A-Za-z0-9]*$/.test(username)
+      && /^[a-zA-Z\s]*$/.test(name)
+      && /^[a-zA-Z\s]*$/.test(surname)
+      && /^[a-zA-Z\s]*$/.test(newUsername)
+      && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+
+    if (isBodyValid) {
+      req.body.name = capFirstLetter(name);
+      req.body.usurname = capFirstLetter(surname);
+      req.body.email = email.toLowerCase();
+      req.body.newUsername = capFirstLetter(newUsername);
+
+      return next();
     } else {
       return res.json({ status: 404 });
     }
   } else {
-    req.body.name = capFirstLetter(name);
-    req.body.surname = capFirstLetter(surname);
-    req.body.username = capFirstLetter(username);
-    req.body.email = email.toLowerCase();
-    req.body.role = role.toLowerCase();
-    req.body.password = password;
-    req.body.category = category;
+    const isBodyValid = /^[A-Za-z0-9]*$/.test(username)
+      // && /^(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password)
+      && password === confirmPassword
+      && /^[a-zA-Z\s]*$/.test(name)
+      && /^[a-zA-Z\s]*$/.test(surname)
+      && /^[a-zA-Z\s]*$/.test(newUsername)
+      && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+      && roles.includes(role);
 
-    if (
-      /^[A-Za-z0-9]*$/.test(username) &&
-      // /^(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password) &&
-      password === confirmPassword &&
-      /^[a-zA-Z\s]*$/.test(name) &&
-      /^[a-zA-Z\s]*$/.test(surname) &&
-      /^[a-zA-Z\s]*$/.test(newUsername) &&
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) &&
-      roles.includes(role)
-    )
-      next();
-    else {
+    if (isBodyValid) {
+      req.body.name = capFirstLetter(name);
+      req.body.surname = capFirstLetter(surname);
+      req.body.username = capFirstLetter(username);
+      req.body.email = email.toLowerCase();
+      req.body.role = role.toLowerCase();
+      req.body.password = password;
+      req.body.category = category;
+
+      return next();
+    } else {
       return res.json({ status: 405 });
     }
   }
 };
 
+
+
 exports.changePassword = (req, res, next) => {
   try {
-     let {newPassword, confirmPassword} = req.body
+    let { newPassword, confirmPassword } = req.body;
     if (
       // /^(?=.[a-z])(?=.[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(newPassword) &&
       newPassword === confirmPassword

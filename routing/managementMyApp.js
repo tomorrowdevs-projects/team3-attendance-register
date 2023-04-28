@@ -25,8 +25,6 @@ router.post("/", async (req, res) => {
           role,
         ])
         .then(async ([rows]) => {
-          if (rows.affectedRows === 0) res.json({ status: 404 }).end();
-          else {
             category.forEach(async (el) => {
               if (role === "athlete") {
                 await connection
@@ -58,12 +56,12 @@ router.post("/", async (req, res) => {
                 ]);
               }
             });
-          }
         });
     })
     res.json({ status: 201 }).end();
 
   } catch (error) {
+    res.json({ status: 400 }).end();
     console.log(error);
   }
 });

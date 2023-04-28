@@ -37,12 +37,18 @@ Extract the contents in the desired folder, open the terminal and position on th
 
 Install the dependencies by running the `npm install` command.
 
-To make the app functional you need to install Xampp available at this address: https://www.apachefriends.org/download.html
+To make the app functional you need to install Xampp available at this address:
+ https://www.apachefriends.org/download.html
 
 Once installed xampp run the start of "Apache web server" and "MySql database".
 
 NPM is the recommended installation method when building applications with Vue. 
-After starting the server, open the shell and type: `npm start`.
+After starting the server, open the shell and type: 
+
+
+## if you are using xamp:   $env:NODE_ENV = "production" ; npm start 
+## if you are using Docker:   $env:NODE_ENV = "dev" ; npm start 
+
 
 
 Open another shell and type this command: `npm run dev`.

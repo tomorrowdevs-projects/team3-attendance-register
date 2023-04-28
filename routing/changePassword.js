@@ -11,15 +11,15 @@ const router = express.Router();
 
 
 
-router.put("/changePassword", async (req, res) => {
-  const { password, newPassword, confirmPassword } = req.body;
+router.put("/", async (req, res) => {
+  const { password, newPassword } = req.body;
     let hashedPassowrd = await bcrypt.hash(newPassword, 12);
     connection()
       .then(async (connection) => {
         await connection.query(queries.use);
         connection
           .query(queries.updatePassword, [hashedPassowrd, req.username])
-          .then(([rows]) => {
+          .then(() => {
             res.json({ status: 201});
           });
       })

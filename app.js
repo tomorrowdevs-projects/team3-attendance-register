@@ -15,20 +15,19 @@ const select = require("./routing/select.js");
 const fillDb = require("./controller/toFillDb.js");
 const managementMyApp = require("./routing/managementMyApp.js");
 const download = require('./routing/download.js')
-var bodyParser = require('body-parser')
+const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 app.use(cookieParser("Murubutu"));
 app.use(
   cors({
-    origin: "http://localhost:8080",
+    origin: ["http://localhost:8080", "http://localhost:5173"],
     credentials: true,
   })
 );
 
-
-
+console.log(`working environments : ${process.env.NODE_ENV}`)
 
 //test
 app.get("/", (req, res) => res.sendStatus(203));
@@ -63,30 +62,30 @@ app.use("/api/v1", download);
 
 app.use("/api/v1", logIn);
 app.use("/api/v1", logout);
-app.all("*", controller.authorization);
-app.use("/api/v1", controller.changePassword, changePassword);
+// app.all("*", controller.authorization);
 
 
 app.use(
   "/api/v1/managementMyApp/edit",
   controller.checkUserWithParams,
   controller.checkEmailForEdit,
-  controller.checkParametersRegister,
+  controller.checkParametersRegister, 
   edit
 );
 
-
+ 
 app.use(
   "/api/v1/managementMyApp",
   controller.checkParametersRegister,
   controller.checkusernameExist,
   managementMyApp
 );
-
+  
 app.use("/api/v1", select);
 app.use("/api/v1", calendary);
 app.use("/api/v1", category);
 
+app.use("/api/v1/changePassword", controller.changePassword, changePassword);
 
 
  
