@@ -25,7 +25,7 @@ router.put("/:username", async (req, res) => {
           username,
         ])
         .then(async ([rows]) => {
-          if (rows.affectedRows === 0) res.json({ status: 404333 }).end();
+          if (rows.affectedRows === 0) res.json({ status: 404 }).end();
 
           if (req.body.role === "trainer") {
             category.forEach(async (element) => {

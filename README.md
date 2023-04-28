@@ -43,10 +43,9 @@ To make the app functional you need to install Xampp available at this address:
 Once installed xampp run the start of "Apache web server" and "MySql database".
 
 NPM is the recommended installation method when building applications with Vue. 
-After starting the server, open the shell and type: 
 
+If you use docker run this command
 
-## if you are using xamp:   $env:NODE_ENV = "production" ; npm start 
 ## if you are using Docker:   $env:NODE_ENV = "dev" ; npm start 
 
 
