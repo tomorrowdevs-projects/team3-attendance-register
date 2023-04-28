@@ -1,9 +1,10 @@
 require("dotenv").config();
 const mysql = require("mysql2/promise");
+process.env.NODE_ENV = "production";
 
 async function db() {
   try {
-    if (process.env.NODE_ENV === "production" | process.env.NODE_ENV === "test") {
+    if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "test") {
       //xamp and test
       return await mysql.createConnection({
         host: process.env.LOCALHOST,

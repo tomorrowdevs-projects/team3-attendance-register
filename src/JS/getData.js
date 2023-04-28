@@ -26,6 +26,7 @@ async function getData () {
         .get(`${baseUrl}calendary/list/Admin`, { withCredentials: true, headers: {'Access-Control-Allow-Credentials': 'true'} })
     
     return Promise.all([categories, trainers, athletes, withoutTrainer, calendar]).then(result => {
+
         const categories = [...new Set( result[0].data.data.reduce((acc, el) => { 
             acc.push(el.category); 
             return acc;

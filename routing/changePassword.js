@@ -19,8 +19,9 @@ router.put("/", async (req, res) => {
         await connection.query(queries.use);
         connection
           .query(queries.updatePassword, [hashedPassowrd, req.username])
-          .then(() => {
-            res.json({ status: 201});
+          .then((rows) => {
+            if (rows.length > 0) res.json({ status: 201}).end()
+            else res.json({ status: 400 }).end()
           });
       })
       .catch((error) => {
@@ -28,6 +29,5 @@ router.put("/", async (req, res) => {
       });
   
 });
-
 
 module.exports = router;
