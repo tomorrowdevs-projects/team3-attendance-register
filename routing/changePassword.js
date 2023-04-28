@@ -12,7 +12,7 @@ const router = express.Router();
 
 
 router.put("/", async (req, res) => {
-  const { password, newPassword } = req.body;
+  const { newPassword } = req.body;
     let hashedPassowrd = await bcrypt.hash(newPassword, 12);
 
     connection()
