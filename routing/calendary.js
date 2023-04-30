@@ -32,7 +32,7 @@ router.post("/calendary/:username", async (req, res) => {
           if (rows.length === 0) {
             for (const username_ath in name_ath) {
               await connection.query(queries.use);
-
+ 
               await connection.query(queries.insertIntoCalendary, [
                 username_trainer,
                 id_course,

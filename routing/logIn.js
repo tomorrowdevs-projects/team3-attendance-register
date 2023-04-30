@@ -8,7 +8,8 @@ const express = require("express");
 const router = express.Router();
 
 const login = router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  const {username, password } = req.body;
+
   if (username && password) {
     connection()
       .then(async (connection) => {

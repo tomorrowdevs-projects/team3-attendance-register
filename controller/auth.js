@@ -136,7 +136,7 @@ exports.changePassword = (req, res, next) => {
   try {
     let { newPassword, confirmPassword } = req.body;
     if (
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(newPassword) &&
+      // /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(newPassword) &&
       newPassword === confirmPassword
     )
       return next();
