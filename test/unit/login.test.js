@@ -2,12 +2,12 @@ const request = require("supertest");
 const login = require("../../routing/logIn.js");
 const app = require("../../app.js");
 
-describe("login", () => {
+describe("login", () => { 
   it("returns 201 and the user object when given valid credentials", async () => {
     const response = await request(app)
       .post("/api/v1/login")
       .send({ username: "Lee", password: "123456Op" })
-
+ 
       .expect("Content-Type", /json/);
     expect(response.status).toBe(200);
     expect(response.body.status).toBe(201);

@@ -4,7 +4,7 @@ const pdfDocument = require("../pdf_service.js");
 const router = express.Router();
 
 
-router.get("/", function async(req, res) {
+router.get("/download", function async(req, res) {
     pdfDocument.buildPdp().then(() => {
       const file = './file/hours.pdf';
       res.download(file);

@@ -47,7 +47,7 @@ NPM is the recommended installation method when building applications with Vue.
 If you use docker run this command
 
 ## if you are using Docker:   $env:NODE_ENV = "dev" ; npm start 
-
+ 
 
 
 Open another shell and type this command: `npm run dev`.
