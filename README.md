@@ -60,3 +60,5 @@ By default, an admin user and a trainer user are created in the database, to acc
 `Admin: Noelio , password: 123456qW`
 
 `Trainer: Paskal , password: 123456hJ`
+
+# IMPORTANT: by default when a new user is created, this password has YOUR USERNAME + 1000.

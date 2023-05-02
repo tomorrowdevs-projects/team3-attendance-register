@@ -173,6 +173,7 @@ const printPdf = (element) => {
     downloadFile()
 }
 
+console.log(filteredList[2])
 //Add new user
 const fetchNewUser = (event) => {
     if (catNewUser.value.length === 0) {
@@ -190,6 +191,7 @@ const fetchNewUser = (event) => {
     axios
         .post(`http://localhost:2000/api/v1/managementMyApp`, { ...data }, { withCredentials: true, headers: { 'Access-Control-Allow-Credentials': 'true' } })
         .then((response) => {
+            console.log(response.data.status)
             if (response.data.status === 201) {
                 emit('event');
                 const modal = document.querySelector('#modalAddNew');
@@ -371,7 +373,7 @@ const fetchNewUser = (event) => {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <ErrorMessage v-show="props.user.selected === 'trainer' ? filteredList[2].length === 0 : error" :message="props.user.selected === 'trainer' && filteredList[2].length === 0 ? 'There are no courses available, please add a course first' : errorMessage"></ErrorMessage>
+                    <ErrorMessage v-show="props.user.selected === 'trainer' ? filteredList[2] : error" :message="props.user.selected === 'trainer' && filteredList[2].length === 0 ? 'There are no courses available, please add a course first' : errorMessage"></ErrorMessage>
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Add new {{ user.selected }}</h1>
                 </div>
                 <div class="modal-body">

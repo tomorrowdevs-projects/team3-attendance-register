@@ -61,14 +61,15 @@ exports.checkEmailForEdit = async (req, res, next) => {
 
 
 exports.checkParametersRegister = (req, res, next) => {
-  const REQUIRED_FIELDS = ['username', 'password', 'confirmPassword',  'name', 'surname', 'email', 'role', 'category'];
+  const REQUIRED_FIELDS = req.method == "POST" ? ['username', 'password', 'confirmPassword',  'name', 'surname', 'email', 'role', 'category'] :
+                                                 ['newUsername',  'name', 'surname', 'email', 'role', 'category']
 
   const { method, path, body } = req;
 
   if (method === 'DELETE') {
     return next();
   }
-
+  
   if (Object.keys(body).length === 0 || REQUIRED_FIELDS.some(field => !body[field])) {
     return res.status(406).json({ status: 406 });
   }
@@ -136,7 +137,7 @@ exports.changePassword = (req, res, next) => {
   try {
     let { newPassword, confirmPassword } = req.body;
     if (
-      // /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(newPassword) &&
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(newPassword) &&
       newPassword === confirmPassword
     )
       return next();

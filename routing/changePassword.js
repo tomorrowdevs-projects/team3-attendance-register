@@ -21,13 +21,12 @@ router.put("/", async (req, res) => {
         connection
           .query(queries.updatePassword, [hashedPassowrd, req.username])
           .then((rows) => {
-
-            if(rows.affectedRows === 1) res.json({ status: 201});
-
-            else(res.json({ status: 201}))
+            console.log(rows)
+            if(rows[0].affectedRows === 1) res.json({ status: 201});
           });
       })
       .catch((error) => {
+        res.json({ status: 500})
         throw error;
       });
   
