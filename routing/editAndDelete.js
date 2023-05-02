@@ -13,9 +13,14 @@ router.put("/:username", async (req, res) => {
 
     const { newUsername, name, surname, email, category, old_category, role } =
       req.body;
+      
+    // Connect to database
     await connection().then(async (connection) => {
+      
+      // Set current database to the one specified in queries.use
       await connection.query(queries.use);
-      //edit accounts
+      
+      // Edit account details
       await connection
         .query(queries.edit_account, [
           email,
@@ -25,8 +30,10 @@ router.put("/:username", async (req, res) => {
           username,
         ])
         .then(async ([rows]) => {
+          // If no rows are affected, return 404
           if (rows.affectedRows === 0) res.json({ status: 404 }).end();
 
+          // If the user is a trainer, update categories assigned to them
           if (req.body.role === "trainer") {
             category.forEach(async (element) => {
               await connection
@@ -34,8 +41,8 @@ router.put("/:username", async (req, res) => {
                   newUsername,
                   element,
                 ])
-                //delete old_categories
                 .then(async ([rows]) => {
+                  // If the user is not assigned to this category, insert new assignment
                   if (rows.length === 0) {
                     await connection.query(
                       queries.insertInto_category_assignment,
@@ -45,6 +52,7 @@ router.put("/:username", async (req, res) => {
                 });
             });
 
+            // Delete categories that are no longer assigned to the user
             old_category.forEach(async (el) => {
               if (!category.includes(el)) {
                 await connection
@@ -52,7 +60,6 @@ router.put("/:username", async (req, res) => {
                     newUsername,
                     el,
                   ])
-                  //delete old_categories
                   .then(async ([rows]) => {
                     let id = rows[0].id_course;
                     await connection.query(
@@ -64,15 +71,16 @@ router.put("/:username", async (req, res) => {
             });
           }
 
+          // If the user is an athlete, update categories they belong to
           if (req.body.role === "athlete") {
             category.forEach(async (el) => {
               await connection
                 .query(queries.select_all_from_category_assignment, [el])
                 .then(async ([rows]) => {
                   if (rows.length > 0) {
-                    //category not yet assigned to any trainer
                     rows.forEach(async (row) => {
                       if (row.username_trainer) {
+                        // If the athlete is not yet assigned to this trainer in this category, insert new assignment
                         await connection
                           .query(queries.select_athlete_from_category, [row.username_trainer, el, newUsername])
                           .then(async ([rows]) => {
@@ -92,6 +100,8 @@ router.put("/:username", async (req, res) => {
                   }
                 });
             });
+
+            // Delete categories that are no longer assigned to the user
             if (old_category) {
               old_category.forEach(async (element) => {
                 if (!category.includes(element)) {
@@ -105,10 +115,12 @@ router.put("/:username", async (req, res) => {
           }
         });
 
+      // Return 201 status
       res.json({ status: 201 }).end();
     });
   } catch (error) {
     console.log(error);
+    // Return 40444 status if an error occurs
     res.json({ status: 40444 }).end();
   }
 });

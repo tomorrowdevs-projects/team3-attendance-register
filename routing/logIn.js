@@ -11,7 +11,7 @@ const login = router.post("/login", async (req, res) => {
   const {username, password } = req.body;
 
   if (username && password) {
-    connection()
+    connection() 
       .then(async (connection) => {
         await connection.query(queries.use);
         //find the cryptoPassword in Db
