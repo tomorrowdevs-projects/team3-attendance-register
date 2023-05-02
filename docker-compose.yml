@@ -34,7 +34,7 @@ services:
     depends_on:
       - db
     environment:
-      NODE_ENV: dev  
+      NODE_ENV: dev
 
   vue:
     build:

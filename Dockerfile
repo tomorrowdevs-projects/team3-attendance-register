@@ -8,7 +8,6 @@ RUN npm run build
 
 ENV NODE_ENV=dev
 CMD ["npm", "start"]
-
 # production stage
 FROM nginx:stable-alpine as production-stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
